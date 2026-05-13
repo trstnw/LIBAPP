@@ -112,9 +112,9 @@ input[type=text]::placeholder{color:rgba(255,255,255,.2)}
 /* BOTTOM SHEETS shared */
 .bk{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);align-items:flex-end;justify-content:center}
 .bk.open{display:flex}
-.sheet{background:#141414;border-radius:24px 24px 0 0;width:100%;max-width:480px;border:1px solid rgba(255,255,255,.12);overflow-y:auto;animation:slideUp .26s cubic-bezier(.32,.72,0,1)}
+.sheet{background:#141414;border-radius:24px 24px 0 0;width:100%;max-width:480px;border:1px solid rgba(255,255,255,.12);overflow-y:auto;animation:slideUp .26s cubic-bezier(.32,.72,0,1);max-height:95vh}
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
-.sp2{padding:20px 24px 48px}
+.sp2{padding:20px 24px 60px;display:flex;flex-direction:column;max-height:95vh;overflow:hidden;box-sizing:border-box}
 .pill{width:36px;height:4px;background:rgba(255,255,255,.2);border-radius:2px;margin:0 auto 20px}
 
 /* ARTIST MODAL */
@@ -139,7 +139,7 @@ input[type=text]::placeholder{color:rgba(255,255,255,.2)}
 
 /* MY LINEUP */
 #luBk{z-index:300}
-.lu-sheet{display:flex;flex-direction:column;max-height:82vh;overflow:hidden}
+.lu-sheet{display:flex;flex-direction:column;max-height:95vh;overflow:hidden}
 .lu-hdr{padding:16px 24px 14px;border-bottom:1px solid rgba(255,255,255,.07);flex-shrink:0;position:sticky;top:0;background:#141414;z-index:10}
 .lu-title{font-size:20px;font-weight:900;margin-top:4px}
 .lu-scr{overflow-y:auto;padding:16px 24px 40px;flex:1}
@@ -162,7 +162,7 @@ input[type=text]::placeholder{color:rgba(255,255,255,.2)}
 .sr-row span{font-size:18px;flex-shrink:0}
 .sr-row input{flex:1;background:transparent;border:none;outline:none;color:#fff;font-size:16px;font-family:inherit;padding:13px 0}
 .sr-row input::placeholder{color:rgba(255,255,255,.25)}
-.sr-list{max-height:52vh;overflow-y:auto;display:flex;flex-direction:column;gap:8px}
+.sr-list{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding-bottom:24px;min-height:0}
 .sri{display:flex;align-items:stretch;gap:0;border-radius:14px;background:transparent;cursor:pointer;overflow:hidden;min-height:64px;margin-bottom:0;border:1.5px solid rgba(255,255,255,.1)}
 .sri:active{background:rgba(255,255,255,.1)}
 .sri.sn{background:rgba(255,70,70,.15);border-color:rgba(255,80,80,.4)}
@@ -256,6 +256,15 @@ input[type=text]::placeholder{color:rgba(255,255,255,.2)}
 .squad-tag:active{transform:scale(.93)}
 .squad-tag:hover{border-color:rgba(255,255,255,.25);background:rgba(255,255,255,.1)}
 .squad-tag-me{border-color:rgba(245,166,35,.5);background:rgba(245,166,35,.1);color:var(--gold)}
+
+.drawer-close{position:absolute;top:16px;right:16px;width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.1);border:none;color:rgba(255,255,255,.7);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:inherit;line-height:1;flex-shrink:0;z-index:10;transition:background .15s;-webkit-tap-highlight-color:transparent}
+.drawer-close:active{background:rgba(255,255,255,.2)}
+
+.shdr-row{display:flex;overflow:hidden;flex-shrink:0;background:#0a0a0a;z-index:30;height:36px;border-bottom:2px solid rgba(255,255,255,.06)}
+.shdr-cell{flex-shrink:0;display:flex;align-items:center;justify-content:center;gap:6px;padding:0 8px;height:36px}
+.schdr{display:none}
+
+.feed-scroll{flex:1;overflow-y:auto;min-height:0;padding-bottom:24px}
 </style>
 </head>
 <body>
@@ -313,7 +322,10 @@ input[type=text]::placeholder{color:rgba(255,255,255,.2)}
   </div>
   <div class="gcont" id="gridCont">
     <div class="tgut"><div class="tgut-i" id="timeGutter"></div></div>
+    <div style="flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0">
+    <div class="shdr-row" id="stageHeaderRow"></div>
     <div class="sscr" id="stagesScroll"><div class="si" id="stagesInner"></div></div>
+    </div>
     <div class="zoom-ctrls">
       <button class="zbtn" onclick="adjustZoom(0.1)" title="Zoom in">+</button>
       <button class="zbtn" onclick="adjustZoom(-0.1)" title="Zoom out">−</button>
@@ -323,7 +335,8 @@ input[type=text]::placeholder{color:rgba(255,255,255,.2)}
 
 <!-- ARTIST MODAL -->
 <div class="bk" id="amBk" onclick="closeAM(event)" style="z-index:200">
-  <div class="sheet sp2" onclick="event.stopPropagation()">
+  <div class="sheet sp2" onclick="event.stopPropagation()" style="position:relative">
+    <button class="drawer-close" onclick="closeAM()">&#10005;</button>
     <div class="pill"></div>
     <div class="am-hdr">
       <div style="flex:1;min-width:0">
@@ -353,7 +366,7 @@ input[type=text]::placeholder{color:rgba(255,255,255,.2)}
       <div class="pill"></div>
       <div style="display:flex;justify-content:space-between;align-items:center">
         <div class="lu-title" id="luTitle">My Lineup</div>
-        <button onclick="document.getElementById('luBk').classList.remove('open')" style="background:rgba(255,255,255,.1);border:none;color:#fff;border-radius:50%;width:32px;height:32px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0">&times;</button>
+        <button class="drawer-close" onclick="closeLU()" style="position:static">&#10005;</button>
       </div>
     </div>
     <div class="lu-scr" id="luScr"></div>
@@ -362,7 +375,8 @@ input[type=text]::placeholder{color:rgba(255,255,255,.2)}
 
 <!-- SEARCH -->
 <div class="bk" id="srBk" onclick="closeSR(event)" style="z-index:400">
-  <div class="sheet sp2" onclick="event.stopPropagation()">
+  <div class="sheet sp2" onclick="event.stopPropagation()" style="position:relative">
+    <button class="drawer-close" onclick="closeSR()">&#10005;</button>
     <div class="pill"></div>
     <div style="font-size:20px;font-weight:900;color:#fff;margin-bottom:14px;letter-spacing:-.01em">Find an artist</div>
     <div class="sr-row">
@@ -970,7 +984,7 @@ var myPass=localStorage.getItem("lib26v3_pass")||null;
 var fbReady=false;
 var selEmoji="🌊";
 var pickerTarget="join";
-var PICKER_EMOJIS=["🌊", "🌙", "⚡", "🎪", "🦋", "🌵", "🍄", "🌈", "🎯", "🦅", "🪐", "💎", "🎸", "🐉", "🌺", "🦊", "🎭", "🌴", "⭐", "🐬", "🦁", "🍉", "🦜", "🌸", "🦩", "🐺", "🦄", "🌮", "🥑", "🎺", "🥁", "🌻", "🦝", "🐙", "🪩", "🏄", "🎨", "🧿", "🪬", "🔮", "🧲", "🌋", "🏔", "🐋", "🦈", "🍀", "🌿", "🪸", "🐚", "🪷", "🌹", "🌷", "💐", "🌼", "🌞", "🌝", "🌪", "❄️", "💧", "🫧", "🌾", "🎡", "🎢", "🎠", "🏕", "🌲", "🌳", "🦔", "🦦", "🦥", "🐨", "🐼", "🦭", "🪅", "🧸", "🎑", "🎆", "🦎", "🐊", "🐳", "🦒", "🦧", "🕊", "🦏", "🐖", "🐎", "🦌", "🐻", "🐧", "🦢", "🕋", "🐍", "🪵", "🍓", "🍝", "🍣", "🍦", "🫖", "🧁", "🍭", "🍺", "🥂", "🍹", "🫗", "🎵", "🎶", "🎼", "🪗", "📻", "🏹", "🪃", "🛸", "🛹", "🛼", "🪂", "🛝", "🪄", "🧨", "🔫", "🧪", "🧫", "🧬", "🌌", "🌑", "🌒", "🌓", "🌔", "🌕", "🛰", "🛳", "🌏", "🌄", "🌅", "🪞", "🪟", "🪤", "🪥", "🪦", "🪧", "🪫", "🪭", "🪮", "🩶", "🩷", "🩸", "🩹", "🩺", "🩻", "🩼", "🎦", "🎣", "🏋", "🏇", "🏆", "🥇", "🥈", "🥉", "🏵", "🧶", "🧷", "🧹", "🧺", "🧻", "🧼", "🧽"];
+var PICKER_EMOJIS=["🌊", "🌙", "⚡", "🎪", "🦋", "🌵", "🍄", "🌈", "🎯", "🦅", "🪐", "💎", "🎸", "🐉", "🌺", "🦊", "🎭", "🌴", "⭐", "🐬", "🦁", "🍉", "🦜", "🌸", "🦩", "🐺", "🦄", "🌮", "🥑", "🎺", "🥁", "🌻", "🦝", "🐙", "🪩", "🏄", "🎨", "🧿", "🪬", "🔮", "🧲", "🌋", "🏔", "🐋", "🦈", "🍀", "🌿", "🪸", "🐚", "🪷", "🌹", "🌷", "💐", "🌼", "🌞", "🌝", "🌪", "❄️", "💧", "🫧", "🌾", "🎡", "🎢", "🎠", "🏕", "🌲", "🌳", "🦔", "🦦", "🦥", "🐨", "🐼", "🦭", "🪅", "🧸", "🎑", "🎆", "🦎", "🐊", "🐳", "🦒", "🦧", "🕊", "🦏", "🐖", "🐎", "🦌", "🐻", "🐧", "🦢", "🕋", "🐍", "🪵", "🍓", "🍝", "🍣", "🍦", "🫖", "🧁", "🍭", "🍺", "🥂", "🍹", "🫗", "🎵", "🎶", "🎼", "🪗", "📻", "🏹", "🪃", "🛸", "🛹", "🛼", "🪂", "🛝", "🪄", "🧨", "🔫", "🧪", "🧫", "🧬", "🌌", "🌑", "🌒", "🌓", "🌔", "🌕", "🛰", "🛳", "🌏", "🌄", "🌅", "🪞", "🪟", "🪤", "🪥", "🪦", "🪧", "🪫", "🪭", "🪮", "🩶", "🩷", "🩸", "🩹", "🩺", "🩻", "🩼", "🎦", "🎣", "🏋", "🏇", "🏆", "🥇", "🥈", "🥉", "🏵", "🧶", "🧷", "🧹", "🧺", "🧻", "🧼", "🧽", "🌤", "⛅", "🌦", "🌧", "⛈", "🌩", "🌨", "❄", "🌬", "🌀", "☀", "🌟", "💫", "✨️", "🌠", "☄", "🌱", "🍃", "🍂", "🍁", "🎋", "🎍", "🪴", "🎄", "🐠", "🐟", "🦀", "🦞", "🦑", "⛵", "🚤", "🛥", "⚓", "🤿", "🏖", "🏝", "🍋", "🍊", "🍇", "🫐", "🥝", "🍑", "🥭", "🍍", "🥥", "🫒", "🌽", "🧄", "🫚", "🍯", "🧃", "🥤", "🍵", "🧉", "🖼", "🎬", "🎤", "🎧", "🎷", "🪕", "🎻", "🥊", "🤸", "🔑", "🗝", "💌", "📿", "💍", "👑", "🎩", "🔭", "🔬", "💡", "🕯", "🪔", "🦨", "🦡", "🦫", "🐿", "🐾", "🦃", "🦤", "🦚", "🐓", "🦆", "🪶", "🐛", "🐌", "🐜", "🪲", "🐝", "🪱", "🦗", "🪳", "🦟", "🦠", "🧊", "🔥️", "⚡️", "🌫", "☀️", "🌤️", "🌥", "☁", "🌦️", "🌧️", "⛈️", "🌩️", "🌨️", "☃", "⛄", "🌬️", "💨", "🌁", "🌃", "🏙", "🌆", "🌇", "🌉", "🎇", "🗺", "🧭", "⛰", "🗻", "🏖️", "🏜", "🏝️", "🏞", "🛖", "🏡", "🏰", "🗼", "🗽", "🗿", "🪆"];
 function hashPass(str){var h=5381;for(var i=0;i<str.length;i++)h=((h<<5)+h)^str.charCodeAt(i);return(h>>>0).toString(36);}
 var activeDay="fri";
 var curArtist=null;
@@ -1073,6 +1087,9 @@ window.addEventListener("DOMContentLoaded",function(){
   if(_scrEl)_scrEl.addEventListener("scroll",function(){
     var gut=document.getElementById("timeGutter");
     if(gut)gut.style.transform="translateY(-"+_scrEl.scrollTop+"px)";
+    // Sync sticky header row horizontal scroll
+    var hdr=document.getElementById("stageHeaderRow");
+    if(hdr)hdr.scrollLeft=_scrEl.scrollLeft;
   },{passive:true});
   // Show splash after 800ms regardless of Firebase
   setTimeout(function(){
@@ -1249,6 +1266,9 @@ function buildTimeGutter(){
   scr.onscroll=function(){gut.scrollTop=scr.scrollTop;};
 }
 function renderGrid(){
+  // Rebuild sticky header row
+  var hdrRow=document.getElementById("stageHeaderRow");
+  if(hdrRow){hdrRow.innerHTML="";}
   var day=DAYS.find(function(d){return d.id===activeDay;});
   if(!day)return;
   var totalH=SLOTS*SH;
@@ -1339,7 +1359,17 @@ function renderGrid(){
       arts.appendChild(blk);
     });
     colDiv.appendChild(arts);
-    inner.appendChild(colDiv);
+    // Add matching sticky header cell
+  if(hdrRow){
+    var hdrCell=document.createElement("div");
+    hdrCell.className="shdr-cell";
+    hdrCell.style.width=colW+"px";
+    hdrCell.style.minWidth=colW+"px";
+    hdrCell.innerHTML='<div class="scdot" style="background:'+col+';box-shadow:0 0 8px '+col+'cc"></div>'
+      +'<div class="scnm" style="color:'+col+';text-shadow:0 0 16px '+col+'88">'+stage+'</div>';
+    hdrRow.appendChild(hdrCell);
+  }
+  inner.appendChild(colDiv);
   });
 }
 // ZOOM
@@ -1909,11 +1939,14 @@ function navToArtist(artistId,dayId){
 }
 </script>
 <div class="bk" id="feedBk" onclick="closeFeed(event)" style="z-index:450">
-  <div class="sheet sp2" onclick="event.stopPropagation()">
+  <div class="sheet sp2" onclick="event.stopPropagation()" style="position:relative">
+    <button class="drawer-close" onclick="closeFeed()">&#10005;</button>
     <div class="pill"></div>
     <div style="font-size:20px;font-weight:900;color:#fff;margin-bottom:16px;letter-spacing:-.01em">🔮 Find your Squad</div>
-    <div id="matchList" style="margin-bottom:4px"></div>
-    <div id="feedList"></div>
+    <div class="feed-scroll">
+      <div id="matchList" style="margin-bottom:4px"></div>
+      <div id="feedList"></div>
+    </div>
   </div>
 </div>
 
@@ -1929,12 +1962,12 @@ function navToArtist(artistId,dayId){
 
 <!-- PROFILE DRAWER -->
 <div class="bk" id="profileDrawerBk" onclick="closeProfileDrawer(event)" style="z-index:500">
-  <div class="sheet lu-sheet" onclick="event.stopPropagation()" style="max-height:85vh">
+  <div class="sheet lu-sheet" onclick="event.stopPropagation()">
     <div class="lu-hdr" id="profileDrawerHdr">
       <div class="pill"></div>
       <div style="display:flex;justify-content:space-between;align-items:center">
         <div id="profileDrawerTitle" style="font-size:22px;font-weight:900;color:#fff"></div>
-        <button onclick="closeProfileDrawer()" style="background:rgba(255,255,255,.1);border:none;color:#fff;border-radius:50%;width:32px;height:32px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0">&times;</button>
+        <button class="drawer-close" onclick="closeProfileDrawer()" style="position:static">&#10005;</button>
       </div>
     </div>
     <div class="lu-scr" id="profileDrawerContent"></div>
