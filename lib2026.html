@@ -16,7 +16,7 @@ html,body{height:100%;background:#0a0a0a;color:#fff;font-family:'DM Sans',system
   --gold:#F5A623;--gdim:rgba(245,166,35,.15);
   --surf:rgba(255,255,255,.05);--bdr:rgba(255,255,255,.08);
   --mut:rgba(255,255,255,.35);
-  --col:210px;--row:60px;--tgut:52px;
+  --col:210px;--row:60px;--tgut:56px;
 }
 .screen{display:none;height:100vh;flex-direction:column;overflow:hidden}
 .screen.active{display:flex}
@@ -71,7 +71,7 @@ input[type=text]::placeholder{color:rgba(255,255,255,.2)}
 .gcont{flex:1;display:flex;overflow:hidden;position:relative}
 .tgut{width:var(--tgut);flex-shrink:0;overflow:hidden;position:relative;border-right:1px solid var(--bdr);z-index:10;background:#0a0a0a}
 .tgut-i{position:absolute;top:0;left:0;right:0}
-.tlbl{height:var(--row);display:flex;align-items:flex-start;padding:4px 6px 0 0;justify-content:flex-end;font-size:10px;color:var(--mut);font-weight:600;white-space:nowrap}
+.tlbl{height:var(--row);display:flex;align-items:flex-start;padding:0 8px 0 0;justify-content:flex-end;font-size:12px;color:rgba(255,255,255,.5);font-weight:700;white-space:nowrap}
 .sscr{flex:1;overflow-x:auto;overflow-y:auto;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.1) transparent;touch-action:pan-x pan-y pinch-zoom;scroll-snap-type:x mandatory}
 .sscr::-webkit-scrollbar{height:4px;width:4px}
 .sscr::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:2px}
@@ -80,10 +80,10 @@ input[type=text]::placeholder{color:rgba(255,255,255,.2)}
 .schdr{position:sticky;top:0;z-index:20;height:36px;display:flex;align-items:center;justify-content:center;padding:0 8px;gap:5px;background:rgba(10,10,10,.96);border-bottom:1px solid var(--bdr)}
 .scdot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
 .scnm{font-size:11px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.gbg{position:absolute;top:36px;left:0;right:0;bottom:0;pointer-events:none}
-.grow{height:var(--row);border-bottom:1px solid rgba(255,255,255,.04)}
-.grow.hr{border-bottom-color:rgba(255,255,255,.09)}
-.scarts{position:absolute;top:36px;left:0;right:0}
+.gbg{position:absolute;top:0;left:0;right:0;bottom:0;pointer-events:none}
+.grow{height:var(--row);border-bottom:1px solid rgba(255,255,255,.06)}
+.grow.hr{border-bottom-color:rgba(255,255,255,.18)}
+.scarts{position:absolute;top:0;left:0;right:0}
 
 /* ARTIST BLOCKS */
 .ab{position:absolute;left:4px;right:4px;border-radius:10px;cursor:pointer;padding:6px 8px;overflow:hidden;border:1px solid transparent;transition:background .2s,border-color .2s,box-shadow .2s;display:flex;flex-direction:column}
@@ -112,9 +112,9 @@ input[type=text]::placeholder{color:rgba(255,255,255,.2)}
 /* BOTTOM SHEETS shared */
 .bk{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);align-items:flex-end;justify-content:center}
 .bk.open{display:flex}
-.sheet{background:#141414;border-radius:24px 24px 0 0;width:100%;max-width:480px;border:1px solid rgba(255,255,255,.12);overflow:hidden;animation:slideUp .26s cubic-bezier(.32,.72,0,1);max-height:90vh}
+.sheet{background:#141414;border-radius:24px 24px 0 0;width:100%;max-width:480px;border:1px solid rgba(255,255,255,.12);overflow:hidden;animation:slideUp .26s cubic-bezier(.32,.72,0,1);max-height:90vh;display:flex;flex-direction:column}
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
-.sp2{padding:20px 24px 32px;overflow-y:auto;max-height:90vh;box-sizing:border-box}
+.sp2{padding:20px 24px 32px;overflow-y:auto;flex:1;min-height:0;box-sizing:border-box}
 .pill{width:36px;height:4px;background:rgba(255,255,255,.2);border-radius:2px;margin:0 auto 20px}
 
 /* ARTIST MODAL */
@@ -139,10 +139,10 @@ input[type=text]::placeholder{color:rgba(255,255,255,.2)}
 
 /* MY LINEUP */
 #luBk{z-index:300}
-.lu-sheet{display:flex;flex-direction:column;max-height:95vh;overflow:hidden}
-.lu-hdr{padding:16px 24px 14px;border-bottom:1px solid rgba(255,255,255,.07);flex-shrink:0;position:sticky;top:0;background:#141414;z-index:10}
+.lu-sheet{display:flex;flex-direction:column;flex:1;overflow:hidden;min-height:0}
+.lu-hdr{padding:16px 24px 14px;border-bottom:1px solid rgba(255,255,255,.07);flex-shrink:0;background:#141414;z-index:10}
 .lu-title{font-size:20px;font-weight:900;margin-top:4px}
-.lu-scr{overflow-y:auto;padding:16px 24px 80px;flex:1;min-height:0}
+.lu-scr{overflow-y:auto;padding:16px 24px 100px;flex:1;min-height:0}
 .lu-day{margin-bottom:24px}
 .lu-dlbl{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--mut);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,.06)}
 .lu-item{display:flex;align-items:stretch;gap:0;padding:0;border-radius:14px;margin-bottom:8px;cursor:pointer;overflow:hidden;min-height:64px;width:100%;border:1.5px solid rgba(255,255,255,.1)}
@@ -162,7 +162,7 @@ input[type=text]::placeholder{color:rgba(255,255,255,.2)}
 .sr-row span{font-size:18px;flex-shrink:0}
 .sr-row input{flex:1;background:transparent;border:none;outline:none;color:#fff;font-size:16px;font-family:inherit;padding:13px 0}
 .sr-row input::placeholder{color:rgba(255,255,255,.25)}
-.sr-list{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding-bottom:32px;min-height:0}
+.sr-list{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding-bottom:100px;min-height:0}
 .sri{display:flex;align-items:stretch;gap:0;border-radius:14px;background:transparent;cursor:pointer;overflow:hidden;min-height:68px;margin-bottom:0;border:1.5px solid rgba(255,255,255,.1)}
 .sri:active{background:rgba(255,255,255,.1)}
 .sri.sn{background:rgba(255,70,70,.15);border-color:rgba(255,80,80,.4)}
@@ -264,14 +264,20 @@ input[type=text]::placeholder{color:rgba(255,255,255,.2)}
 .shdr-cell{flex-shrink:0;display:flex;align-items:center;justify-content:center;gap:6px;padding:0 8px;height:36px}
 .schdr{display:none}
 
-.feed-scroll{flex:1;overflow-y:auto;min-height:0;padding:0 0 32px}
+.feed-scroll{flex:1;overflow-y:auto;min-height:0;padding:0 0 100px}
 
-.sp2-flex{display:flex;flex-direction:column;overflow:hidden;box-sizing:border-box;height:100%;max-height:90vh}
+.sp2-flex{display:flex;flex-direction:column;flex:1;overflow:hidden;min-height:0;padding:0 24px}
 
 .sp2-flex>.drawer-close{flex-shrink:0}
 .sp2-flex>.pill{flex-shrink:0}
 .sp2-flex>div:not(.feed-scroll):not(.sr-list){flex-shrink:0}
 .sp2-flex>input,.sp2-flex>.sr-row{flex-shrink:0}
+
+.tlbl-hour{color:rgba(255,255,255,.75)!important;font-size:13px!important;font-weight:800!important}
+.tlbl-half{color:rgba(255,255,255,.15)!important;font-size:9px!important}
+
+.drawer-title{font-size:20px;font-weight:900;color:#fff;letter-spacing:-.01em;flex-shrink:0;padding-bottom:14px}
+.sr-row{flex-shrink:0;margin-bottom:12px}
 </style>
 </head>
 <body>
@@ -385,7 +391,7 @@ input[type=text]::placeholder{color:rgba(255,255,255,.2)}
 
 <!-- SEARCH -->
 <div class="bk" id="srBk" onclick="closeSR(event)" style="z-index:400">
-  <div class="sheet sp2 sp2-flex" onclick="event.stopPropagation()" style="position:relative">
+  <div class="sheet sp2-flex" onclick="event.stopPropagation()" style="position:relative">
     <button class="drawer-close" onclick="closeSR()">&#10005;</button>
     <div class="pill"></div>
     <div style="font-size:20px;font-weight:900;color:#fff;margin-bottom:14px;letter-spacing:-.01em">Find an artist</div>
@@ -404,8 +410,7 @@ input[type=text]::placeholder{color:rgba(255,255,255,.2)}
   <button class="sfab" onclick="openSR()">&#128269;</button>
 </div>
 
-<script>
-// ── FIREBASE CONFIG ─────────────────────────────
+<script>// ── FIREBASE CONFIG ─────────────────────────────
 // ── FIREBASE CONFIG ───────────────────────────────────────────────────────────
 // For live cross-device sync: create a free project at console.firebase.google.com,
 // enable Realtime Database (test mode), then replace the values below.
@@ -471,250 +476,250 @@ function tr(str){
 }
 
 var META = {
-  "w1":["Melodic House · Organic","SF DJ blending warm basslines with organic percussion and atmospheric textures."],
-  "w2":["Future Bass · Hip-Hop","LA producer known for lush, cinematic beats and genre-defying collaborations."],
-  "w3":["Afro House · Deep House","South African vocalist weaving soulful vocals into deep, afro-infused grooves."],
-  "w4":["Classic House · Tribute","A celebration of DJ Dan\'s legendary Bay Area trance and progressive house legacy."],
-  "w5":["Deep Techno · Ambient","Hypnotic producer crafting introspective techno journeys with ambient undertones."],
-  "w6":["Dark Techno · Industrial","Dense, industrial-tinged techno with relentless energy and heavy low-end pressure."],
-  "w7":["Disco House · Nordic","Norwegian producer fusing sun-soaked disco edits with contemporary house warmth."],
-  "w8":["Sound Journey · Healing","Immersive sonic ceremony blending live instruments, nature sounds, and tonal frequencies."],
-  "w9":["Ecstatic Dance · Global","An intentional dance journey through world rhythms and tribal beats."],
-  "w10":["Techno · Minimal","Hypnotic minimal techno with surgical precision and a deep, meditative groove."],
-  "w11":["Melodic Techno","Cinematic melodic techno with sweeping synths and driving rhythms built for big rooms."],
-  "w12":["Cacao Ceremony · Ritual","A sacred cacao circle led by Nana Marina Cruz with heart-opening ritual and live music."],
-  "w13":["Afro House · Soulful","Soulful DJ bringing the warmth and swing of African rhythms to the dance floor."],
-  "w14":["Breaks · Bass","High-energy breaks and bass fusion with chunky hip-hop influenced rhythms."],
-  "w15":["Downtempo · Indie","Dreamy indie-electronic soundscapes perfect for a golden hour warm-up set."],
-  "w16":["Funk · Nu-Disco","Infectious funk-infused nu-disco cuts guaranteed to get hips moving before dark."],
-  "t1":["Tech House · Peak Time","Ibiza heavyweight known for peak-time tech house with infectious groove and relentless energy."],
-  "t2":["Techno · Club","Hypnotic DJ delivering precise, high-voltage techno built for the early morning hours."],
+  "w1":["Deep house · Soulful · Selector","SF DJ blending warm basslines with organic percussion and atmospheric textures."],
+  "w2":["Future beats · Jazz-inflected · Electronic hip-hop · West Coast bass","LA producer known for lush, cinematic beats and genre-defying collaborations."],
+  "w3":["Neo-soul · Electronic · Afro-pop","South African vocalist weaving soulful vocals into deep, afro-infused grooves."],
+  "w4":["Trance · Classic rave · Hard house · Historical tribute set","A celebration of DJ Dan\'s legendary Bay Area trance and progressive house legacy."],
+  "w5":["Bass music · Lo-fi electronic · Chill","Hypnotic producer crafting introspective techno journeys with ambient undertones."],
+  "w6":["Bass music · Heavy electronic","Dense, industrial-tinged techno with relentless energy and heavy low-end pressure."],
+  "w7":["Organic techno · Nordic minimalism · Atmospheric","Norwegian producer fusing sun-soaked disco edits with contemporary house warmth."],
+  "w8":["Organic downtempo · World-influenced · Healing space","Immersive sonic ceremony blending live instruments, nature sounds, and tonal frequencies."],
+  "w9":["UKG pioneer · 2-step · Ecstatic Dance format · Selector legend","An intentional dance journey through world rhythms and tribal beats."],
+  "w10":["Techno · Dark warehouse","Hypnotic minimal techno with surgical precision and a deep, meditative groove."],
+  "w11":["Psytrance · Full-on · Festival psy","Cinematic melodic techno with sweeping synths and driving rhythms built for big rooms."],
+  "w12":["Ceremonial cacao ritual · World bass · Healing space DJ","A sacred cacao circle led by Nana Marina Cruz with heart-opening ritual and live music."],
+  "w13":["Deep house · Soulful · Groove","Soulful DJ bringing the warmth and swing of African rhythms to the dance floor."],
+  "w14":["Bass music · Heavy · Festival","High-energy breaks and bass fusion with chunky hip-hop influenced rhythms."],
+  "w15":["Deep house · Soulful · Selector","Dreamy indie-electronic soundscapes perfect for a golden hour warm-up set."],
+  "w16":["Melodic bass · Atmospheric","Infectious funk-infused nu-disco cuts guaranteed to get hips moving before dark."],
+  "t1":["Peak-time groove · Progressive house · Tech house · Deep house","Ibiza heavyweight known for peak-time tech house with infectious groove and relentless energy."],
+  "t2":["Groove-forward · UK club · Tech house","Hypnotic DJ delivering precise, high-voltage techno built for the early morning hours."],
   "t3":["Deep House · Collective","Desert Hearts collective delivering all-day deep house euphoria."],
   "t4":["Deep House","Forward-thinking deep house with warm basslines and infectious rhythmic sensibility."],
-  "t5":["Latin House · B2B","Latin rhythms and organic percussion brought to the dance floor in this b2b collaboration."],
-  "t6":["Eclectic · Live","Live band blending jazz, soul, and funk for a unique afternoon festival experience."],
-  "t7":["Latin House · Afro","Miami duo merging Latin percussion, afro rhythms, and tech house energy."],
-  "t8":["Melodic House · Dreamy","Ethereal melodic house with soft, dreamy atmospheres and celestial synthesizer work."],
-  "t9":["Afrobeat · World","Percussive Afrobeat and global rhythms delivered with raw live energy and spiritual intention."],
-  "t10":["Indie Dance · Organic","Blooming indie dance sounds with organic textures and an irresistible melodic sensibility."],
-  "t11":["Latin Club · Electronic","High-octane Latin club tracks blended with contemporary electronic production."],
-  "t12":["Acid House · Dark","Berlin duo known for raw, acid-soaked house perfectly suited to the sweaty early hours."],
-  "t13":["Deep House · Cosmic","Cosmic deep house journeys with a philosophical edge and thoughtful track selection."],
-  "t14":["House · Disco","High-spirited house DJ rolling through disco-influenced edits and classic feel-good cuts."],
-  "t15":["Techno · Industrial","Bruising industrial techno with heavy machinery percussion and relentless forward momentum."],
-  "t16":["Tribal House · World","Tribal rhythms and world-influenced house built around hypnotic repetition."],
-  "t17":["Deep House · Soulful","Warm deep house selections with a clear love for classic Chicago and NYC roots."],
-  "t18":["Tech House · Funky","Tight, funky tech house cuts with bouncy basslines and crowd-pleasing energy."],
-  "t19":["House · Eclectic","Eclectic house selector with a broad crate of feel-good tracks across decades."],
-  "t20":["House","High-energy house that doubles as festival fuel."],
-  "t21":["SURPRISE","The lineup\'s best-kept secret. Expect anything."],
-  "t22":["Hip-Hop · Electronic","LA beatmaker blurring lines between hip-hop, electronic, and art music with intricate production."],
-  "t23":["Hip-Hop · Club","Team Supreme brings sharp hip-hop flavored beats and infectious DJ chemistry."],
-  "t24":["Hip-Hop · B2B","A back-to-back exploring hard-hitting beats and experimental bass."],
-  "t25":["Hip-Hop · Electronic","Intricate drum programming and lush sampling woven into club-ready sets."],
-  "t26":["Global Bass · World","A global bass journey through cumbia, baile funk, and dancehall."],
-  "t27":["Reggaeton · Tropical","Tropical club energy blending reggaeton rhythms with global electronic production."],
-  "t28":["Bass House · Club","Aggressive bass house built to demolish speakers."],
-  "t29":["R&B · Electronic","R&B songwriting sensibility meets experimental electronic production."],
-  "t30":["Downtempo · Electronic","Textured downtempo with introspective depth and carefully crafted atmosphere."],
-  "t31":["Tech House · Underground","Underground tech house rooted in late-night warehouse culture."],
-  "t32":["Ambient · Electronic","Gentle ambient-tinged selections for easing into the festival afternoon."],
-  "t33":["Bass · Club","High-energy bass music to close out the stage with maximum impact."],
-  "t34":["House · Classic","Classic house selections spanning decades of soulful, joyful music."],
-  "t35":["Hip-Hop · Comedy","Rapper and comedian with unhinged energy, internet-famous wit, and hard-hitting rap."],
-  "t36":["Afro House · Tribal","Richly textured Afro house rhythms and spiritual tribal frequencies."],
-  "t37":["Footwork · Club","Chicago footwork and juke — fast, percussive, and relentless."],
-  "t38":["Baile World · Global","Celebrating global bass, batucada, and Brazilian rhythms."],
-  "t39":["Disco · Classic","Disco-infused classic-leaning sets with warm and celebratory energy."],
+  "t5":["Uplifting deep house · Sultry late-night · B2B selector","Latin rhythms and organic percussion brought to the dance floor in this b2b collaboration."],
+  "t6":["Eclectic day party · Open-format · Vintage soul","Live band blending jazz, soul, and funk for a unique afternoon festival experience."],
+  "t7":["Afro house · Electronic · Latin","Miami duo merging Latin percussion, afro rhythms, and tech house energy."],
+  "t8":["Ambient · Downtempo · Dreamscape","Ethereal melodic house with soft, dreamy atmospheres and celestial synthesizer work."],
+  "t9":["Afro-Brazilian spiritual · Ceremonial dance · Live","Percussive Afrobeat and global rhythms delivered with raw live energy and spiritual intention."],
+  "t10":["Experimental · Bass-forward · Psychedelic","Blooming indie dance sounds with organic textures and an irresistible melodic sensibility."],
+  "t11":["Disco · Funky house · Nu-disco · Selector","High-octane Latin club tracks blended with contemporary electronic production."],
+  "t12":["Dark disco · Cosmic · DJ tools","Berlin duo known for raw, acid-soaked house perfectly suited to the sweaty early hours."],
+  "t13":["Deep house · Melodic · Selector","Cosmic deep house journeys with a philosophical edge and thoughtful track selection."],
+  "t14":["Funk · Afrobeat · Live electronic","High-spirited house DJ rolling through disco-influenced edits and classic feel-good cuts."],
+  "t15":["Deep house · Afro-influenced · Groove","Bruising industrial techno with heavy machinery percussion and relentless forward momentum."],
+  "t16":["Deep house · Middle Eastern-influenced · Selector","Tribal rhythms and world-influenced house built around hypnotic repetition."],
+  "t17":["Deep house · Melodic · Selector","Warm deep house selections with a clear love for classic Chicago and NYC roots."],
+  "t18":["Tech house · Dark · Club","Tight, funky tech house cuts with bouncy basslines and crowd-pleasing energy."],
+  "t19":["Deep house · Selector","Eclectic house selector with a broad crate of feel-good tracks across decades."],
+  "t20":["Experimental bass · Eclectic","High-energy house that doubles as festival fuel."],
+  "t21":["Experimental club · Eclectic","The lineup\'s best-kept secret. Expect anything."],
+  "t22":["Team Supreme context set · Beat science · Abstract hip-hop · Experimental trap","LA beatmaker blurring lines between hip-hop, electronic, and art music with intricate production."],
+  "t23":["Abstract hip-hop beats · Team Supreme collective · Beat science","Team Supreme brings sharp hip-hop flavored beats and infectious DJ chemistry."],
+  "t24":["Future beats · Trap-adjacent · Lo-fi hip-hop · West Coast","A back-to-back exploring hard-hitting beats and experimental bass."],
+  "t25":["Abstract hip-hop beats · Team Supreme collective · Future beats","Intricate drum programming and lush sampling woven into club-ready sets."],
+  "t26":["World bass · Global sound system · Multicultural club","A global bass journey through cumbia, baile funk, and dancehall."],
+  "t27":["Melodic bass · Progressive","Tropical club energy blending reggaeton rhythms with global electronic production."],
+  "t28":["Hard groove · Industrial-adjacent · Dark club","Aggressive bass house built to demolish speakers."],
+  "t29":["Heavy bass · Experimental bass · Dark","R&B songwriting sensibility meets experimental electronic production."],
+  "t30":["Melodic techno · Progressive · Atmospheric","Textured downtempo with introspective depth and carefully crafted atmosphere."],
+  "t31":["Tech house · Groove","Underground tech house rooted in late-night warehouse culture."],
+  "t32":["Deep house · Minimal · Selector","Gentle ambient-tinged selections for easing into the festival afternoon."],
+  "t33":["Baile World founder · Baile funk · Afrobeats crossover · Brazilian club · Global bass","High-energy bass music to close out the stage with maximum impact."],
+  "t34":["House · Selector","Classic house selections spanning decades of soulful, joyful music."],
+  "t35":["\"Shemar-Core\" · Comedy rap · Avant-hip-hop · Viral internet rap · Atlanta","Rapper and comedian with unhinged energy, internet-famous wit, and hard-hitting rap."],
+  "t36":["South Asian-inflected electronic · Deep house · Selector","Richly textured Afro house rhythms and spiritual tribal frequencies."],
+  "t37":["Bass music · Experimental","Chicago footwork and juke — fast, percussive, and relentless."],
+  "t38":["Baile funk · Brazilian club · Global bass","Celebrating global bass, batucada, and Brazilian rhythms."],
+  "t39":["Deep house · Asian diaspora club · Selector","Disco-infused classic-leaning sets with warm and celebratory energy."],
   "t40":["Melodic Techno · Deep","Emotional, cinematic melodic techno perfectly suited to the early hours."],
-  "t41":["Bass · Electronic","Bass music, alien frequencies, and club pressure in a unique sonic experience."],
-  "f1":["Tech House · Mainstage","Dutch DJ who stormed the global scene with anthemic tech house slammers and massive crossover appeal."],
-  "f2":["Rave · Electronic","UK duo crafting euphoric rave-influenced electronic music rooted in UK hardcore and techno heritage."],
-  "f3":["Art Pop · Electronic","Israeli artist fusing art pop, rap, and electronic production into sharp political statements."],
-  "f4":["Bass · Psychedelic","Psychedelic bass music and heavy low-end frequencies for the dance floor."],
-  "f5":["Neo-Soul · Indie R&B","Brooklyn artist crafting lush neo-soul and indie R&B with introspective, poetic lyricism."],
-  "f6":["Dubstep · Bass","Canadian duo who have been a bass music institution for over a decade. Heavy, melodic, and immense."],
-  "f7":["Drum & Bass · Experimental","London trio who pioneered halftime D&B and experimental club music with cinematic depth."],
-  "f8":["Drum & Bass · Liquid","Liquid and neurofunk D&B with technical precision and emotional resonance."],
-  "f9":["Grime · Club","UK grime and club music pioneer with razor-sharp selection and genre-defining heritage."],
-  "f10":["Ambient · Atmospheric","Delicate, introspective ambient music layered with field recordings and soft synthesis."],
-  "f11":["Disco · Nu-Disco","Vintage disco fused with contemporary house for feel-good afternoon selections."],
-  "f12":["Afro House · Deep","Deep Afro house vibrations with rich percussive textures and soulful melodies."],
-  "f13":["Tech House · Breaks","Tech house foundations blended with chunky breakbeats for a propulsive sound."],
-  "f14":["Bass · Sound Healing","An immersive sound healing experience using sub-bass frequencies and live ceremony."],
-  "f15":["Techno · Club","Club-focused techno with tight grooves and precise mixing built for peak hours."],
-  "f16":["Techno · Industrial","High-intensity techno known for dark, industrial-influenced warehouse sets."],
-  "f17":["Techno · Experimental","Pushes experimental techno boundaries with abstract textures and unconventional structures."],
-  "f18":["Electronic · Multi-Genre","Weaves across genres with a crate-digger sensibility and deep musical knowledge."],
-  "f19":["Ambient House · Deep","Legendary selector known for ethereal, deeply emotive ambient-influenced house."],
-  "f20":["Techno · Melodic","Melodic techno with emotional depth and a finely tuned sense of dancefloor dynamics."],
+  "t41":["Experimental bass · Glitch · Futurist sound design","Bass music, alien frequencies, and club pressure in a unique sonic experience."],
+  "f1":["Dutch warehouse · Hard groove · Peak-time tech house","Dutch DJ who stormed the global scene with anthemic tech house slammers and massive crossover appeal."],
+  "f2":["Rave continuum · Acid 2-step · Post-dubstep · Breakbeat · UK rave","UK duo crafting euphoric rave-influenced electronic music rooted in UK hardcore and techno heritage."],
+  "f3":["Politically charged · Glitchy pop · Tel Aviv club electronics · Experimental art-pop","Israeli artist fusing art pop, rap, and electronic production into sharp political statements."],
+  "f4":["Mexican electro-funk · Nile Rodgers-lineage · Nu-disco · Synthpop · Funktronica","Psychedelic bass music and heavy low-end frequencies for the dance floor."],
+  "f5":["West African & American diaspora vocals · Poet-rapper · Neo-soul · Jazz-rap · Alt-R&B","Brooklyn artist crafting lush neo-soul and indie R&B with introspective, poetic lyricism."],
+  "f6":["Neuro · Halftime · Dubstep · Bass house","Canadian duo who have been a bass music institution for over a decade. Heavy, melodic, and immense."],
+  "f7":["20/20 sound · Halftime · Deconstructed DnB · Trip-hop · Post-dubstep bass","London trio who pioneered halftime D&B and experimental club music with cinematic depth."],
+  "f8":["Grime-tinged · 4x4 garage · Jump-up DnB · Rollers","Liquid and neurofunk D&B with technical precision and emotional resonance."],
+  "f9":["Hospital Records crossover · Grime-rooted · Liquid DnB · Bassline / 4x4 · UKG","UK grime and club music pioneer with razor-sharp selection and genre-defining heritage."],
+  "f10":["Deep house · Atmospheric","Delicate, introspective ambient music layered with field recordings and soft synthesis."],
+  "f11":["Deep house · Underground","Vintage disco fused with contemporary house for feel-good afternoon selections."],
+  "f12":["Soulful deep house · Afro house","Deep Afro house vibrations with rich percussive textures and soulful melodies."],
+  "f13":["Bass music · Experimental","Tech house foundations blended with chunky breakbeats for a propulsive sound."],
+  "f14":["Bass music · Sound system culture","An immersive sound healing experience using sub-bass frequencies and live ceremony."],
+  "f15":["Cinematic bass · Midtempo · Dark bass","Club-focused techno with tight grooves and precise mixing built for peak hours."],
+  "f16":["Industrial techno · Hard techno · Dark techno","High-intensity techno known for dark, industrial-influenced warehouse sets."],
+  "f17":["Brutal warehouse · Industrial · Hard techno · Dark techno","Pushes experimental techno boundaries with abstract textures and unconventional structures."],
+  "f18":["Long-form · Slow-build ethereal · Hypnotic minimal · Ambient techno","Weaves across genres with a crate-digger sensibility and deep musical knowledge."],
+  "f19":["Sunrise sets · All Day I Dream · Organic house · Downtempo · Melodic deep house","Legendary selector known for ethereal, deeply emotive ambient-influenced house."],
+  "f20":["Techno · Dark club","Melodic techno with emotional depth and a finely tuned sense of dancefloor dynamics."],
   "f21":["Afro House · Soulful","Soulful, Afro-infused house with warmth, positivity, and infectious groove."],
-  "f22":["Funk · Live","A live funk experience delivering groove, soul, and communal joy."],
-  "f23":["Deep House · Organic","Desert Hearts co-founder bringing deep house love, community, and good vibes."],
-  "f24":["House · Deep","Explores the deeper end of house music with soulful selections and smooth transitions."],
-  "f25":["Experimental · Club","Pushes experimental club music into unexpected territory with fearless selection."],
-  "f26":["Indie Dance · House","Bridges indie dance and house with a boutique, curated musical sensibility."],
+  "f22":["Soulful brunch set · Eclectic open-format · Day party","A live funk experience delivering groove, soul, and communal joy."],
+  "f23":["Desert Hearts co-founder · Deep house · Freak flag underground","Desert Hearts co-founder bringing deep house love, community, and good vibes."],
+  "f24":["House · Eclectic selector","Explores the deeper end of house music with soulful selections and smooth transitions."],
+  "f25":["Japanese club · Bass music · Selector","Pushes experimental club music into unexpected territory with fearless selection."],
+  "f26":["Indie dance · Melodic house","Bridges indie dance and house with a boutique, curated musical sensibility."],
   "f27":["Bass · Electronic","Bass-heavy production with vibrant energy and bold club sounds."],
-  "f28":["Electronic · Community","SF collective known for inclusive community-oriented electronic events."],
-  "f29":["Ambient · Downtempo","Flowing ambient and downtempo soundscapes for late night drifting."],
-  "f30":["Tech House · Energy","High-octane tech house with relentless drive and peak-time intensity."],
-  "f31":["Deep House · Soulful","Warm, rolling deep house for the discerning ear."],
-  "f32":["House · Latin","Fuses Latin flavors with contemporary house for a vibrant cross-cultural sound."],
-  "f33":["Melodic House · Deep","Melodic deep house journeys with emotional resonance and graceful pacing."],
-  "f34":["House · Classic","Deep house selector with vast knowledge of classic and contemporary material."],
-  "f35":["Electronic · Hybrid","Genre-crossing electronic sets spanning house, techno, and hybrid club sounds."],
-  "f36":["Melodic House · Organic","Organic melodic house rooted in natural textures and unhurried, flowing rhythms."],
-  "f37":["Hip-Hop · Electronic","Hip-hop with electronic production in a gritty, sample-rich sonic palette."],
-  "f38":["House · B2B","A rare b2b exploring the full spectrum of house music with mutual spontaneity."],
-  "f39":["Afro House · Dance","Vibrant, dance-floor-focused Afro house with contagious energy."],
-  "f40":["Footwork · Bass","Explosive, percussive footwork and bass music."],
-  "f41":["Bass · Club","Heavy bass music with cinematic production and versatile genre-bending sets."],
-  "f42":["House · Deep","Selects across deep and soulful house, delivering warmth and depth."],
-  "f43":["Afro House · Dance","Afro-infused house with an irresistible sense of rhythm and movement."],
-  "f44":["Techno · Melodic","Melodic threads through driving techno for emotionally resonant peak-time sets."],
-  "f45":["Tech House · Underground","Bay Area underground selector with a deep house and tech house catalogue."],
-  "f46":["Electronic · Indie","Dreamy indie-electronic music bridging bedroom pop and dance floor aesthetics."],
-  "f47":["Melodic House · Solar","Warm, sun-drenched melodic house designed for golden hour festival moments."],
-  "f48":["Afro House · Healing","Fuses Afro house with healing intention, creating spiritual dancefloor experiences."],
+  "f28":["Electronic · Club","SF collective known for inclusive community-oriented electronic events."],
+  "f29":["Ambient · Downtempo · Experimental","Flowing ambient and downtempo soundscapes for late night drifting."],
+  "f30":["Hard techno · Industrial techno","High-octane tech house with relentless drive and peak-time intensity."],
+  "f31":["Soul · R&B · Hip-hop selector","Warm, rolling deep house for the discerning ear."],
+  "f32":["Deep house · Afro-influenced · Soulful","Fuses Latin flavors with contemporary house for a vibrant cross-cultural sound."],
+  "f33":["Deep house · Soulful · Melodic","Melodic deep house journeys with emotional resonance and graceful pacing."],
+  "f34":["Deep house · Long-form · Selector","Deep house selector with vast knowledge of classic and contemporary material."],
+  "f35":["Deep house · Eclectic selector · NYC underground","Genre-crossing electronic sets spanning house, techno, and hybrid club sounds."],
+  "f36":["Melodic house · Organic","Organic melodic house rooted in natural textures and unhurried, flowing rhythms."],
+  "f37":["Hip-hop · Electronic","Hip-hop with electronic production in a gritty, sample-rich sonic palette."],
+  "f38":["Deep house · Electronic","A rare b2b exploring the full spectrum of house music with mutual spontaneity."],
+  "f39":["Bass house · Groove-forward · Club","Vibrant, dance-floor-focused Afro house with contagious energy."],
+  "f40":["Indigenous percussion-informed bass · Psychedelic bass · Deadbeats sound · Deep dubstep · Downtempo","Explosive, percussive footwork and bass music."],
+  "f41":["Pittsburgh bass scene · Glitch-trap · Twisted soundscape design · Electronic bass","Heavy bass music with cinematic production and versatile genre-bending sets."],
+  "f42":["Deep house · Afro-influenced · Soulful","Selects across deep and soulful house, delivering warmth and depth."],
+  "f43":["Bass house · Groove-forward · Club","Afro-infused house with an irresistible sense of rhythm and movement."],
+  "f44":["Afro house · Soulful · Deep","Melodic threads through driving techno for emotionally resonant peak-time sets."],
+  "f45":["Deep house · Late-night · Selector","Bay Area underground selector with a deep house and tech house catalogue."],
+  "f46":["Electronic · Indie · Lo-fi","Dreamy indie-electronic music bridging bedroom pop and dance floor aesthetics."],
+  "f47":["Melodic house · Atmospheric","Warm, sun-drenched melodic house designed for golden hour festival moments."],
+  "f48":["Afro house · Deep house","Fuses Afro house with healing intention, creating spiritual dancefloor experiences."],
   "f49":["House · Snap","Snappy, percussive house with tight rhythms and a lively, fun-loving energy."],
-  "f50":["Melodic Techno · Deep","Melodic techno with emotional layers and a careful, evolving mix style."],
-  "f51":["Afro House · Tropical","Tropical rhythms blended with Afro house for warm, percussion-rich afternoon sets."],
-  "f52":["Drum & Bass · Liquid","Drum and bass veterans known for lush, liquid DnB and live performances."],
+  "f50":["Melodic techno · Progressive","Melodic techno with emotional layers and a careful, evolving mix style."],
+  "f51":["Afro house · Deep house","Tropical rhythms blended with Afro house for warm, percussion-rich afternoon sets."],
+  "f52":["Liquid funk DnB · Jazz-soul DnB · SF DnB institution · CODE Recordings · Cinematic DnB","Drum and bass veterans known for lush, liquid DnB and live performances."],
   "f53":["Electronic · Hybrid","Spans electronic genres with skill and taste, delivering versatile, energetic sets."],
-  "f54":["Techno · Underground","Navigates underground techno with raw, stripped-back selection."],
-  "f55":["Techno · Dark","Dark, aggressive techno to close out the night with maximum intensity."],
-  "f56":["Tech House · Late Night","Late-night tech house specialist known for long, evolved sets in intimate spaces."],
-  "f57":["Ambient · Experimental","Expansive, meditative ambient drones — a unique sensory experience."],
-  "f58":["UK Garage · Jungle","UK sounds specialist weaving garage, jungle, and bass culture."],
-  "f59":["Deep House · Minimal","Precise, minimal deep house focusing on space, texture, and subtlety."],
-  "f60":["Afro House · Dawn","Ushers in the sunrise with Afro house warmth and uplifting spiritual sensibility."],
-  "f61":["Bass · Experimental","Pushes experimental bass music into uncharted sonic territory."],
-  "f62":["Techno · Experimental","Explores experimental techno with abstract sound design."],
-  "f63":["Deep House · Soulful","Soulful house selector drawing on gospel, soul, and classic deep house roots."],
-  "s1":["Drum & Bass · Live","UK\'s biggest DnB act. Expect euphoric bangers, live elements, and a massive show."],
+  "f54":["Bass music · Experimental · Dark","Navigates underground techno with raw, stripped-back selection."],
+  "f55":["Hard bass · Industrial-adjacent · Dark","Dark, aggressive techno to close out the night with maximum intensity."],
+  "f56":["Bass music · Electronic","Late-night tech house specialist known for long, evolved sets in intimate spaces."],
+  "f57":["Ambient · Drone music · Experimental sound","Expansive, meditative ambient drones — a unique sensory experience."],
+  "f58":["MC-led DnB · Jump-up · Rave format","UK sounds specialist weaving garage, jungle, and bass culture."],
+  "f59":["Deep house · Melodic techno","Precise, minimal deep house focusing on space, texture, and subtlety."],
+  "f60":["Organic downtempo · Afro-Latin · World bass","Ushers in the sunrise with Afro house warmth and uplifting spiritual sensibility."],
+  "f61":["Bass music · Experimental hip-hop · Future beats","Pushes experimental bass music into uncharted sonic territory."],
+  "f62":["Bass music · Dark · Experimental","Explores experimental techno with abstract sound design."],
+  "f63":["Deep house · Soulful · Late-night","Soulful house selector drawing on gospel, soul, and classic deep house roots."],
+  "s1":["MC-led DnB · Jump-up · Liquid DnB · Rave","UK\'s biggest DnB act. Expect euphoric bangers, live elements, and a massive show."],
   "s2":["Indie Dance · Electronic","Scottish artist crafting emotive indie dance and electronic music with raw vulnerability."],
-  "s3":["Drum & Bass · Jungle","Leading voice in the jungle/D&B revival. Soulful, raw, and essential."],
-  "s4":["Pop · Drag","Drag Race star bringing campy, country-pop energy and pure entertainment."],
-  "s5":["Techno · Minimal","Precise, minimal techno rooted in the Detroit and Berlin traditions."],
-  "s6":["Bass · Heavy","Bass music heavyweight known for crushing, precisely engineered low-end sets."],
-  "s7":["Electronic · Melodic","Combines melodic electronic production with deep drops and wide dynamic range."],
+  "s3":["Junglist revivalist · Footwork-inflected · Neo-rave · Jungle · UK club","Leading voice in the jungle/D&B revival. Soulful, raw, and essential."],
+  "s4":["Campy peak-time · Hi-NRG · Freestyle · Italo disco · House","Drag Race star bringing campy, country-pop energy and pure entertainment."],
+  "s5":["Techno · Club","Precise, minimal techno rooted in the Detroit and Berlin traditions."],
+  "s6":["Electro soul · Glitchy hip-hop · Future beats · Abstract bass","Bass music heavyweight known for crushing, precisely engineered low-end sets."],
+  "s7":["Atmospheric trap · Melodic bass · Progressive bass","Combines melodic electronic production with deep drops and wide dynamic range."],
   "s8":["Techno · Dark","Berlin-based artist delivering dark, hard-edged warehouse techno."],
-  "s9":["Electronic · Club","Genre-fluid club music rooted in UK bass culture and electronic experimentation."],
+  "s9":["Swamp 81 sound · Broken beat · Deep garage · Lo-fi house · UKG-adjacent","Genre-fluid club music rooted in UK bass culture and electronic experimentation."],
   "s10":["Melodic House · Ethereal","Ethereal melodic house with a rich, textured, emotionally expansive sound."],
-  "s11":["Melodic Techno · Progressive","Progressive melodic techno with a polished, cinematic production approach."],
-  "s12":["Electronic · Hybrid","Versatile electronic sets across the spectrum of house and techno."],
-  "s13":["Afro House · Deep","Deep Afro house with soulful layering and vibrant percussive energy."],
-  "s14":["Tech House · Minimal","Minimal tech house with precision and a deep sense of rhythmic hypnosis."],
+  "s11":["Raw hard dance · Crossover hardstyle · Festival hard","Progressive melodic techno with a polished, cinematic production approach."],
+  "s12":["North American DnB ambassador · Melodic DnB · Cinematic bass · Liquid DnB","Versatile electronic sets across the spectrum of house and techno."],
+  "s13":["Deep house · Tech house","Deep Afro house with soulful layering and vibrant percussive energy."],
+  "s14":["Organic deep house · Minimal","Minimal tech house with precision and a deep sense of rhythmic hypnosis."],
   "s15":["Afro House · Dance","Blends Afro house vibrancy with dance floor power and joyful selection."],
-  "s16":["Techno · Berlin","Techno titan known for intense, deeply built peak-time sets."],
-  "s17":["Bass · Electronic","Energetic bass-influenced electronic music with a sharp, modern production edge."],
-  "s18":["Tech House · Progressive","Polished tech house with high energy and broad appeal."],
-  "s19":["Melodic House · Deep","Beautiful melodic house with emotionally resonant builds and thoughtful selection."],
-  "s20":["House · Community","A collective bringing joyful, inclusive house music to festival spaces."],
-  "s21":["Deep House · Minimal","Slow, deliberate, minimal deep house that rewards patient listeners."],
-  "s22":["Afro House · Vibrant","Vibrant Afro house energy. Bright, warm, and brimming with rhythm and joy."],
-  "s23":["Latin Techno · Experimental","Blends Latin rhythms with experimental club production for a richly textured sound."],
-  "s24":["Afro House · Club","Merges Afro house with club-ready bass music in a high-energy package."],
-  "s25":["Electronic · Audiovisual","A multi-sensory audiovisual journey through electronic landscapes."],
-  "s26":["Reggae · Dub","Navigates roots reggae, dub, and sound system culture with deep knowledge."],
-  "s27":["Indie Folk · Electronic","Indie folk songwriting blended with electronic textures for intimate performances."],
-  "s28":["Afrobeats · Brunch","A celebratory Afrobeats experience with a joyful collective of DJs and dancers."],
-  "s29":["Electronic · Folk","Eclectic electronic-folk sensibility for afternoon festival hours."],
-  "s30":["Melodic Techno · Late Night","Emotionally charged melodic techno and breathtaking builds for late night."],
-  "s31":["Electronic · Experimental","Genre-bending electronic music that challenges expectations."],
-  "s32":["Melodic House · Deep","Bay Area producer delivering elegant, harmonically rich melodic deep house."],
-  "s33":["Tech House · Peak","Rising tech house DJ delivering tight, peak-time energy with confident selection."],
-  "s34":["Techno · Tribal","Tribal percussion and driving techno into transcendent late-night dance floor sets."],
-  "s35":["Bass · Club","Bass-heavy club music with a modern, hard-hitting production style."],
-  "s36":["Melodic Techno · Cinematic","Cinematic melodic techno. Sweeping, emotional, built for big stages."],
-  "s37":["Afro House · Vibrant","Vibrant, afro-rooted house music with a sunny disposition and strong groove."],
-  "s38":["House · Indie","Indie-flavored house selections with character, warmth, and genuine love of music."],
-  "s39":["Electronic · Eclectic","An eclectic approach to electronic music, spanning moods and genres fluidly."],
-  "s40":["Deep House · Collective","Desert Hearts closes the night in a collective deep house marathon."],
-  "s41":["Bass · Heavy","Dubstep and bass music heavyweight bringing crushing, emotionally loaded sets."],
-  "s42":["Electronic · Cinematic","Electronic music legends delivering cinematic, anthemic live performances."],
-  "s43":["Electronic · Experimental","Experimental electronic music balancing abstract sound design with dancefloor function."],
-  "s44":["Minimal · Hypnotic","Minimal techno and house DJ weaving hypnotic patterns across long, evolving sets."],
-  "s45":["Techno · Club","Hard-edged, peak-time techno with confident, forward-driving energy."],
-  "s46":["Tech House · Deep","Tech house depth with underground roots. Musical, functional, well-crafted."],
-  "s47":["Melodic House · Deep","ALL:LO collective bringing melodic, emotive house to the Stacks stage."],
-  "s48":["House · Collective","Considered, thoughtful house selections with a community ethos."],
-  "s49":["Deep House · Vibe","Breezy, effortless mood with smooth, rolling deep house tracks."],
-  "s50":["Tech House · Underground","Digs deep for underground tech house and minimal tracks with lasting impact."],
-  "s51":["Hip-Hop · Electronic","Hip-hop-influenced beats and abstract electronic production."],
-  "s52":["Bass · Club","Blends bass music and club culture with a bold, forward-thinking DJ style."],
-  "s53":["Deep House · Cosmic","Deep and cosmic house. Warm, spacious, and transportive."],
-  "s54":["Electronic · Eclectic","Eclectic energy and genuine crate-digging knowledge for afternoon crowds."],
-  "s55":["Bass · Electronic","Bass-forward electronic music with deep community roots in Oakland."],
-  "s56":["Techno · Experimental","Chicago-based experimental techno blending club, trans, and electronic art culture."],
-  "s57":["Techno · Dark","Dark, powerful techno rooted in Berlin club culture."],
-  "s58":["Techno · Hypnotic","Hypnotic, repetitive techno with a meditative intensity."],
-  "s59":["Ballroom · Club","Ballroom culture and voguing energy brought to the dance floor in DJ mode."],
-  "s60":["Tech House · Club","Combines forces for a peak-time tech house b2b with dynamic energy."],
-  "s61":["Queer Club · Party","LA\'s iconic queer party. Inclusive, joyful, and always legendary."],
-  "s62":["Afro House · Dawn","Sunrise Afro house set. Warm, hopeful, and spiritually uplifting."],
-  "s63":["House · Melodic","Combines melodic sensibilities for a deeply felt, late-night house b2b."],
-  "s64":["Melodic House · Dreamy","Dreamy, melodic house for a transportive early morning set."],
+  "s16":["Cosmic industrial · EBM-inflected · Introspective warehouse · Dark techno · Melodic techno","Techno titan known for intense, deeply built peak-time sets."],
+  "s17":["Groove-forward · Bass house · Tech house","Energetic bass-influenced electronic music with a sharp, modern production edge."],
+  "s18":["Chicago-influenced · Club house · Tech house","Polished tech house with high energy and broad appeal."],
+  "s19":["Emotive dancefloor · Melodic techno · Progressive house · Melodic house","Beautiful melodic house with emotionally resonant builds and thoughtful selection."],
+  "s20":["Groove-led club · Tech house","A collective bringing joyful, inclusive house music to festival spaces."],
+  "s21":["Afro house · Melodic deep house","Slow, deliberate, minimal deep house that rewards patient listeners."],
+  "s22":["Deep house · Selector","Vibrant Afro house energy. Bright, warm, and brimming with rhythm and joy."],
+  "s23":["Organic house · World-influenced · Melodic","Blends Latin rhythms with experimental club production for a richly textured sound."],
+  "s24":["Psytrance · Psychedelic bass · Ceremonial","Merges Afro house with club-ready bass music in a high-energy package."],
+  "s25":["Ambient · Ceremonial sound · Healing arts adjacent","A multi-sensory audiovisual journey through electronic landscapes."],
+  "s26":["Deep house · Afro-influenced · Selector","Navigates roots reggae, dub, and sound system culture with deep knowledge."],
+  "s27":["Indie folk-electronic · Ethereal vocal · Singer-songwriter","Indie folk songwriting blended with electronic textures for intimate performances."],
+  "s28":["Afrobeats brunch culture · Soulful African-diaspora · Day party vibes","A celebratory Afrobeats experience with a joyful collective of DJs and dancers."],
+  "s29":["Deep house · Soulful · Selector","Eclectic electronic-folk sensibility for afternoon festival hours."],
+  "s30":["Downtempo · Melodic house","Emotionally charged melodic techno and breathtaking builds for late night."],
+  "s31":["Experimental club · Eclectic","Genre-bending electronic music that challenges expectations."],
+  "s32":["Expressive melodic deep house · All Day I Dream adjacent · Romanian minimal-influenced · Bay Area underground","Bay Area producer delivering elegant, harmonically rich melodic deep house."],
+  "s33":["South Asian diaspora bass · Global club · Selector","Rising tech house DJ delivering tight, peak-time energy with confident selection."],
+  "s34":["Psytrance · Psychedelic bass · Ceremonial","Tribal percussion and driving techno into transcendent late-night dance floor sets."],
+  "s35":["Bass music · Melodic · Electronic","Bass-heavy club music with a modern, hard-hitting production style."],
+  "s36":["Deep house · Minimal · Selector","Cinematic melodic techno. Sweeping, emotional, built for big stages."],
+  "s37":["Afrobeats · African diaspora dance","Vibrant, afro-rooted house music with a sunny disposition and strong groove."],
+  "s38":["Ethereal electronic · Ambient dance","Indie-flavored house selections with character, warmth, and genuine love of music."],
+  "s39":["Techno · Minimal · Dark","An eclectic approach to electronic music, spanning moods and genres fluidly."],
+  "s40":["Freak flag house · Marathon underground · West Coast underground · Deep house · Tech house","Desert Hearts closes the night in a collective deep house marathon."],
+  "s41":["Psychedelic bass · Glitch-hop · Redwood rave roots · Melodic dubstep","Dubstep and bass music heavyweight bringing crushing, emotionally loaded sets."],
+  "s42":["LA beat scene founders · Glitch-hop · Cinematic bass · Live electronic performance · Bass-driven electronica","Electronic music legends delivering cinematic, anthemic live performances."],
+  "s43":["Afro house · Soulful · Deep","Experimental electronic music balancing abstract sound design with dancefloor function."],
+  "s44":["Deep house · Afro-influenced · Groove","Minimal techno and house DJ weaving hypnotic patterns across long, evolving sets."],
+  "s45":["Melodic techno · Progressive · Atmospheric","Hard-edged, peak-time techno with confident, forward-driving energy."],
+  "s46":["Bass music · Dark · Heavy","Tech house depth with underground roots. Musical, functional, well-crafted."],
+  "s47":["Soulful electronic · Downtempo · Beat-forward","ALL:LO collective bringing melodic, emotive house to the Stacks stage."],
+  "s48":["Hip-hop · Live · Soulful","Considered, thoughtful house selections with a community ethos."],
+  "s49":["Lo-fi hip-hop · Chill beats · Instrumental","Breezy, effortless mood with smooth, rolling deep house tracks."],
+  "s50":["Deep house · Minimal · Selector","Digs deep for underground tech house and minimal tracks with lasting impact."],
+  "s51":["Soulection sound · Experimental trap · Future beats · Team Supreme · Abstract hip-hop","Hip-hop-influenced beats and abstract electronic production."],
+  "s52":["Bass music · Heavy bass · Dark","Blends bass music and club culture with a bold, forward-thinking DJ style."],
+  "s53":["Deep house · Organic · Selector","Deep and cosmic house. Warm, spacious, and transportive."],
+  "s54":["Experimental · Eclectic selector","Eclectic energy and genuine crate-digging knowledge for afternoon crowds."],
+  "s55":["Experimental hip-hop · ALL:LO collective · Abstract beats","Bass-forward electronic music with deep community roots in Oakland."],
+  "s56":["Belizean punta-inflected techno · Smartbar resident · Queer club · Chicago house · Discwoman","Chicago-based experimental techno blending club, trans, and electronic art culture."],
+  "s57":["Harsh industrial · Avant-garde noise · Dark electro · Brutal club","Dark, powerful techno rooted in Berlin club culture."],
+  "s58":["Tech house · Groove-forward · Club","Hypnotic, repetitive techno with a meditative intensity."],
+  "s59":["Camp house · Drag performance · Hi-NRG · Queer club","Ballroom culture and voguing energy brought to the dance floor in DJ mode."],
+  "s60":["B2B deep house · Soulful pairing","Combines forces for a peak-time tech house b2b with dynamic energy."],
+  "s61":["Queer-rooted LA institution · Disco · Italo · Hi-NRG · Classic house","LA\'s iconic queer party. Inclusive, joyful, and always legendary."],
+  "s62":["Deep house · Selector · Filipino-American club","Sunrise Afro house set. Warm, hopeful, and spiritually uplifting."],
+  "s63":["B2B deep house · Late-night selector pairing","Combines melodic sensibilities for a deeply felt, late-night house b2b."],
+  "s64":["B2B deep house · Soulful selector pairing","Dreamy, melodic house for a transportive early morning set."],
   "s65":["Electronic · Eclectic","High-energy, genre-fluid electronic sets with irreverent, joyful selection."],
-  "su1":["Indie Pop · Electronic","Australian duo delivering theatrical, anthemic indie pop with spectacular live shows."],
-  "su2":["Tech House · Melodic","Brazilian DJ blending melodic electronic and tech house with globe-trotting elegance."],
-  "su3":["R&B · Pop","Multi-platinum R&B pop star bringing a catalogue of sultry, danceable hits."],
-  "su4":["Electronic · B2B","A b2b electronic set full of warmth, energy, and musical conversation."],
-  "su5":["Electronic · Collective","Electronic collective bringing expansive, community-driven sounds."],
-  "su6":["Drum & Bass · Electronic","One of the UK\'s leading DnB producers. Anthemic, precise, and consistently thrilling."],
-  "su7":["Bass · Electronic","Bass-heavy, psychedelic electronic music that blurs genre and defies easy labeling."],
-  "su8":["Electronic · Club","Dynamic, genre-fluid club music drawing on house, techno, and experimental bass."],
-  "su9":["UK Garage · Funky","Leading voice in funky, UK garage-influenced house and contemporary club music."],
-  "su10":["Techno · Introspective","A considered, introspective approach to techno. Careful, unhurried, and deep."],
-  "su11":["Electronic · Eclectic","Irreverent, joyful electronic music across genres."],
-  "su12":["Electronic · Club","Forward-thinking club music drawing on UK underground culture and bass heritage."],
-  "su13":["House · Global","Takes house music on a journey through Eastern influences and global inspirations."],
-  "su14":["Indie Pop · Electronic","Indie pop songwriting blended with electronic production for emotionally resonant sets."],
-  "su15":["Techno · Experimental","Revered experimental techno DJ celebrated for adventurous, erudite selections."],
-  "su16":["Techno · Minimal","Minimal, hypnotic techno designed for deep, late-night meditative dance floor states."],
-  "su17":["House · Afro","Standout DJ blending house, disco, and Afro rhythms with academic depth."],
-  "su18":["Electronic · Live","Live electronic performance blending modular synthesis and club music."],
-  "su19":["Electronic · Eclectic","Eclectic electronic selections spanning decades and continents."],
-  "su20":["UK Garage · Dance","A UK garage and dance music tribute. Nostalgic, joyful, and irresistible."],
-  "su21":["House · Eclectic","Eclectic house selections to kick off Sunday with warmth."],
-  "su22":["Electronic · Ambient","Expansive, ambient electronic music inspired by astrophysics and space."],
-  "su23":["Electronic · Live","Live collaborative set featuring a handpicked ensemble for a unique late-night experience."],
-  "su24":["Electronic · Experimental","Networked, interactive electronic music that evolves in response to its environment."],
-  "su25":["Electronic · Club","Buoyant, bouncy electronic club tracks with playful energy."],
-  "su26":["Electronic · Global","Draws on Philippine musical traditions and global club sounds for a hybrid set."],
-  "su27":["Community · Live","Celebrates the festival community with live performances and surprises."],
-  "su28":["Electronic · Soulful","Soulful, spiritually aware electronic music for a Sunday afternoon audience."],
-  "su29":["Electronic · Community","A community collective celebrating radical self-expression through music."],
-  "su30":["Electronic · Late Night","Deep, sustained late-night electronic sets built for endurance and focus."],
-  "su31":["Melodic House · Emotional","Emotionally resonant melodic house with a rich harmonic palette and long arcs."],
-  "su32":["Afro House · Dance","Afro house and dance floor joy with radiant energy for the witching hour."],
-  "su33":["Electronic · Club","Bold, dynamic electronic club music with a powerful presence and sharp selection."],
-  "su34":["Electronic · Deep","Deep, considered electronic waters with a long-form, evolving approach."],
-  "su35":["Electronic · Spiritual","Emotionally layered electronic music with a spiritual, healing-focused intention."],
-  "su36":["Electronic · Club","Lively, upbeat club energy with a broad crate and infectious sense of fun."],
-  "su37":["Electronic · Eclectic","Moves fluidly across electronic genres with a curious, explorative DJ style."],
-  "su38":["Electronic · Deep","Draws from deep electronic roots and a broad international crate of quality music."],
-  "su39":["Hip-Hop · Electronic","Blends hip-hop and electronic production for a sample-rich Sunday opening."],
-  "su40":["Techno · Dark","Dark, heavy techno energy perfectly tuned to the late-night hours."],
-  "su41":["Tech House · Sweet","Balances sweet melodic sensibilities with driving tech house rhythms."],
-  "su42":["Bass · Heavy","Bass-heavy, aggressive electronic music with no-compromise energy."],
-  "su43":["Drum & Bass · Speed","Drum and bass veteran bringing technical precision and decades of genre knowledge."],
-  "su44":["Minimal · Hypnotic","Hypnotic, minimal techno with deep grooves and patient, meditative long-form sets."],
-  "su45":["Afro House · Soul","Blends Afro house with soul music in warm, vibrant, and deeply musical sets."],
-  "su46":["Afrobeat · Festival","Afrobeat-influenced festival energy with rhythmic complexity and joy."],
-  "su47":["Electronic · Ethereal","Ethereal, genre-defying electronic music with a quietly confident, unique voice."],
-  "su48":["Electronic · Bold","Bold, fearless energy and a broad crate of club-ready electronic music."],
-  "su49":["Hip-Hop · Electronic","Blends hip-hop and electronic production to kick off Sunday afternoon."],
-  "su50":["Techno · Hypnotic","Hypnotic, early-morning techno and deep focus to close out Crossroads."],
-  "su51":["Electronic · Soulful","Versatile producer blending soulful electronic with hip-hop and R&B influences."],
-  "su52":["Afro House · Deep","Digs deep into Afro house and Afrotech for a richly textured and soulful set."],
-  "su53":["House · Celebratory","Celebratory, warm house music to close out Sunday with community and joy."],
-  "su54":["Electronic · Minimal","Stripped-back minimal electronic music with a focus on space and groove."],
-  "su55":["Electronic · Soulful","Soulful, bass-warm electronic music rooted in community and authentic expression."],
-  "su56":["Afro House · Dance","Afro house, dance, and uplifting vibes for Sunday morning."],
-  "su57":["Afro House · Spiritual","Spiritual Afro house and a sense of collective togetherness to close Sunday."],
-  "su58":["Ambient · Classical","Transcendent vocal ambient music. Looped voices that feel divine and infinite."],
-  "su59":["Electronic · Hybrid","Hybrid electronic music bridging jazz, club, and contemporary composition."],
+  "su1":["Psychedelic synth-pop · Indietronica · Electropop","Australian duo delivering theatrical, anthemic indie pop with spectacular live shows."],
+  "su2":["Brazilian club · Afro house · Deep house · Melodic techno","Brazilian DJ blending melodic electronic and tech house with globe-trotting elegance."],
+  "su3":["Alt-R&B · Dance-pop · Hyperpop-adjacent","Multi-platinum R&B pop star bringing a catalogue of sultry, danceable hits."],
+  "su4":["Funky house · Nu-disco · Soulful house","A b2b electronic set full of warmth, energy, and musical conversation."],
+  "su5":["House · Community club","Electronic collective bringing expansive, community-driven sounds."],
+  "su6":["Crossover DnB · Melodic DnB · Liquid","One of the UK\'s leading DnB producers. Anthemic, precise, and consistently thrilling."],
+  "su7":["Forest bass · Dark bass · Halftime · Experimental bass","Bass-heavy, psychedelic electronic music that blurs genre and defies easy labeling."],
+  "su8":["Latin groove · Deep tech · Tech house","Dynamic, genre-fluid club music drawing on house, techno, and experimental bass."],
+  "su9":["Kiwi Rekords sound · NUKG · Afrobeats-inflected garage · 2-step · Bassline","Leading voice in funky, UK garage-influenced house and contemporary club music."],
+  "su10":["Future garage · Bass music","A considered, introspective approach to techno. Careful, unhurried, and deep."],
+  "su11":["Eclectic rave · Breaks · Club collage","Irreverent, joyful electronic music across genres."],
+  "su12":["Hard dance · Hardstyle","Forward-thinking club music drawing on UK underground culture and bass heritage."],
+  "su13":["Ethnic fusion electronica · World-influenced club","Takes house music on a journey through Eastern influences and global inspirations."],
+  "su14":["Melodic house · Emerging","Indie pop songwriting blended with electronic production for emotionally resonant sets."],
+  "su15":["Braindance-adjacent · Post-rave trance · EBM · Euro club experimentalism","Revered experimental techno DJ celebrated for adventurous, erudite selections."],
+  "su16":["Full-on · Melodic psy · Progressive psytrance","Minimal, hypnotic techno designed for deep, late-night meditative dance floor states."],
+  "su17":["Queer-inflected soulful · Acid house · Disco · Funk · Deep house","Standout DJ blending house, disco, and Afro rhythms with academic depth."],
+  "su18":["Modular-infused · French touch adjacent · Cinematic live electronics · Melodic techno","Live electronic performance blending modular synthesis and club music."],
+  "su19":["Black diasporic club · West African-inflected · Afro house · Deep groove","Eclectic electronic selections spanning decades and continents."],
+  "su20":["UK funky · Bassline · UKG","A UK garage and dance music tribute. Nostalgic, joyful, and irresistible."],
+  "su21":["Tech house · Club","Eclectic house selections to kick off Sunday with warmth."],
+  "su22":["Live improvisation · Jazz-electronic · Experimental","Expansive, ambient electronic music inspired by astrophysics and space."],
+  "su23":["Live electronic ensemble · Experimental live music","Live collaborative set featuring a handpicked ensemble for a unique late-night experience."],
+  "su24":["Experimental · Bass music","Networked, interactive electronic music that evolves in response to its environment."],
+  "su25":["Bass music · Experimental","Buoyant, bouncy electronic club tracks with playful energy."],
+  "su26":["Filipino bass culture · Global club","Draws on Philippine musical traditions and global club sounds for a hybrid set."],
+  "su27":["LIB institution · Variety stage · Experimental performance","Celebrates the festival community with live performances and surprises."],
+  "su28":["Deep house · Soulful · Emerging","Soulful, spiritually aware electronic music for a Sunday afternoon audience."],
+  "su29":["Feminist performance art · Queer eclectic · Art party","A community collective celebrating radical self-expression through music."],
+  "su30":["Deep house · Afro-influenced · Groove","Deep, sustained late-night electronic sets built for endurance and focus."],
+  "su31":["Deep house · Afro-influenced · Soulful","Emotionally resonant melodic house with a rich harmonic palette and long arcs."],
+  "su32":["Deep house · Afro-influenced · Melodic","Afro house and dance floor joy with radiant energy for the witching hour."],
+  "su33":["Hard techno · Warehouse · Dark club","Bold, dynamic electronic club music with a powerful presence and sharp selection."],
+  "su34":["Deep house · Selector","Deep, considered electronic waters with a long-form, evolving approach."],
+  "su35":["Dreamy pop · Electronic indie · Ethereal vocal","Emotionally layered electronic music with a spiritual, healing-focused intention."],
+  "su36":["Soulful house · Deep · Selector","Lively, upbeat club energy with a broad crate and infectious sense of fun."],
+  "su37":["Deep house · Melodic · Selector","Moves fluidly across electronic genres with a curious, explorative DJ style."],
+  "su38":["Soul · R&B · Live","Draws from deep electronic roots and a broad international crate of quality music."],
+  "su39":["Tech house · Club","Blends hip-hop and electronic production for a sample-rich Sunday opening."],
+  "su40":["Hard techno · Dark club · Warehouse","Dark, heavy techno energy perfectly tuned to the late-night hours."],
+  "su41":["Bass music · Sweet-heavy · Melodic","Balances sweet melodic sensibilities with driving tech house rhythms."],
+  "su42":["Halftime · Dark DnB · Industrial bass · Experimental","Bass-heavy, aggressive electronic music with no-compromise energy."],
+  "su43":["Play Me Records founder · North American DnB matriarch · Multi-genre bass pioneer · Jungle-to-DnB lineage","Drum and bass veteran bringing technical precision and decades of genre knowledge."],
+  "su44":["Ambient techno · Slow-build · Atmospheric","Hypnotic, minimal techno with deep grooves and patient, meditative long-form sets."],
+  "su45":["Afrobeats · Afropop · Diaspora dance","Blends Afro house with soul music in warm, vibrant, and deeply musical sets."],
+  "su46":["Hip-hop · Eclectic selector · Open-format","Afrobeat-influenced festival energy with rhythmic complexity and joy."],
+  "su47":["Deep house · Organic · Soulful","Ethereal, genre-defying electronic music with a quietly confident, unique voice."],
+  "su48":["Tech house · Groove-forward · Selector","Bold, fearless energy and a broad crate of club-ready electronic music."],
+  "su49":["Bass music · Experimental · Selector","Blends hip-hop and electronic production to kick off Sunday afternoon."],
+  "su50":["Desi-inflected electronic · South Asian diaspora club · Global bass","Hypnotic, early-morning techno and deep focus to close out Crossroads."],
+  "su51":["Amsterdam beat scene · Soulful hip-hop · Downtempo R&B · Instrumental house · Neo-soul adjacent","Versatile producer blending soulful electronic with hip-hop and R&B influences."],
+  "su52":["Hip-hop influenced bass · Soulful selector","Digs deep into Afro house and Afrotech for a richly textured and soulful set."],
+  "su53":["Deep house · Soulful selector","Celebratory, warm house music to close out Sunday with community and joy."],
+  "su54":["Afro house · Deep house · Soulful","Stripped-back minimal electronic music with a focus on space and groove."],
+  "su55":["Soul · Live music · R&B","Soulful, bass-warm electronic music rooted in community and authentic expression."],
+  "su56":["Jazz-infused deep house · Soulful club","Afro house, dance, and uplifting vibes for Sunday morning."],
+  "su57":["House · Soulful","Spiritual Afro house and a sense of collective togetherness to close Sunday."],
+  "su58":["Looped vocal ambient · Choral loop machine · Dead Oceans · New age renaissance · Experimental vocal","Transcendent vocal ambient music. Looped voices that feel divine and infinite."],
+  "su59":["Deep house · Organic · Minimal","Hybrid electronic music bridging jazz, club, and contemporary composition."],
   "su60":["Techno · Mellow","A slow-burn techno journey for the final hours of LIB."],
 };
 
@@ -1260,16 +1265,17 @@ function buildTimeGutter(){
   SH=parseInt(getComputedStyle(document.documentElement).getPropertyValue("--row"))||60;
   var totalH=SLOTS*SH;
   var gut=document.getElementById("timeGutter");
-  gut.style.height=(36+totalH)+"px";
-  var html='<div style="height:36px"></div>';
+  gut.style.height=totalH+"px";
+  var html='';
   for(var i=0;i<=SLOTS;i++){
     var mins=DS+i*30;
     var wrap=mins>=1440?mins-1440:mins;
     var h=Math.floor(wrap/60),m=wrap%60;
     var ap=h<12?"a":"p";
     var h12=h%12||12;
-    var lbl=m===0?h12+ap:"";
-    html+='<div class="tlbl">'+lbl+'</div>';
+    var lbl=m===0?h12+ap:(m===30?"+":""  );
+    var cls=m===0?"tlbl tlbl-hour":"tlbl tlbl-half";
+    html+='<div class="'+cls+'">'+lbl+'</div>';
   }
   gut.innerHTML=html;
   var scr=document.getElementById("stagesScroll");
@@ -1287,14 +1293,14 @@ function renderGrid(){
   var totalH=SLOTS*SH;
   var inner=document.getElementById("stagesInner");
   inner.innerHTML="";
-  inner.style.minHeight=(36+totalH)+"px";
+  inner.style.minHeight=totalH+"px";
   var myPicks=db.picks&&db.picks[myId]?db.picks[myId]:{};
   day.stages.forEach(function(stage){
     var col=SC[stage]||"#aaa";
     var artists=day.artists.filter(function(a){return a.stage===stage;});
     var colDiv=document.createElement("div");
     colDiv.className="scol";
-    colDiv.style.minHeight=(36+totalH)+"px";
+    colDiv.style.minHeight=totalH+"px";
     colDiv.style.background="linear-gradient(180deg,"+col+"18 0%,transparent 120px)";
     colDiv.style.borderRight="1px solid "+col+"30";
     colDiv.innerHTML='<div class="schdr" style="border-bottom:2px solid '+col+'60;background:linear-gradient(180deg,'+col+'22 0%,transparent 100%)"><div class="scdot" style="background:'+col+';box-shadow:0 0 8px '+col+'cc"></div>'
@@ -1304,7 +1310,7 @@ function renderGrid(){
     bg.className="gbg";
     for(var i=0;i<SLOTS;i++){
       var row=document.createElement("div");
-      row.className="grow"+(i%2===0?" hr":"");
+      row.className="grow"+(i%2===1?" hr":"");
       bg.appendChild(row);
     }
     colDiv.appendChild(bg);
@@ -1426,11 +1432,17 @@ function openAM(artistId){
   var gEl=document.getElementById("amGenres");
   gEl.innerHTML="";
   if(found.genres){
-    found.genres.split(" · ").forEach(function(g){
+    var gtags=found.genres.split(" · ");
+    gtags.forEach(function(g,gi){
       var sp=document.createElement("span");
       sp.textContent=g;
-      sp.style.cssText="font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;"
-        +"background:"+col+"22;color:"+col+";border:1px solid "+col+"44;border-radius:20px;padding:3px 10px";
+      if(gi===0){
+        sp.style.cssText="font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;"
+          +"background:"+col+"30;color:"+col+";border:1.5px solid "+col+"66;border-radius:20px;padding:4px 12px";
+      } else {
+        sp.style.cssText="font-size:10px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;"
+          +"background:rgba(255,255,255,.05);color:rgba(255,255,255,.45);border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:3px 9px";
+      }
       gEl.appendChild(sp);
     });
   }
@@ -1953,8 +1965,9 @@ function navToArtist(artistId,dayId){
   },60);
 }
 </script>
+script>
 <div class="bk" id="feedBk" onclick="closeFeed(event)" style="z-index:450">
-  <div class="sheet sp2 sp2-flex" onclick="event.stopPropagation()" style="position:relative">
+  <div class="sheet sp2-flex" onclick="event.stopPropagation()" style="position:relative">
     <button class="drawer-close" onclick="closeFeed()">&#10005;</button>
     <div class="pill"></div>
     <div style="font-size:20px;font-weight:900;color:#fff;margin-bottom:16px;letter-spacing:-.01em">🔮 Find your Squad</div>
