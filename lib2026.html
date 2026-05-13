@@ -1271,6 +1271,7 @@ function renderGrid(){
   // Rebuild sticky header row
   var hdrRow=document.getElementById("stageHeaderRow");
   if(hdrRow){hdrRow.innerHTML="";}
+  var colW=parseInt(getComputedStyle(document.documentElement).getPropertyValue("--col"))||210;
   var day=DAYS.find(function(d){return d.id===activeDay;});
   if(!day)return;
   var totalH=SLOTS*SH;
