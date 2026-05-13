@@ -1,0 +1,1344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0a0a0a">
+<title>LIB 2026 Squad Planner</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,700;9..40,800;9..40,900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:#0a0a0a;color:#fff;font-family:'DM Sans',system-ui,sans-serif;overscroll-behavior:none;overflow:hidden}
+:root{
+  --gold:#F5A623;--gdim:rgba(245,166,35,.15);
+  --surf:rgba(255,255,255,.05);--bdr:rgba(255,255,255,.08);
+  --mut:rgba(255,255,255,.35);
+  --col:192px;--row:60px;--tgut:52px;
+}
+.screen{display:none;height:100vh;flex-direction:column;overflow:hidden}
+.screen.active{display:flex}
+
+/* LOADING */
+#loading{position:fixed;inset:0;background:#0a0a0a;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;z-index:9999}
+#loading h2{font-size:34px;font-weight:900;letter-spacing:-.02em}
+#loading p{font-size:13px;color:var(--mut)}
+
+/* SPLASH */
+#splash{background:radial-gradient(ellipse 90% 50% at 50% 0%,rgba(245,166,35,.18) 0%,transparent 65%);overflow-y:auto;align-items:center;padding:52px 24px 80px}
+.sp{width:100%;max-width:400px;margin:0 auto;display:flex;flex-direction:column;align-items:center}
+.sp-eye{font-size:11px;letter-spacing:.25em;color:var(--mut);text-transform:uppercase;margin-bottom:10px;text-align:center}
+.sp-h1{font-size:60px;font-weight:900;line-height:.9;letter-spacing:-.03em;text-align:center;margin-bottom:8px}
+.sp-h1 span{color:var(--gold)}
+.sp-sub{font-size:15px;font-weight:700;color:rgba(255,255,255,.65);margin-bottom:5px;text-align:center}
+.sp-loc{font-size:13px;color:var(--mut);margin-bottom:32px;text-align:center}
+.flbl{font-size:11px;letter-spacing:.1em;color:var(--mut);text-transform:uppercase;display:block;margin-bottom:8px}
+.fgrp{width:100%;margin-bottom:18px}
+input[type=text]{width:100%;padding:14px 16px;background:rgba(255,255,255,.07);border:1px solid var(--bdr);border-radius:14px;color:#fff;font-size:16px;font-family:inherit;outline:none;transition:border .15s}
+input[type=text]:focus{border-color:rgba(245,166,35,.5)}
+input[type=text]::placeholder{color:rgba(255,255,255,.2)}
+.ewrap{width:100%;overflow-x:auto;margin-bottom:20px;scrollbar-width:none}
+.ewrap::-webkit-scrollbar{display:none}
+.egrid{display:flex;flex-wrap:wrap;gap:10px;width:max-content;padding:4px}
+.ebtn{width:64px;height:64px;border-radius:14px;font-size:34px;background:var(--surf);border:1px solid var(--bdr);cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ebtn:active{transform:scale(.88)}
+.ebtn.sel{background:var(--gdim);border:2px solid rgba(245,166,35,.7);transform:scale(1.08);box-shadow:0 0 18px rgba(245,166,35,.3)}
+.jbtn{width:100%;padding:17px;background:var(--gold);color:#000;border:none;border-radius:16px;font-size:16px;font-weight:800;font-family:inherit;cursor:pointer;transition:all .15s}
+.jbtn:disabled{background:rgba(255,255,255,.1);color:rgba(255,255,255,.2);cursor:default}
+.sqprev{margin-top:24px;text-align:center;width:100%}
+.sqlbl{font-size:11px;color:var(--mut);margin-bottom:10px}
+.sqchips{display:flex;flex-wrap:wrap;justify-content:center;gap:8px}
+.sqchip{display:flex;align-items:center;gap:6px;background:var(--surf);border-radius:20px;padding:4px 10px 4px 6px;font-size:13px;color:rgba(255,255,255,.6)}
+
+/* HEADER */
+.hdr{flex-shrink:0;background:rgba(10,10,10,.98);backdrop-filter:blur(12px);border-bottom:1px solid var(--bdr);padding:12px 16px 0;z-index:50}
+.hdr-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.hdr-logo{font-size:18px;font-weight:900;letter-spacing:-.01em}
+.hdr-logo span{color:var(--gold)}
+.mechip{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.08);border-radius:20px;padding:5px 10px 5px 6px;font-size:13px;color:rgba(255,255,255,.7);cursor:pointer;border:none;font-family:inherit;transition:background .15s}
+.mechip:active{background:rgba(255,255,255,.15)}
+.dtabs{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;height:48px}
+.dtabs::-webkit-scrollbar{display:none}
+.dtab{flex-shrink:0;padding:6px 16px;border-radius:10px 10px 0 0;border:none;cursor:pointer;font-family:inherit;background:transparent;border-bottom:2px solid transparent;color:var(--mut);transition:all .15s;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.dtab.on{background:var(--gdim);border-bottom-color:var(--gold);color:var(--gold)}
+.dtab .dl{font-size:13px;font-weight:800;letter-spacing:.04em}
+.dtab .dd{font-size:10px;opacity:.7;margin-top:1px}
+
+/* GRID */
+.gcont{flex:1;display:flex;overflow:hidden}
+.tgut{width:var(--tgut);flex-shrink:0;overflow:hidden;position:relative;border-right:1px solid var(--bdr);z-index:10;background:#0a0a0a}
+.tgut-i{position:absolute;top:0;left:0;right:0}
+.tlbl{height:var(--row);display:flex;align-items:flex-start;padding:4px 6px 0 0;justify-content:flex-end;font-size:10px;color:var(--mut);font-weight:600;white-space:nowrap}
+.sscr{flex:1;overflow-x:auto;overflow-y:auto;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.1) transparent}
+.sscr::-webkit-scrollbar{height:4px;width:4px}
+.sscr::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:2px}
+.si{display:flex;min-height:100%}
+.scol{width:var(--col);flex-shrink:0;border-right:1px solid var(--bdr);position:relative}
+.schdr{position:sticky;top:0;z-index:20;height:36px;display:flex;align-items:center;justify-content:center;padding:0 8px;gap:5px;background:rgba(10,10,10,.96);border-bottom:1px solid var(--bdr)}
+.scdot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.scnm{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gbg{position:absolute;top:36px;left:0;right:0;bottom:0;pointer-events:none}
+.grow{height:var(--row);border-bottom:1px solid rgba(255,255,255,.04)}
+.grow.hr{border-bottom-color:rgba(255,255,255,.09)}
+.scarts{position:absolute;top:36px;left:0;right:0}
+
+/* ARTIST BLOCKS */
+.ab{position:absolute;left:4px;right:4px;border-radius:10px;cursor:pointer;padding:6px 8px;overflow:hidden;border:1px solid transparent;transition:background .2s,border-color .2s,box-shadow .2s;display:flex;flex-direction:column}
+.ab:active{opacity:.75;transform:scale(.97)}
+.ab .abn{font-size:12px;font-weight:800;color:#fff;line-height:1.2;margin-bottom:2px}
+.ab .abt{font-size:9px;opacity:.5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px}
+.ab .abg{font-size:9px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;opacity:.75;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:3px}
+.ab .abfp{display:flex;align-items:center;margin-top:auto;padding-top:3px;flex-wrap:nowrap}
+.ab .abfl{font-size:9px;opacity:.5;margin-left:5px;white-space:nowrap}
+.fc{width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:13px;border:1.5px solid rgba(255,255,255,.25);flex-shrink:0}
+.fc+.fc,.fcx{margin-left:-6px}
+.fcx{width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;border:1.5px solid rgba(255,255,255,.25);flex-shrink:0;color:#fff}
+@keyframes pickPop{0%{transform:scale(1)}40%{transform:scale(1.07)}70%{transform:scale(.97)}100%{transform:scale(1)}}
+.ab.pop{animation:pickPop .35s cubic-bezier(.36,.07,.19,.97)}
+@keyframes navPulse{0%,100%{box-shadow:0 0 0 0 rgba(255,255,255,0)}50%{box-shadow:0 0 0 4px rgba(255,255,255,.4)}}
+.ab.nav{animation:navPulse .6s ease 3}
+
+/* BOTTOM SHEETS shared */
+.bk{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);align-items:flex-end;justify-content:center}
+.bk.open{display:flex}
+.sheet{background:#141414;border-radius:24px 24px 0 0;width:100%;max-width:480px;border:1px solid rgba(255,255,255,.12);overflow-y:auto;animation:slideUp .26s cubic-bezier(.32,.72,0,1)}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.sp2{padding:20px 24px 48px}
+.pill{width:36px;height:4px;background:rgba(255,255,255,.2);border-radius:2px;margin:0 auto 20px}
+
+/* ARTIST MODAL */
+.am-hdr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px}
+.am-stag{display:inline-flex;border-radius:20px;padding:4px 10px;margin-bottom:8px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.am-name{font-size:26px;font-weight:900;line-height:1.05;margin-bottom:4px}
+.am-time{font-size:13px;color:var(--mut)}
+.sptbtn{display:flex;align-items:center;gap:6px;background:#1DB954;color:#000;border-radius:20px;padding:8px 16px;font-size:12px;font-weight:800;text-decoration:none;flex-shrink:0;margin-left:12px;font-family:inherit;white-space:nowrap}
+.am-genres{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.am-desc{font-size:13px;color:rgba(255,255,255,.5);line-height:1.6;margin-bottom:20px}
+.tbns{display:flex;gap:10px;margin-bottom:22px}
+.tbn{flex:1;padding:14px 8px;border-radius:14px;border:1.5px solid var(--bdr);background:var(--surf);color:#fff;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;transition:all .15s}
+.tbn.an{background:rgba(255,80,80,.18);border-color:rgba(255,80,80,.7);border-width:2px}
+.tbn.ai{background:rgba(80,160,255,.15);border-color:rgba(100,180,255,.7);border-width:2px}
+.attsec{margin-bottom:16px}
+.attlbl{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mut);margin-bottom:10px}
+.attchips{display:flex;flex-wrap:wrap;gap:8px}
+.ach{display:flex;align-items:center;gap:6px;border-radius:20px;padding:5px 12px 5px 8px;font-size:13px;color:#fff}
+.ach.n{background:rgba(255,80,80,.15);border:1px solid rgba(255,80,80,.4)}
+.ach.i{background:rgba(80,160,255,.12);border:1px solid rgba(100,180,255,.4)}
+.nopick{text-align:center;color:var(--mut);font-size:13px;padding:10px 0}
+
+/* MY LINEUP */
+#luBk{z-index:300}
+.lu-sheet{display:flex;flex-direction:column;max-height:90vh;overflow:hidden}
+.lu-hdr{padding:20px 24px 16px;border-bottom:1px solid rgba(255,255,255,.07);flex-shrink:0}
+.lu-title{font-size:20px;font-weight:900;margin-top:4px}
+.lu-scr{overflow-y:auto;padding:16px 24px 40px;flex:1}
+.lu-day{margin-bottom:24px}
+.lu-dlbl{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--mut);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,.06)}
+.lu-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;margin-bottom:6px;cursor:pointer}
+.lu-item.n{background:rgba(255,80,80,.15);border:1px solid rgba(255,80,80,.35)}
+.lu-item.i{background:rgba(80,160,255,.12);border:1px solid rgba(100,180,255,.35)}
+.lu-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.lu-info{flex:1;min-width:0}
+.lu-name{font-size:14px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lu-meta{font-size:11px;color:var(--mut);margin-top:1px}
+.lu-tier{font-size:18px;flex-shrink:0}
+.lu-empty{text-align:center;padding:48px 24px;color:var(--mut);font-size:14px;line-height:1.6}
+
+/* SEARCH */
+#srBk{z-index:400}
+.sr-row{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:14px;padding:0 14px;margin-bottom:14px}
+.sr-row span{font-size:18px;flex-shrink:0}
+.sr-row input{flex:1;background:transparent;border:none;outline:none;color:#fff;font-size:16px;font-family:inherit;padding:13px 0}
+.sr-row input::placeholder{color:rgba(255,255,255,.25)}
+.sr-list{max-height:52vh;overflow-y:auto;display:flex;flex-direction:column;gap:6px}
+.sri{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:12px;background:rgba(255,255,255,.05);cursor:pointer;border:1px solid transparent}
+.sri:active{background:rgba(255,255,255,.1)}
+.sri.sn{background:rgba(255,70,70,.15);border-color:rgba(255,80,80,.4)}
+.sri.si{background:rgba(80,160,255,.12);border-color:rgba(100,180,255,.4)}
+.sri-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.sri-info{flex:1;min-width:0}
+.sri-name{font-size:14px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sri-meta{font-size:11px;color:var(--mut);margin-top:1px}
+.sri-day{font-size:11px;font-weight:700;background:rgba(255,255,255,.1);color:rgba(255,255,255,.6);border-radius:8px;padding:2px 8px;flex-shrink:0}
+.sr-empty{text-align:center;color:var(--mut);font-size:14px;padding:32px 0}
+
+/* FAB ROW */
+.fabs{position:fixed;bottom:20px;left:0;right:0;display:flex;align-items:center;justify-content:center;gap:12px;z-index:100;pointer-events:none}
+.fabs > *{pointer-events:all}
+.sfab{width:46px;height:46px;background:#1a1a1a;border:1px solid rgba(255,255,255,.18);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;box-shadow:0 4px 20px rgba(0,0,0,.6);transition:all .15s}
+.sfab:active{transform:scale(.92)}
+.lfab{background:#1a1a1a;border:1px solid rgba(255,255,255,.15);border-radius:24px;padding:10px 20px;display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;color:#fff;font-family:inherit;cursor:pointer;box-shadow:0 4px 20px rgba(0,0,0,.6);transition:all .15s;white-space:nowrap}
+.lfab:active{transform:scale(.96)}
+.fcnt{background:var(--gold);color:#000;border-radius:12px;padding:1px 7px;font-size:12px;font-weight:800;min-width:20px;text-align:center}
+
+/* SYNC */
+.sync{position:fixed;top:14px;right:14px;background:rgba(15,15,15,.9);border:1px solid var(--bdr);border-radius:20px;padding:5px 10px;font-size:11px;color:var(--mut);display:flex;align-items:center;gap:6px;z-index:60}
+.sdot{width:6px;height:6px;border-radius:50%;background:#555}
+.sdot.ok{background:#50C878;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+</style>
+</head>
+<body>
+
+<div id="loading"><h2>&#9889; LIB 2026</h2><p>Loading&#8230;</p></div>
+
+<!-- SPLASH -->
+<div class="screen" id="splash">
+<div class="sp">
+  <div class="sp-eye">Lightning in a Bottle &middot; Buena Vista Lake, CA</div>
+  <div class="sp-h1">&#9889; LIB<br><span>2026</span></div>
+  <div class="sp-sub">Squad Planner</div>
+  <div class="sp-loc">May 20&ndash;24 &middot; Buena Vista Lake, CA</div>
+  <div class="fgrp"><label class="flbl">Your name</label>
+    <input type="text" id="nameInput" placeholder="Enter your name&hellip;" maxlength="20" autocomplete="off"></div>
+  <div class="fgrp" style="margin-bottom:12px"><label class="flbl">Pick your vibe</label></div>
+  <div class="ewrap"><div class="egrid" id="emojiGrid"></div></div>
+  <button class="jbtn" id="joinBtn" disabled>Enter your name&hellip;</button>
+  <div class="sqprev" id="sqPrev" style="display:none">
+    <div class="sqlbl">Already in the squad</div>
+    <div class="sqchips" id="sqChips"></div>
+  </div>
+</div>
+</div>
+
+<!-- MAIN -->
+<div class="screen" id="main">
+  <div class="hdr">
+    <div class="hdr-top">
+      <div class="hdr-logo">&#9889; <span>LIB</span> 2026</div>
+      <button class="mechip" id="meChip" onclick="editProfile()"></button>
+    </div>
+    <div class="dtabs" id="dayTabs"></div>
+  </div>
+  <div class="gcont">
+    <div class="tgut"><div class="tgut-i" id="timeGutter"></div></div>
+    <div class="sscr" id="stagesScroll"><div class="si" id="stagesInner"></div></div>
+  </div>
+</div>
+
+<!-- ARTIST MODAL -->
+<div class="bk" id="amBk" onclick="closeAM(event)" style="z-index:200">
+  <div class="sheet sp2" onclick="event.stopPropagation()">
+    <div class="pill"></div>
+    <div class="am-hdr">
+      <div style="flex:1;min-width:0">
+        <div class="am-stag" id="amStag"></div>
+        <div class="am-name" id="amName"></div>
+        <div class="am-time" id="amTime"></div>
+      </div>
+      <a id="amSpot" class="sptbtn" href="#" target="_blank" rel="noreferrer">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+        Spotify
+      </a>
+    </div>
+    <div class="am-genres" id="amGenres"></div>
+    <div class="am-desc" id="amDesc"></div>
+    <div class="tbns">
+      <button class="tbn" id="btnNeed" onclick="setPick('need')">&#128293; Need to see</button>
+      <button class="tbn" id="btnInt"  onclick="setPick('interested')">&#10024; Interested</button>
+    </div>
+    <div id="amAtt"></div>
+  </div>
+</div>
+
+<!-- MY LINEUP -->
+<div class="bk" id="luBk" onclick="closeLU(event)" style="z-index:300">
+  <div class="sheet lu-sheet" onclick="event.stopPropagation()">
+    <div class="lu-hdr"><div class="pill"></div><div class="lu-title" id="luTitle">My Lineup</div></div>
+    <div class="lu-scr" id="luScr"></div>
+  </div>
+</div>
+
+<!-- SEARCH -->
+<div class="bk" id="srBk" onclick="closeSR(event)" style="z-index:400">
+  <div class="sheet sp2" onclick="event.stopPropagation()">
+    <div class="pill"></div>
+    <div class="sr-row">
+      <span>&#128269;</span>
+      <input type="text" id="srInput" placeholder="Search artists, genres, stages&hellip;" autocomplete="off" spellcheck="false">
+    </div>
+    <div class="sr-list" id="srList"></div>
+  </div>
+</div>
+
+<!-- FABs -->
+<div class="fabs">
+  <button class="sfab" onclick="openSR()">&#128269;</button>
+  <button class="lfab" onclick="openLU()">My Lineup <span class="fcnt" id="fabCnt">0</span></button>
+</div>
+<div class="sync" id="syncEl"><div class="sdot" id="syncDot"></div><span id="syncTxt">Local</span></div>
+
+<script>
+// ── FIREBASE CONFIG ───────────────────────────────────────────────────────────
+// For live cross-device sync: create a free project at console.firebase.google.com,
+// enable Realtime Database (test mode), then replace the values below.
+var FBC = {
+  apiKey:"AIzaSyAPDG2oujtGT7hpxG-JkF-4ia_orglNia0",
+  authDomain:"libapp-ca0b9.firebaseapp.com",
+  databaseURL:"https://libapp-ca0b9-default-rtdb.firebaseio.com",
+  projectId:"libapp-ca0b9",
+  storageBucket:"libapp-ca0b9.firebasestorage.app",
+  messagingSenderId:"485974690646",
+  appId:"1:485974690646:web:d5aa25cc77b7ad191b64f7"
+};
+var FB_ON = true;
+var fbDb=null,fbRef=null,fbOnVal=null,fbUpd=null;
+
+// ── EMOJIS ────────────────────────────────────────────────────────────────────
+var EMOJIS = [
+  "🌊","🔥","🌙","⚡","🎪","🦋","🌵","🍄","🌈","🎯",
+  "🦅","🪐","💎","🎸","🐉","🌺","🦊","🎭","🌴","⭐",
+  "🐬","🦁","🍉","🦜","🌸","🦩","🐺","🦄","🌮","🥑",
+  "🎺","🥁","🌻","🦝","🐙","🪩","🏄","🎨","🧿","🪬",
+  "🔮","🧲","🌋","🏔","🐋","🦈","🍀","🌿","🪸","🐚",
+  "🪷","🌹","🌷","💐","🌼","🌞","🌝","☄️","🌪","❄️",
+  "💧","🫧","🌾","🎡","🎢","🎠","🏕","🎆","🎇","🎑"
+];
+
+// ── STAGE COLORS ──────────────────────────────────────────────────────────────
+var SC = {
+  "Lightning":"#F5A623","Thunder":"#7B68EE","Woogie":"#50C878",
+  "Grand Artique":"#FF6B9D","Junkyard":"#FF8C42","Stacks":"#00CED1",
+  "Crossroads":"#DDA0DD","Moon Room":"#87CEEB","Yoga Sol":"#98FB98"
+};
+
+// ── TIME ──────────────────────────────────────────────────────────────────────
+var DS=720, DE=1680, SH=60, SLOTS=(DE-DS)/30;
+function pt(s){
+  var m=s.match(/(\d+):(\d+)([ap])/i);
+  if(!m)return 0;
+  var h=+m[1],mn=+m[2],ap=m[3].toLowerCase();
+  if(ap==="p"&&h!==12)h+=12;
+  if(ap==="a"&&h===12)h=0;
+  return h*60+mn;
+}
+function tr(str){
+  var p=str.split("–");
+  if(p.length!==2)return[DS,DS+60];
+  var ef=p[1].trim(),sr=p[0].trim(),ap=ef.slice(-1);
+  var sw=/[ap]$/i.test(sr)?sr:sr+ap;
+  var s=pt(sw),e=pt(ef);
+  if(e<=s)e+=1440;
+  return[s,e];
+}
+
+var META = {
+  "w1":["Melodic House · Organic","SF DJ blending warm basslines with organic percussion and atmospheric textures."],
+  "w2":["Future Bass · Hip-Hop","LA producer known for lush, cinematic beats and genre-defying collaborations."],
+  "w3":["Afro House · Deep House","South African vocalist weaving soulful vocals into deep, afro-infused grooves."],
+  "w4":["Classic House · Tribute","A celebration of DJ Dan\'s legendary Bay Area trance and progressive house legacy."],
+  "w5":["Deep Techno · Ambient","Hypnotic producer crafting introspective techno journeys with ambient undertones."],
+  "w6":["Dark Techno · Industrial","Dense, industrial-tinged techno with relentless energy and heavy low-end pressure."],
+  "w7":["Disco House · Nordic","Norwegian producer fusing sun-soaked disco edits with contemporary house warmth."],
+  "w8":["Sound Journey · Healing","Immersive sonic ceremony blending live instruments, nature sounds, and tonal frequencies."],
+  "w9":["Ecstatic Dance · Global","An intentional dance journey through world rhythms and tribal beats."],
+  "w10":["Techno · Minimal","Hypnotic minimal techno with surgical precision and a deep, meditative groove."],
+  "w11":["Melodic Techno","Cinematic melodic techno with sweeping synths and driving rhythms built for big rooms."],
+  "w12":["Cacao Ceremony · Ritual","A sacred cacao circle led by Nana Marina Cruz with heart-opening ritual and live music."],
+  "w13":["Afro House · Soulful","Soulful DJ bringing the warmth and swing of African rhythms to the dance floor."],
+  "w14":["Breaks · Bass","High-energy breaks and bass fusion with chunky hip-hop influenced rhythms."],
+  "w15":["Downtempo · Indie","Dreamy indie-electronic soundscapes perfect for a golden hour warm-up set."],
+  "w16":["Funk · Nu-Disco","Infectious funk-infused nu-disco cuts guaranteed to get hips moving before dark."],
+  "t1":["Tech House · Peak Time","Ibiza heavyweight known for peak-time tech house with infectious groove and relentless energy."],
+  "t2":["Techno · Club","Hypnotic DJ delivering precise, high-voltage techno built for the early morning hours."],
+  "t3":["Deep House · Collective","Desert Hearts collective delivering all-day deep house euphoria."],
+  "t4":["Deep House","Forward-thinking deep house with warm basslines and infectious rhythmic sensibility."],
+  "t5":["Latin House · B2B","Latin rhythms and organic percussion brought to the dance floor in this b2b collaboration."],
+  "t6":["Eclectic · Live","Live band blending jazz, soul, and funk for a unique afternoon festival experience."],
+  "t7":["Latin House · Afro","Miami duo merging Latin percussion, afro rhythms, and tech house energy."],
+  "t8":["Melodic House · Dreamy","Ethereal melodic house with soft, dreamy atmospheres and celestial synthesizer work."],
+  "t9":["Afrobeat · World","Percussive Afrobeat and global rhythms delivered with raw live energy and spiritual intention."],
+  "t10":["Indie Dance · Organic","Blooming indie dance sounds with organic textures and an irresistible melodic sensibility."],
+  "t11":["Latin Club · Electronic","High-octane Latin club tracks blended with contemporary electronic production."],
+  "t12":["Acid House · Dark","Berlin duo known for raw, acid-soaked house perfectly suited to the sweaty early hours."],
+  "t13":["Deep House · Cosmic","Cosmic deep house journeys with a philosophical edge and thoughtful track selection."],
+  "t14":["House · Disco","High-spirited house DJ rolling through disco-influenced edits and classic feel-good cuts."],
+  "t15":["Techno · Industrial","Bruising industrial techno with heavy machinery percussion and relentless forward momentum."],
+  "t16":["Tribal House · World","Tribal rhythms and world-influenced house built around hypnotic repetition."],
+  "t17":["Deep House · Soulful","Warm deep house selections with a clear love for classic Chicago and NYC roots."],
+  "t18":["Tech House · Funky","Tight, funky tech house cuts with bouncy basslines and crowd-pleasing energy."],
+  "t19":["House · Eclectic","Eclectic house selector with a broad crate of feel-good tracks across decades."],
+  "t20":["House","High-energy house that doubles as festival fuel."],
+  "t21":["SURPRISE","The lineup\'s best-kept secret. Expect anything."],
+  "t22":["Hip-Hop · Electronic","LA beatmaker blurring lines between hip-hop, electronic, and art music with intricate production."],
+  "t23":["Hip-Hop · Club","Team Supreme brings sharp hip-hop flavored beats and infectious DJ chemistry."],
+  "t24":["Hip-Hop · B2B","A back-to-back exploring hard-hitting beats and experimental bass."],
+  "t25":["Hip-Hop · Electronic","Intricate drum programming and lush sampling woven into club-ready sets."],
+  "t26":["Global Bass · World","A global bass journey through cumbia, baile funk, and dancehall."],
+  "t27":["Reggaeton · Tropical","Tropical club energy blending reggaeton rhythms with global electronic production."],
+  "t28":["Bass House · Club","Aggressive bass house built to demolish speakers."],
+  "t29":["R&B · Electronic","R&B songwriting sensibility meets experimental electronic production."],
+  "t30":["Downtempo · Electronic","Textured downtempo with introspective depth and carefully crafted atmosphere."],
+  "t31":["Tech House · Underground","Underground tech house rooted in late-night warehouse culture."],
+  "t32":["Ambient · Electronic","Gentle ambient-tinged selections for easing into the festival afternoon."],
+  "t33":["Bass · Club","High-energy bass music to close out the stage with maximum impact."],
+  "t34":["House · Classic","Classic house selections spanning decades of soulful, joyful music."],
+  "t35":["Hip-Hop · Comedy","Rapper and comedian with unhinged energy, internet-famous wit, and hard-hitting rap."],
+  "t36":["Afro House · Tribal","Richly textured Afro house rhythms and spiritual tribal frequencies."],
+  "t37":["Footwork · Club","Chicago footwork and juke — fast, percussive, and relentless."],
+  "t38":["Baile World · Global","Celebrating global bass, batucada, and Brazilian rhythms."],
+  "t39":["Disco · Classic","Disco-infused classic-leaning sets with warm and celebratory energy."],
+  "t40":["Melodic Techno · Deep","Emotional, cinematic melodic techno perfectly suited to the early hours."],
+  "t41":["Bass · Electronic","Bass music, alien frequencies, and club pressure in a unique sonic experience."],
+  "f1":["Tech House · Mainstage","Dutch DJ who stormed the global scene with anthemic tech house slammers and massive crossover appeal."],
+  "f2":["Rave · Electronic","UK duo crafting euphoric rave-influenced electronic music rooted in UK hardcore and techno heritage."],
+  "f3":["Art Pop · Electronic","Israeli artist fusing art pop, rap, and electronic production into sharp political statements."],
+  "f4":["Bass · Psychedelic","Psychedelic bass music and heavy low-end frequencies for the dance floor."],
+  "f5":["Neo-Soul · Indie R&B","Brooklyn artist crafting lush neo-soul and indie R&B with introspective, poetic lyricism."],
+  "f6":["Dubstep · Bass","Canadian duo who have been a bass music institution for over a decade. Heavy, melodic, and immense."],
+  "f7":["Drum & Bass · Experimental","London trio who pioneered halftime D&B and experimental club music with cinematic depth."],
+  "f8":["Drum & Bass · Liquid","Liquid and neurofunk D&B with technical precision and emotional resonance."],
+  "f9":["Grime · Club","UK grime and club music pioneer with razor-sharp selection and genre-defining heritage."],
+  "f10":["Ambient · Atmospheric","Delicate, introspective ambient music layered with field recordings and soft synthesis."],
+  "f11":["Disco · Nu-Disco","Vintage disco fused with contemporary house for feel-good afternoon selections."],
+  "f12":["Afro House · Deep","Deep Afro house vibrations with rich percussive textures and soulful melodies."],
+  "f13":["Tech House · Breaks","Tech house foundations blended with chunky breakbeats for a propulsive sound."],
+  "f14":["Bass · Sound Healing","An immersive sound healing experience using sub-bass frequencies and live ceremony."],
+  "f15":["Techno · Club","Club-focused techno with tight grooves and precise mixing built for peak hours."],
+  "f16":["Techno · Industrial","High-intensity techno known for dark, industrial-influenced warehouse sets."],
+  "f17":["Techno · Experimental","Pushes experimental techno boundaries with abstract textures and unconventional structures."],
+  "f18":["Electronic · Multi-Genre","Weaves across genres with a crate-digger sensibility and deep musical knowledge."],
+  "f19":["Ambient House · Deep","Legendary selector known for ethereal, deeply emotive ambient-influenced house."],
+  "f20":["Techno · Melodic","Melodic techno with emotional depth and a finely tuned sense of dancefloor dynamics."],
+  "f21":["Afro House · Soulful","Soulful, Afro-infused house with warmth, positivity, and infectious groove."],
+  "f22":["Funk · Live","A live funk experience delivering groove, soul, and communal joy."],
+  "f23":["Deep House · Organic","Desert Hearts co-founder bringing deep house love, community, and good vibes."],
+  "f24":["House · Deep","Explores the deeper end of house music with soulful selections and smooth transitions."],
+  "f25":["Experimental · Club","Pushes experimental club music into unexpected territory with fearless selection."],
+  "f26":["Indie Dance · House","Bridges indie dance and house with a boutique, curated musical sensibility."],
+  "f27":["Bass · Electronic","Bass-heavy production with vibrant energy and bold club sounds."],
+  "f28":["Electronic · Community","SF collective known for inclusive community-oriented electronic events."],
+  "f29":["Ambient · Downtempo","Flowing ambient and downtempo soundscapes for late night drifting."],
+  "f30":["Tech House · Energy","High-octane tech house with relentless drive and peak-time intensity."],
+  "f31":["Deep House · Soulful","Warm, rolling deep house for the discerning ear."],
+  "f32":["House · Latin","Fuses Latin flavors with contemporary house for a vibrant cross-cultural sound."],
+  "f33":["Melodic House · Deep","Melodic deep house journeys with emotional resonance and graceful pacing."],
+  "f34":["House · Classic","Deep house selector with vast knowledge of classic and contemporary material."],
+  "f35":["Electronic · Hybrid","Genre-crossing electronic sets spanning house, techno, and hybrid club sounds."],
+  "f36":["Melodic House · Organic","Organic melodic house rooted in natural textures and unhurried, flowing rhythms."],
+  "f37":["Hip-Hop · Electronic","Hip-hop with electronic production in a gritty, sample-rich sonic palette."],
+  "f38":["House · B2B","A rare b2b exploring the full spectrum of house music with mutual spontaneity."],
+  "f39":["Afro House · Dance","Vibrant, dance-floor-focused Afro house with contagious energy."],
+  "f40":["Footwork · Bass","Explosive, percussive footwork and bass music."],
+  "f41":["Bass · Club","Heavy bass music with cinematic production and versatile genre-bending sets."],
+  "f42":["House · Deep","Selects across deep and soulful house, delivering warmth and depth."],
+  "f43":["Afro House · Dance","Afro-infused house with an irresistible sense of rhythm and movement."],
+  "f44":["Techno · Melodic","Melodic threads through driving techno for emotionally resonant peak-time sets."],
+  "f45":["Tech House · Underground","Bay Area underground selector with a deep house and tech house catalogue."],
+  "f46":["Electronic · Indie","Dreamy indie-electronic music bridging bedroom pop and dance floor aesthetics."],
+  "f47":["Melodic House · Solar","Warm, sun-drenched melodic house designed for golden hour festival moments."],
+  "f48":["Afro House · Healing","Fuses Afro house with healing intention, creating spiritual dancefloor experiences."],
+  "f49":["House · Snap","Snappy, percussive house with tight rhythms and a lively, fun-loving energy."],
+  "f50":["Melodic Techno · Deep","Melodic techno with emotional layers and a careful, evolving mix style."],
+  "f51":["Afro House · Tropical","Tropical rhythms blended with Afro house for warm, percussion-rich afternoon sets."],
+  "f52":["Drum & Bass · Liquid","Drum and bass veterans known for lush, liquid DnB and live performances."],
+  "f53":["Electronic · Hybrid","Spans electronic genres with skill and taste, delivering versatile, energetic sets."],
+  "f54":["Techno · Underground","Navigates underground techno with raw, stripped-back selection."],
+  "f55":["Techno · Dark","Dark, aggressive techno to close out the night with maximum intensity."],
+  "f56":["Tech House · Late Night","Late-night tech house specialist known for long, evolved sets in intimate spaces."],
+  "f57":["Ambient · Experimental","Expansive, meditative ambient drones — a unique sensory experience."],
+  "f58":["UK Garage · Jungle","UK sounds specialist weaving garage, jungle, and bass culture."],
+  "f59":["Deep House · Minimal","Precise, minimal deep house focusing on space, texture, and subtlety."],
+  "f60":["Afro House · Dawn","Ushers in the sunrise with Afro house warmth and uplifting spiritual sensibility."],
+  "f61":["Bass · Experimental","Pushes experimental bass music into uncharted sonic territory."],
+  "f62":["Techno · Experimental","Explores experimental techno with abstract sound design."],
+  "f63":["Deep House · Soulful","Soulful house selector drawing on gospel, soul, and classic deep house roots."],
+  "s1":["Drum & Bass · Live","UK\'s biggest DnB act. Expect euphoric bangers, live elements, and a massive show."],
+  "s2":["Indie Dance · Electronic","Scottish artist crafting emotive indie dance and electronic music with raw vulnerability."],
+  "s3":["Drum & Bass · Jungle","Leading voice in the jungle/D&B revival. Soulful, raw, and essential."],
+  "s4":["Pop · Drag","Drag Race star bringing campy, country-pop energy and pure entertainment."],
+  "s5":["Techno · Minimal","Precise, minimal techno rooted in the Detroit and Berlin traditions."],
+  "s6":["Bass · Heavy","Bass music heavyweight known for crushing, precisely engineered low-end sets."],
+  "s7":["Electronic · Melodic","Combines melodic electronic production with deep drops and wide dynamic range."],
+  "s8":["Techno · Dark","Berlin-based artist delivering dark, hard-edged warehouse techno."],
+  "s9":["Electronic · Club","Genre-fluid club music rooted in UK bass culture and electronic experimentation."],
+  "s10":["Melodic House · Ethereal","Ethereal melodic house with a rich, textured, emotionally expansive sound."],
+  "s11":["Melodic Techno · Progressive","Progressive melodic techno with a polished, cinematic production approach."],
+  "s12":["Electronic · Hybrid","Versatile electronic sets across the spectrum of house and techno."],
+  "s13":["Afro House · Deep","Deep Afro house with soulful layering and vibrant percussive energy."],
+  "s14":["Tech House · Minimal","Minimal tech house with precision and a deep sense of rhythmic hypnosis."],
+  "s15":["Afro House · Dance","Blends Afro house vibrancy with dance floor power and joyful selection."],
+  "s16":["Techno · Berlin","Techno titan known for intense, deeply built peak-time sets."],
+  "s17":["Bass · Electronic","Energetic bass-influenced electronic music with a sharp, modern production edge."],
+  "s18":["Tech House · Progressive","Polished tech house with high energy and broad appeal."],
+  "s19":["Melodic House · Deep","Beautiful melodic house with emotionally resonant builds and thoughtful selection."],
+  "s20":["House · Community","A collective bringing joyful, inclusive house music to festival spaces."],
+  "s21":["Deep House · Minimal","Slow, deliberate, minimal deep house that rewards patient listeners."],
+  "s22":["Afro House · Vibrant","Vibrant Afro house energy. Bright, warm, and brimming with rhythm and joy."],
+  "s23":["Latin Techno · Experimental","Blends Latin rhythms with experimental club production for a richly textured sound."],
+  "s24":["Afro House · Club","Merges Afro house with club-ready bass music in a high-energy package."],
+  "s25":["Electronic · Audiovisual","A multi-sensory audiovisual journey through electronic landscapes."],
+  "s26":["Reggae · Dub","Navigates roots reggae, dub, and sound system culture with deep knowledge."],
+  "s27":["Indie Folk · Electronic","Indie folk songwriting blended with electronic textures for intimate performances."],
+  "s28":["Afrobeats · Brunch","A celebratory Afrobeats experience with a joyful collective of DJs and dancers."],
+  "s29":["Electronic · Folk","Eclectic electronic-folk sensibility for afternoon festival hours."],
+  "s30":["Melodic Techno · Late Night","Emotionally charged melodic techno and breathtaking builds for late night."],
+  "s31":["Electronic · Experimental","Genre-bending electronic music that challenges expectations."],
+  "s32":["Melodic House · Deep","Bay Area producer delivering elegant, harmonically rich melodic deep house."],
+  "s33":["Tech House · Peak","Rising tech house DJ delivering tight, peak-time energy with confident selection."],
+  "s34":["Techno · Tribal","Tribal percussion and driving techno into transcendent late-night dance floor sets."],
+  "s35":["Bass · Club","Bass-heavy club music with a modern, hard-hitting production style."],
+  "s36":["Melodic Techno · Cinematic","Cinematic melodic techno. Sweeping, emotional, built for big stages."],
+  "s37":["Afro House · Vibrant","Vibrant, afro-rooted house music with a sunny disposition and strong groove."],
+  "s38":["House · Indie","Indie-flavored house selections with character, warmth, and genuine love of music."],
+  "s39":["Electronic · Eclectic","An eclectic approach to electronic music, spanning moods and genres fluidly."],
+  "s40":["Deep House · Collective","Desert Hearts closes the night in a collective deep house marathon."],
+  "s41":["Bass · Heavy","Dubstep and bass music heavyweight bringing crushing, emotionally loaded sets."],
+  "s42":["Electronic · Cinematic","Electronic music legends delivering cinematic, anthemic live performances."],
+  "s43":["Electronic · Experimental","Experimental electronic music balancing abstract sound design with dancefloor function."],
+  "s44":["Minimal · Hypnotic","Minimal techno and house DJ weaving hypnotic patterns across long, evolving sets."],
+  "s45":["Techno · Club","Hard-edged, peak-time techno with confident, forward-driving energy."],
+  "s46":["Tech House · Deep","Tech house depth with underground roots. Musical, functional, well-crafted."],
+  "s47":["Melodic House · Deep","ALL:LO collective bringing melodic, emotive house to the Stacks stage."],
+  "s48":["House · Collective","Considered, thoughtful house selections with a community ethos."],
+  "s49":["Deep House · Vibe","Breezy, effortless mood with smooth, rolling deep house tracks."],
+  "s50":["Tech House · Underground","Digs deep for underground tech house and minimal tracks with lasting impact."],
+  "s51":["Hip-Hop · Electronic","Hip-hop-influenced beats and abstract electronic production."],
+  "s52":["Bass · Club","Blends bass music and club culture with a bold, forward-thinking DJ style."],
+  "s53":["Deep House · Cosmic","Deep and cosmic house. Warm, spacious, and transportive."],
+  "s54":["Electronic · Eclectic","Eclectic energy and genuine crate-digging knowledge for afternoon crowds."],
+  "s55":["Bass · Electronic","Bass-forward electronic music with deep community roots in Oakland."],
+  "s56":["Techno · Experimental","Chicago-based experimental techno blending club, trans, and electronic art culture."],
+  "s57":["Techno · Dark","Dark, powerful techno rooted in Berlin club culture."],
+  "s58":["Techno · Hypnotic","Hypnotic, repetitive techno with a meditative intensity."],
+  "s59":["Ballroom · Club","Ballroom culture and voguing energy brought to the dance floor in DJ mode."],
+  "s60":["Tech House · Club","Combines forces for a peak-time tech house b2b with dynamic energy."],
+  "s61":["Queer Club · Party","LA\'s iconic queer party. Inclusive, joyful, and always legendary."],
+  "s62":["Afro House · Dawn","Sunrise Afro house set. Warm, hopeful, and spiritually uplifting."],
+  "s63":["House · Melodic","Combines melodic sensibilities for a deeply felt, late-night house b2b."],
+  "s64":["Melodic House · Dreamy","Dreamy, melodic house for a transportive early morning set."],
+  "s65":["Electronic · Eclectic","High-energy, genre-fluid electronic sets with irreverent, joyful selection."],
+  "su1":["Indie Pop · Electronic","Australian duo delivering theatrical, anthemic indie pop with spectacular live shows."],
+  "su2":["Tech House · Melodic","Brazilian DJ blending melodic electronic and tech house with globe-trotting elegance."],
+  "su3":["R&B · Pop","Multi-platinum R&B pop star bringing a catalogue of sultry, danceable hits."],
+  "su4":["Electronic · B2B","A b2b electronic set full of warmth, energy, and musical conversation."],
+  "su5":["Electronic · Collective","Electronic collective bringing expansive, community-driven sounds."],
+  "su6":["Drum & Bass · Electronic","One of the UK\'s leading DnB producers. Anthemic, precise, and consistently thrilling."],
+  "su7":["Bass · Electronic","Bass-heavy, psychedelic electronic music that blurs genre and defies easy labeling."],
+  "su8":["Electronic · Club","Dynamic, genre-fluid club music drawing on house, techno, and experimental bass."],
+  "su9":["UK Garage · Funky","Leading voice in funky, UK garage-influenced house and contemporary club music."],
+  "su10":["Techno · Introspective","A considered, introspective approach to techno. Careful, unhurried, and deep."],
+  "su11":["Electronic · Eclectic","Irreverent, joyful electronic music across genres."],
+  "su12":["Electronic · Club","Forward-thinking club music drawing on UK underground culture and bass heritage."],
+  "su13":["House · Global","Takes house music on a journey through Eastern influences and global inspirations."],
+  "su14":["Indie Pop · Electronic","Indie pop songwriting blended with electronic production for emotionally resonant sets."],
+  "su15":["Techno · Experimental","Revered experimental techno DJ celebrated for adventurous, erudite selections."],
+  "su16":["Techno · Minimal","Minimal, hypnotic techno designed for deep, late-night meditative dance floor states."],
+  "su17":["House · Afro","Standout DJ blending house, disco, and Afro rhythms with academic depth."],
+  "su18":["Electronic · Live","Live electronic performance blending modular synthesis and club music."],
+  "su19":["Electronic · Eclectic","Eclectic electronic selections spanning decades and continents."],
+  "su20":["UK Garage · Dance","A UK garage and dance music tribute. Nostalgic, joyful, and irresistible."],
+  "su21":["House · Eclectic","Eclectic house selections to kick off Sunday with warmth."],
+  "su22":["Electronic · Ambient","Expansive, ambient electronic music inspired by astrophysics and space."],
+  "su23":["Electronic · Live","Live collaborative set featuring a handpicked ensemble for a unique late-night experience."],
+  "su24":["Electronic · Experimental","Networked, interactive electronic music that evolves in response to its environment."],
+  "su25":["Electronic · Club","Buoyant, bouncy electronic club tracks with playful energy."],
+  "su26":["Electronic · Global","Draws on Philippine musical traditions and global club sounds for a hybrid set."],
+  "su27":["Community · Live","Celebrates the festival community with live performances and surprises."],
+  "su28":["Electronic · Soulful","Soulful, spiritually aware electronic music for a Sunday afternoon audience."],
+  "su29":["Electronic · Community","A community collective celebrating radical self-expression through music."],
+  "su30":["Electronic · Late Night","Deep, sustained late-night electronic sets built for endurance and focus."],
+  "su31":["Melodic House · Emotional","Emotionally resonant melodic house with a rich harmonic palette and long arcs."],
+  "su32":["Afro House · Dance","Afro house and dance floor joy with radiant energy for the witching hour."],
+  "su33":["Electronic · Club","Bold, dynamic electronic club music with a powerful presence and sharp selection."],
+  "su34":["Electronic · Deep","Deep, considered electronic waters with a long-form, evolving approach."],
+  "su35":["Electronic · Spiritual","Emotionally layered electronic music with a spiritual, healing-focused intention."],
+  "su36":["Electronic · Club","Lively, upbeat club energy with a broad crate and infectious sense of fun."],
+  "su37":["Electronic · Eclectic","Moves fluidly across electronic genres with a curious, explorative DJ style."],
+  "su38":["Electronic · Deep","Draws from deep electronic roots and a broad international crate of quality music."],
+  "su39":["Hip-Hop · Electronic","Blends hip-hop and electronic production for a sample-rich Sunday opening."],
+  "su40":["Techno · Dark","Dark, heavy techno energy perfectly tuned to the late-night hours."],
+  "su41":["Tech House · Sweet","Balances sweet melodic sensibilities with driving tech house rhythms."],
+  "su42":["Bass · Heavy","Bass-heavy, aggressive electronic music with no-compromise energy."],
+  "su43":["Drum & Bass · Speed","Drum and bass veteran bringing technical precision and decades of genre knowledge."],
+  "su44":["Minimal · Hypnotic","Hypnotic, minimal techno with deep grooves and patient, meditative long-form sets."],
+  "su45":["Afro House · Soul","Blends Afro house with soul music in warm, vibrant, and deeply musical sets."],
+  "su46":["Afrobeat · Festival","Afrobeat-influenced festival energy with rhythmic complexity and joy."],
+  "su47":["Electronic · Ethereal","Ethereal, genre-defying electronic music with a quietly confident, unique voice."],
+  "su48":["Electronic · Bold","Bold, fearless energy and a broad crate of club-ready electronic music."],
+  "su49":["Hip-Hop · Electronic","Blends hip-hop and electronic production to kick off Sunday afternoon."],
+  "su50":["Techno · Hypnotic","Hypnotic, early-morning techno and deep focus to close out Crossroads."],
+  "su51":["Electronic · Soulful","Versatile producer blending soulful electronic with hip-hop and R&B influences."],
+  "su52":["Afro House · Deep","Digs deep into Afro house and Afrotech for a richly textured and soulful set."],
+  "su53":["House · Celebratory","Celebratory, warm house music to close out Sunday with community and joy."],
+  "su54":["Electronic · Minimal","Stripped-back minimal electronic music with a focus on space and groove."],
+  "su55":["Electronic · Soulful","Soulful, bass-warm electronic music rooted in community and authentic expression."],
+  "su56":["Afro House · Dance","Afro house, dance, and uplifting vibes for Sunday morning."],
+  "su57":["Afro House · Spiritual","Spiritual Afro house and a sense of collective togetherness to close Sunday."],
+  "su58":["Ambient · Classical","Transcendent vocal ambient music. Looped voices that feel divine and infinite."],
+  "su59":["Electronic · Hybrid","Hybrid electronic music bridging jazz, club, and contemporary composition."],
+  "su60":["Techno · Mellow","A slow-burn techno journey for the final hours of LIB."],
+};
+
+var DAYS = [
+  {id:"wed",label:"WED",date:"May 20",stages:["Junkyard", "Stacks", "Moon Room", "Yoga Sol"],artists:[
+    {id:"w1",name:"Miko Franconi",stage:"Junkyard",time:"12:30a–2:00a",spotify:"https://open.spotify.com/search/Miko%20Franconi"},
+    {id:"w2",name:"TOKiMONSTA",stage:"Stacks",time:"12:30a–2:00a",spotify:"https://open.spotify.com/artist/3VwKSHAfgzV1DOHV0aANCI"},
+    {id:"w3",name:"Sio",stage:"Moon Room",time:"12:00a–2:00a",spotify:"https://open.spotify.com/search/Sio%20DJ"},
+    {id:"w4",name:"Tribute to DJ Dan",stage:"Junkyard",time:"11:00p–12:30a",spotify:"https://open.spotify.com/search/DJ%20Dan"},
+    {id:"w5",name:"flozone",stage:"Stacks",time:"11:15p–12:30a",spotify:"https://open.spotify.com/search/flozone"},
+    {id:"w6",name:"Endmore",stage:"Junkyard",time:"9:30p–11:00p",spotify:"https://open.spotify.com/search/Endmore"},
+    {id:"w7",name:"Torbjorn",stage:"Stacks",time:"10:00p–11:15p",spotify:"https://open.spotify.com/search/Torbjorn"},
+    {id:"w8",name:"EARTHTONES",stage:"Moon Room",time:"10:00p–12:00a",spotify:"https://open.spotify.com/search/EARTHTONES"},
+    {id:"w9",name:"DJ EZ – Ecstatic Dance",stage:"Yoga Sol",time:"9:00p–11:00p",spotify:"https://open.spotify.com/search/DJ%20EZ"},
+    {id:"w10",name:"Borak",stage:"Junkyard",time:"8:00p–9:30p",spotify:"https://open.spotify.com/search/Borak"},
+    {id:"w11",name:"Spektrum",stage:"Stacks",time:"8:45p–10:00p",spotify:"https://open.spotify.com/search/Spektrum%20DJ"},
+    {id:"w12",name:"Cacao Circle (Nana Marina Cruz)",stage:"Moon Room",time:"7:30p–10:00p",spotify:"https://open.spotify.com/search/Nana%20Marina%20Cruz"},
+    {id:"w13",name:"Mario Lui",stage:"Junkyard",time:"6:30p–8:00p",spotify:"https://open.spotify.com/search/Mario%20Lui"},
+    {id:"w14",name:"POP THA TRUNK",stage:"Stacks",time:"7:30p–8:45p",spotify:"https://open.spotify.com/search/Pop%20Tha%20Trunk"},
+    {id:"w15",name:"Paloma",stage:"Junkyard",time:"5:00p–6:30p",spotify:"https://open.spotify.com/search/Paloma%20DJ"},
+    {id:"w16",name:"KNGSPRNGS",stage:"Stacks",time:"6:00p–7:30p",spotify:"https://open.spotify.com/search/KNGSPRNGS"},
+  ]},
+  {id:"thu",label:"THU",date:"May 21",stages:["Woogie", "Grand Artique", "Junkyard", "Stacks", "Crossroads", "Moon Room"],artists:[
+    {id:"t1",name:"Hot Since 82",stage:"Woogie",time:"10:00p–12:00a",spotify:"https://open.spotify.com/search/Hot%20Since%2082"},
+    {id:"t2",name:"Linska",stage:"Woogie",time:"8:00p–10:00p",spotify:"https://open.spotify.com/search/Linska"},
+    {id:"t3",name:"Desert Hearts",stage:"Woogie",time:"5:00p–8:00p",spotify:"https://open.spotify.com/search/Desert%20Hearts"},
+    {id:"t4",name:"GiZ",stage:"Woogie",time:"3:00p–5:00p",spotify:"https://open.spotify.com/search/GiZ%20DJ"},
+    {id:"t5",name:"Ksenyeah b2b Manguito",stage:"Woogie",time:"1:30p–3:00p",spotify:"https://open.spotify.com/search/Ksenyeah"},
+    {id:"t6",name:"Moondog Matinee",stage:"Grand Artique",time:"12:45a–2:00a",spotify:"https://open.spotify.com/search/Moondog%20Matinee"},
+    {id:"t7",name:"afrobeta",stage:"Grand Artique",time:"10:45p–12:00a",spotify:"https://open.spotify.com/search/afrobeta"},
+    {id:"t8",name:"Elysian Moon",stage:"Grand Artique",time:"9:00p–10:15p",spotify:"https://open.spotify.com/search/Elysian%20Moon"},
+    {id:"t9",name:"Yemanjo & Irene Rosalia",stage:"Grand Artique",time:"7:00p–8:15p",spotify:"https://open.spotify.com/search/Yemanjo"},
+    {id:"t10",name:"Loud Flower",stage:"Grand Artique",time:"5:15p–6:30p",spotify:"https://open.spotify.com/search/Loud%20Flower"},
+    {id:"t11",name:"Juan Travolta",stage:"Grand Artique",time:"3:15p–4:30p",spotify:"https://open.spotify.com/search/Juan%20Travolta%20DJ"},
+    {id:"t12",name:"Thugfucker",stage:"Junkyard",time:"12:30a–2:00a",spotify:"https://open.spotify.com/search/Thugfucker"},
+    {id:"t13",name:"Nico Moon",stage:"Junkyard",time:"11:00p–12:30a",spotify:"https://open.spotify.com/search/Nico%20Moon"},
+    {id:"t14",name:"Planet Rolly",stage:"Junkyard",time:"9:30p–11:00p",spotify:"https://open.spotify.com/search/Planet%20Rolly"},
+    {id:"t15",name:"Enzo Muro",stage:"Junkyard",time:"8:00p–9:30p",spotify:"https://open.spotify.com/search/Enzo%20Muro"},
+    {id:"t16",name:"bawab",stage:"Junkyard",time:"6:30p–8:00p",spotify:"https://open.spotify.com/search/bawab"},
+    {id:"t17",name:"Tyler Chase",stage:"Junkyard",time:"5:00p–6:30p",spotify:"https://open.spotify.com/search/Tyler%20Chase%20DJ"},
+    {id:"t18",name:"POLK",stage:"Junkyard",time:"3:30p–5:00p",spotify:"https://open.spotify.com/search/POLK%20DJ"},
+    {id:"t19",name:"Bret Wallace",stage:"Junkyard",time:"2:00p–3:30p",spotify:"https://open.spotify.com/search/Bret%20Wallace"},
+    {id:"t20",name:"PEPOFIT",stage:"Junkyard",time:"12:00p–2:00p",spotify:"https://open.spotify.com/search/PEPOFIT"},
+    {id:"t21",name:"SURPRISE",stage:"Stacks",time:"2:30a–4:00a",spotify:"https://open.spotify.com/search/surprise"},
+    {id:"t22",name:"Mr. Carmack (Team Supreme)",stage:"Stacks",time:"1:00a–2:30a",spotify:"https://open.spotify.com/search/Mr.%20Carmack"},
+    {id:"t23",name:"Great Dane (Team Supreme)",stage:"Stacks",time:"11:30p–1:00a",spotify:"https://open.spotify.com/search/Great%20Dane%20DJ"},
+    {id:"t24",name:"Mr. Carmack b2b Promnite",stage:"Stacks",time:"10:15p–11:30p",spotify:"https://open.spotify.com/search/Promnite"},
+    {id:"t25",name:"dot (Team Supreme)",stage:"Stacks",time:"9:00p–10:15p",spotify:"https://open.spotify.com/search/dot%20DJ"},
+    {id:"t26",name:"Pangea Sound",stage:"Stacks",time:"7:45p–9:00p",spotify:"https://open.spotify.com/search/Pangea%20Sound"},
+    {id:"t27",name:"Jiqui",stage:"Stacks",time:"6:30p–7:45p",spotify:"https://open.spotify.com/search/Jiqui"},
+    {id:"t28",name:"BROTHEL.",stage:"Stacks",time:"5:15p–6:30p",spotify:"https://open.spotify.com/search/BROTHEL"},
+    {id:"t29",name:"Kumarion",stage:"Stacks",time:"4:00p–5:15p",spotify:"https://open.spotify.com/search/Kumarion"},
+    {id:"t30",name:"Austeria",stage:"Stacks",time:"2:45p–4:00p",spotify:"https://open.spotify.com/search/Austeria"},
+    {id:"t31",name:"Schmux",stage:"Stacks",time:"1:30p–2:45p",spotify:"https://open.spotify.com/search/Schmux"},
+    {id:"t32",name:"Yoko",stage:"Stacks",time:"12:00p–1:30p",spotify:"https://open.spotify.com/search/Yoko%20DJ"},
+    {id:"t33",name:"CQUESTT",stage:"Crossroads",time:"3:00a–4:00a",spotify:"https://open.spotify.com/search/CQUESTT"},
+    {id:"t34",name:"DJ Nico",stage:"Crossroads",time:"2:00a–3:00a",spotify:"https://open.spotify.com/search/DJ%20Nico"},
+    {id:"t35",name:"Zack Fox",stage:"Crossroads",time:"1:00a–2:00a",spotify:"https://open.spotify.com/search/Zack%20Fox"},
+    {id:"t36",name:"Armana Khan",stage:"Crossroads",time:"12:00a–1:00a",spotify:"https://open.spotify.com/search/Armana%20Khan"},
+    {id:"t37",name:"NANOOS",stage:"Crossroads",time:"11:00p–12:00a",spotify:"https://open.spotify.com/search/NANOOS"},
+    {id:"t38",name:"Chrysalis (Baile World)",stage:"Crossroads",time:"10:00p–11:00p",spotify:"https://open.spotify.com/search/Chrysalis%20DJ"},
+    {id:"t39",name:"Mr. Wu",stage:"Moon Room",time:"2:05a–4:00a",spotify:"https://open.spotify.com/search/Mr.%20Wu%20DJ"},
+    {id:"t40",name:"Little Dinosaur",stage:"Moon Room",time:"12:20a–2:05a",spotify:"https://open.spotify.com/search/Little%20Dinosaur%20DJ"},
+    {id:"t41",name:"Dylalien",stage:"Moon Room",time:"10:30p–12:20a",spotify:"https://open.spotify.com/search/Dylalien"},
+  ]},
+  {id:"fri",label:"FRI",date:"May 22",stages:["Lightning", "Thunder", "Woogie", "Grand Artique", "Junkyard", "Stacks", "Crossroads", "Moon Room"],artists:[
+    {id:"f1",name:"Mau P",stage:"Lightning",time:"12:00a–2:00a",spotify:"https://open.spotify.com/search/Mau%20P"},
+    {id:"f2",name:"Overmono",stage:"Lightning",time:"10:30p–11:30p",spotify:"https://open.spotify.com/search/Overmono"},
+    {id:"f3",name:"Noga Erez",stage:"Lightning",time:"9:15p–10:15p",spotify:"https://open.spotify.com/search/Noga%20Erez"},
+    {id:"f4",name:"Midnight Generation",stage:"Lightning",time:"7:45p–9:00p",spotify:"https://open.spotify.com/search/Midnight%20Generation"},
+    {id:"f5",name:"KAMAUU",stage:"Lightning",time:"6:15p–7:15p",spotify:"https://open.spotify.com/artist/5ue8Z5w3uBorBDZtwhsRy2"},
+    {id:"f6",name:"Zeds Dead",stage:"Thunder",time:"11:20p–12:35a",spotify:"https://open.spotify.com/search/Zeds%20Dead"},
+    {id:"f7",name:"Ivy Lab",stage:"Thunder",time:"9:50p–11:05p",spotify:"https://open.spotify.com/search/Ivy%20Lab"},
+    {id:"f8",name:"MPH",stage:"Thunder",time:"8:35p–9:50p",spotify:"https://open.spotify.com/search/MPH%20DJ"},
+    {id:"f9",name:"Flava D",stage:"Thunder",time:"7:20p–8:35p",spotify:"https://open.spotify.com/search/Flava%20D"},
+    {id:"f10",name:"borne",stage:"Thunder",time:"6:05p–7:20p",spotify:"https://open.spotify.com/search/borne%20DJ"},
+    {id:"f11",name:"Casey Club",stage:"Thunder",time:"4:50p–6:05p",spotify:"https://open.spotify.com/search/Casey%20Club"},
+    {id:"f12",name:"Donna Dada",stage:"Thunder",time:"3:35p–4:50p",spotify:"https://open.spotify.com/search/Donna%20Dada"},
+    {id:"f13",name:"Mindex",stage:"Thunder",time:"2:20p–3:35p",spotify:"https://open.spotify.com/search/Mindex"},
+    {id:"f14",name:"Bass Temple",stage:"Thunder",time:"1:05p–2:20p",spotify:"https://open.spotify.com/search/Bass%20Temple"},
+    {id:"f15",name:"ALLEYCVT",stage:"Thunder",time:"12:45a–2:00a",spotify:"https://open.spotify.com/search/ALLEYCVT"},
+    {id:"f16",name:"Sara Landry",stage:"Woogie",time:"12:00a–2:00a",spotify:"https://open.spotify.com/search/Sara%20Landry"},
+    {id:"f17",name:"Effy",stage:"Woogie",time:"10:00p–12:00a",spotify:"https://open.spotify.com/search/Effy%20DJ"},
+    {id:"f18",name:"DJ HEARTSTRING",stage:"Woogie",time:"8:00p–10:00p",spotify:"https://open.spotify.com/search/DJ%20Heartstring"},
+    {id:"f19",name:"Lee Burridge",stage:"Woogie",time:"5:30p–8:00p",spotify:"https://open.spotify.com/search/Lee%20Burridge"},
+    {id:"f20",name:"EREZ",stage:"Woogie",time:"2:00p–4:00p",spotify:"https://open.spotify.com/search/EREZ%20DJ"},
+    {id:"f21",name:"Amira",stage:"Woogie",time:"12:00p–2:00p",spotify:"https://open.spotify.com/search/Amira%20DJ"},
+    {id:"f22",name:"Brunch Life ft. 200 Channels",stage:"Grand Artique",time:"11:30p–12:45a",spotify:"https://open.spotify.com/search/200%20Channels"},
+    {id:"f23",name:"Mikey Lion",stage:"Grand Artique",time:"10:15p–11:30p",spotify:"https://open.spotify.com/search/Mikey%20Lion"},
+    {id:"f24",name:"Logie",stage:"Grand Artique",time:"9:00p–10:15p",spotify:"https://open.spotify.com/search/Logie%20DJ"},
+    {id:"f25",name:"SUIKA T",stage:"Grand Artique",time:"7:15p–8:30p",spotify:"https://open.spotify.com/search/SUIKA%20T"},
+    {id:"f26",name:"Roses Pawn Shop",stage:"Grand Artique",time:"5:15p–6:30p",spotify:"https://open.spotify.com/search/Roses%20Pawn%20Shop"},
+    {id:"f27",name:"Lily Fangz & Joaquin Sun",stage:"Grand Artique",time:"3:15p–4:30p",spotify:"https://open.spotify.com/search/Lily%20Fangz"},
+    {id:"f28",name:"Public Works Dept",stage:"Grand Artique",time:"1:30p–2:45p",spotify:"https://open.spotify.com/search/Public%20Works%20Dept"},
+    {id:"f29",name:"Paperwater",stage:"Grand Artique",time:"2:30a–4:00a",spotify:"https://open.spotify.com/search/Paperwater%20DJ"},
+    {id:"f30",name:"GiZ",stage:"Junkyard",time:"2:30a–4:00a",spotify:"https://open.spotify.com/search/GiZ%20DJ"},
+    {id:"f31",name:"Colored Craig",stage:"Junkyard",time:"1:00a–2:30a",spotify:"https://open.spotify.com/search/Colored%20Craig"},
+    {id:"f32",name:"Juliet Mendoza",stage:"Junkyard",time:"11:30p–1:00a",spotify:"https://open.spotify.com/search/Juliet%20Mendoza"},
+    {id:"f33",name:"Heidi Lawden",stage:"Junkyard",time:"10:00p–11:30p",spotify:"https://open.spotify.com/search/Heidi%20Lawden"},
+    {id:"f34",name:"DJ Kerry",stage:"Junkyard",time:"8:30p–10:00p",spotify:"https://open.spotify.com/search/DJ%20Kerry"},
+    {id:"f35",name:"BRIDGE",stage:"Junkyard",time:"7:00p–8:30p",spotify:"https://open.spotify.com/search/BRIDGE%20DJ"},
+    {id:"f36",name:"SAAND",stage:"Junkyard",time:"5:30p–7:00p",spotify:"https://open.spotify.com/search/SAAND"},
+    {id:"f37",name:"Raffi Kadafi",stage:"Junkyard",time:"4:00p–5:30p",spotify:"https://open.spotify.com/search/Raffi%20Kadafi"},
+    {id:"f38",name:"Elliot DeHoyos b2b Eddie Salavati",stage:"Junkyard",time:"2:00p–4:00p",spotify:"https://open.spotify.com/search/Elliot%20DeHoyos"},
+    {id:"f39",name:"Coco Buckk",stage:"Junkyard",time:"12:00p–2:00p",spotify:"https://open.spotify.com/search/Coco%20Buckk"},
+    {id:"f40",name:"A Hundred Drums",stage:"Stacks",time:"1:00a–2:00a",spotify:"https://open.spotify.com/search/A%20Hundred%20Drums"},
+    {id:"f41",name:"Buku",stage:"Stacks",time:"12:00a–1:00a",spotify:"https://open.spotify.com/search/Buku%20DJ"},
+    {id:"f42",name:"ATTYA",stage:"Stacks",time:"11:00p–12:00a",spotify:"https://open.spotify.com/search/ATTYA"},
+    {id:"f43",name:"Mary Droppinz",stage:"Stacks",time:"10:00p–11:00p",spotify:"https://open.spotify.com/search/Mary%20Droppinz"},
+    {id:"f44",name:"Mfinity",stage:"Stacks",time:"9:00p–10:00p",spotify:"https://open.spotify.com/search/Mfinity"},
+    {id:"f45",name:"sixfour",stage:"Stacks",time:"8:00p–9:00p",spotify:"https://open.spotify.com/search/sixfour%20DJ"},
+    {id:"f46",name:"jordnmoody",stage:"Stacks",time:"6:00p–7:00p",spotify:"https://open.spotify.com/search/jordnmoody"},
+    {id:"f47",name:"rSUN",stage:"Stacks",time:"5:00p–6:00p",spotify:"https://open.spotify.com/search/rSUN%20DJ"},
+    {id:"f48",name:"AURACLE",stage:"Stacks",time:"4:00p–5:00p",spotify:"https://open.spotify.com/search/AURACLE%20DJ"},
+    {id:"f49",name:"O\'Snap",stage:"Stacks",time:"2:00p–3:00p",spotify:"https://open.spotify.com/search/O%27Snap%20DJ"},
+    {id:"f50",name:"Cam Steen",stage:"Stacks",time:"1:00p–2:00p",spotify:"https://open.spotify.com/search/Cam%20Steen"},
+    {id:"f51",name:"Keramel",stage:"Stacks",time:"12:00p–1:00p",spotify:"https://open.spotify.com/search/Keramel%20DJ"},
+    {id:"f52",name:"Bachelors of Science",stage:"Crossroads",time:"2:00a–3:00a",spotify:"https://open.spotify.com/search/Bachelors%20of%20Science"},
+    {id:"f53",name:"Justin Hawkes",stage:"Crossroads",time:"1:00a–2:00a",spotify:"https://open.spotify.com/search/Justin%20Hawkes"},
+    {id:"f54",name:"WHYS",stage:"Crossroads",time:"12:15a–1:00a",spotify:"https://open.spotify.com/search/WHYS%20DJ"},
+    {id:"f55",name:"MACHETE",stage:"Crossroads",time:"11:15p–12:15a",spotify:"https://open.spotify.com/search/MACHETE%20DJ"},
+    {id:"f56",name:"Scooba",stage:"Crossroads",time:"10:30p–11:15p",spotify:"https://open.spotify.com/search/Scooba%20DJ"},
+    {id:"f57",name:"Drone",stage:"Crossroads",time:"9:45p–10:30p",spotify:"https://open.spotify.com/search/Drone%20DJ"},
+    {id:"f58",name:"DJ Clutch w/ MC Woes",stage:"Crossroads",time:"7:00p–10:00p",spotify:"https://open.spotify.com/search/DJ%20Clutch"},
+    {id:"f59",name:"comisar",stage:"Crossroads",time:"3:00p–4:00p",spotify:"https://open.spotify.com/search/comisar"},
+    {id:"f60",name:"Sol Elicio",stage:"Moon Room",time:"4:00a–5:30a",spotify:"https://open.spotify.com/search/Sol%20Elicio"},
+    {id:"f61",name:"BiiSHoP",stage:"Moon Room",time:"2:10a–4:00a",spotify:"https://open.spotify.com/search/BiiSHoP"},
+    {id:"f62",name:"ZZ",stage:"Moon Room",time:"12:20a–2:10a",spotify:"https://open.spotify.com/search/ZZ%20DJ"},
+    {id:"f63",name:"Bobby Saint",stage:"Moon Room",time:"10:30p–12:20a",spotify:"https://open.spotify.com/search/Bobby%20Saint"},
+  ]},
+  {id:"sat",label:"SAT",date:"May 23",stages:["Lightning", "Thunder", "Woogie", "Grand Artique", "Junkyard", "Stacks", "Crossroads", "Moon Room"],artists:[
+    {id:"s1",name:"Chase & Status",stage:"Lightning",time:"12:30a–2:00a",spotify:"https://open.spotify.com/artist/3jNkaOXasoc7RsxdchvEVq"},
+    {id:"s2",name:"Barry Can\'t Swim",stage:"Lightning",time:"10:45p–12:15a",spotify:"https://open.spotify.com/search/Barry%20Cant%20Swim"},
+    {id:"s3",name:"Nia Archives",stage:"Lightning",time:"9:30p–10:30p",spotify:"https://open.spotify.com/search/Nia%20Archives"},
+    {id:"s4",name:"DJ Trixie Mattel",stage:"Lightning",time:"8:15p–9:15p",spotify:"https://open.spotify.com/search/Trixie%20Mattel"},
+    {id:"s5",name:"RM47",stage:"Lightning",time:"7:00p–8:00p",spotify:"https://open.spotify.com/search/RM47"},
+    {id:"s6",name:"Daily Bread",stage:"Thunder",time:"12:45a–2:00a",spotify:"https://open.spotify.com/search/Daily%20Bread%20DJ"},
+    {id:"s7",name:"INZO",stage:"Thunder",time:"11:15p–12:30a",spotify:"https://open.spotify.com/search/INZO"},
+    {id:"s8",name:"Madam X",stage:"Thunder",time:"10:00p–11:15p",spotify:"https://open.spotify.com/search/Madam%20X%20DJ"},
+    {id:"s9",name:"Oppidan",stage:"Thunder",time:"8:45p–10:00p",spotify:"https://open.spotify.com/search/Oppidan"},
+    {id:"s10",name:"Elephant Heart",stage:"Thunder",time:"7:25p–8:40p",spotify:"https://open.spotify.com/search/Elephant%20Heart%20DJ"},
+    {id:"s11",name:"Main Phase",stage:"Thunder",time:"6:00p–7:15p",spotify:"https://open.spotify.com/search/Main%20Phase"},
+    {id:"s12",name:"Justin Hawkes",stage:"Thunder",time:"4:40p–5:55p",spotify:"https://open.spotify.com/search/Justin%20Hawkes"},
+    {id:"s13",name:"Bianca Maieli",stage:"Thunder",time:"3:25p–4:40p",spotify:"https://open.spotify.com/search/Bianca%20Maieli"},
+    {id:"s14",name:"Clearcast",stage:"Thunder",time:"2:10p–3:25p",spotify:"https://open.spotify.com/search/Clearcast"},
+    {id:"s15",name:"Cocoa Crescendo",stage:"Thunder",time:"1:00p–2:10p",spotify:"https://open.spotify.com/search/Cocoa%20Crescendo"},
+    {id:"s16",name:"Maceo Plex",stage:"Woogie",time:"12:00a–2:00a",spotify:"https://open.spotify.com/search/Maceo%20Plex"},
+    {id:"s17",name:"AYYBO",stage:"Woogie",time:"10:00p–12:00a",spotify:"https://open.spotify.com/search/AYYBO"},
+    {id:"s18",name:"J. Worra",stage:"Woogie",time:"8:00p–10:00p",spotify:"https://open.spotify.com/search/J.%20Worra"},
+    {id:"s19",name:"Marsh",stage:"Woogie",time:"6:00p–8:00p",spotify:"https://open.spotify.com/search/Marsh%20DJ"},
+    {id:"s20",name:"Ladies of Leisure",stage:"Woogie",time:"4:00p–6:00p",spotify:"https://open.spotify.com/search/Ladies%20of%20Leisure"},
+    {id:"s21",name:"Brunello",stage:"Woogie",time:"2:00p–4:00p",spotify:"https://open.spotify.com/search/Brunello%20DJ"},
+    {id:"s22",name:"RICHE",stage:"Woogie",time:"12:00p–2:00p",spotify:"https://open.spotify.com/search/RICHE%20DJ"},
+    {id:"s23",name:"Maria Tambien",stage:"Grand Artique",time:"1:20a–2:35a",spotify:"https://open.spotify.com/search/Maria%20Tambien"},
+    {id:"s24",name:"KAIPORA",stage:"Grand Artique",time:"10:45p–12:00a",spotify:"https://open.spotify.com/search/KAIPORA"},
+    {id:"s25",name:"Brittany Quidang – The Voyager",stage:"Grand Artique",time:"9:45p–10:15p",spotify:"https://open.spotify.com/search/Brittany%20Quidang"},
+    {id:"s26",name:"Tone Ranger",stage:"Grand Artique",time:"8:00p–9:15p",spotify:"https://open.spotify.com/search/Tone%20Ranger"},
+    {id:"s27",name:"Anna Ash",stage:"Grand Artique",time:"6:15p–7:30p",spotify:"https://open.spotify.com/search/Anna%20Ash"},
+    {id:"s28",name:"Afromantis Brunch",stage:"Grand Artique",time:"3:00p–5:00p",spotify:"https://open.spotify.com/search/Afromantis"},
+    {id:"s29",name:"Fanny Lynn Federoff",stage:"Grand Artique",time:"1:00p–2:00p",spotify:"https://open.spotify.com/search/Fanny%20Lynn%20Federoff"},
+    {id:"s30",name:"Elephant Heart",stage:"Grand Artique",time:"2:45a–4:00a",spotify:"https://open.spotify.com/search/Elephant%20Heart%20DJ"},
+    {id:"s31",name:"BASEBALL",stage:"Grand Artique",time:"5:15p–6:00p",spotify:"https://open.spotify.com/search/BASEBALL%20DJ"},
+    {id:"s32",name:"atish",stage:"Junkyard",time:"11:30p–1:00a",spotify:"https://open.spotify.com/search/atish"},
+    {id:"s33",name:"SAQIB",stage:"Junkyard",time:"10:00p–11:30p",spotify:"https://open.spotify.com/search/SAQIB"},
+    {id:"s34",name:"MNTRA",stage:"Junkyard",time:"8:30p–10:00p",spotify:"https://open.spotify.com/search/MNTRA"},
+    {id:"s35",name:"HOVR",stage:"Junkyard",time:"7:00p–8:30p",spotify:"https://open.spotify.com/search/HOVR%20DJ"},
+    {id:"s36",name:"Little Dinosaur",stage:"Junkyard",time:"5:30p–7:00p",spotify:"https://open.spotify.com/search/Little%20Dinosaur%20DJ"},
+    {id:"s37",name:"NII TEI",stage:"Junkyard",time:"4:00p–5:30p",spotify:"https://open.spotify.com/search/NII%20TEI"},
+    {id:"s38",name:"Bird Lady",stage:"Junkyard",time:"2:30p–4:00p",spotify:"https://open.spotify.com/search/Bird%20Lady%20DJ"},
+    {id:"s39",name:"Derek Hena",stage:"Junkyard",time:"12:30p–2:30p",spotify:"https://open.spotify.com/search/Derek%20Hena"},
+    {id:"s40",name:"Desert Hearts",stage:"Junkyard",time:"1:00a–2:30a",spotify:"https://open.spotify.com/search/Desert%20Hearts"},
+    {id:"s41",name:"Minnesota",stage:"Stacks",time:"3:00a–4:00a",spotify:"https://open.spotify.com/search/Minnesota%20DJ"},
+    {id:"s42",name:"The Glitch Mob",stage:"Stacks",time:"2:00a–3:00a",spotify:"https://open.spotify.com/search/The%20Glitch%20Mob"},
+    {id:"s43",name:"Lumasi",stage:"Stacks",time:"1:00a–2:00a",spotify:"https://open.spotify.com/search/Lumasi"},
+    {id:"s44",name:"Saka",stage:"Stacks",time:"12:00a–1:00a",spotify:"https://open.spotify.com/search/Saka%20DJ"},
+    {id:"s45",name:"SATURNA",stage:"Stacks",time:"10:00p–11:00p",spotify:"https://open.spotify.com/search/SATURNA"},
+    {id:"s46",name:"CONTRA",stage:"Stacks",time:"9:00p–10:00p",spotify:"https://open.spotify.com/search/CONTRA%20DJ"},
+    {id:"s47",name:"pheel.",stage:"Stacks",time:"8:00p–9:00p",spotify:"https://open.spotify.com/search/pheel"},
+    {id:"s48",name:"Thought Process",stage:"Stacks",time:"7:00p–8:00p",spotify:"https://open.spotify.com/search/Thought%20Process%20DJ"},
+    {id:"s49",name:"parkbreezy",stage:"Stacks",time:"6:00p–7:00p",spotify:"https://open.spotify.com/search/parkbreezy"},
+    {id:"s50",name:"Alex Unger",stage:"Stacks",time:"4:00p–5:00p",spotify:"https://open.spotify.com/search/Alex%20Unger%20DJ"},
+    {id:"s51",name:"Mr. Carmack",stage:"Stacks",time:"3:00p–4:00p",spotify:"https://open.spotify.com/search/Mr.%20Carmack"},
+    {id:"s52",name:"CANNABA55",stage:"Stacks",time:"2:00p–3:00p",spotify:"https://open.spotify.com/search/CANNABA55"},
+    {id:"s53",name:"Alex Moon",stage:"Stacks",time:"1:00p–2:00p",spotify:"https://open.spotify.com/search/Alex%20Moon%20DJ"},
+    {id:"s54",name:"GunthertheFool",stage:"Stacks",time:"12:00p–1:00p",spotify:"https://open.spotify.com/search/GunthertheFool"},
+    {id:"s55",name:"TF Marz (ALL:LO)",stage:"Crossroads",time:"5:00p–6:00p",spotify:"https://open.spotify.com/artist/5ue8Z5w3uBorBDZtwhsRy2"},
+    {id:"s56",name:"Ariel Zetina",stage:"Crossroads",time:"2:30a–4:00a",spotify:"https://open.spotify.com/search/Ariel%20Zetina"},
+    {id:"s57",name:"Madam X",stage:"Crossroads",time:"1:30a–2:30a",spotify:"https://open.spotify.com/search/Madam%20X%20DJ"},
+    {id:"s58",name:"FIFI",stage:"Crossroads",time:"12:30a–1:30a",spotify:"https://open.spotify.com/search/FIFI%20DJ"},
+    {id:"s59",name:"Kerri Colby (DJ)",stage:"Crossroads",time:"11:30p–12:30a",spotify:"https://open.spotify.com/search/Kerri%20Colby"},
+    {id:"s60",name:"Goddollars b2b Paradise",stage:"Crossroads",time:"10:00p–11:30p",spotify:"https://open.spotify.com/search/Goddollars"},
+    {id:"s61",name:"A Club Called Rhonda",stage:"Crossroads",time:"7:00p–10:00p",spotify:"https://open.spotify.com/search/A%20Club%20Called%20Rhonda"},
+    {id:"s62",name:"Elijah Badua",stage:"Moon Room",time:"4:00a–5:30a",spotify:"https://open.spotify.com/search/Elijah%20Badua"},
+    {id:"s63",name:"Alex Moon b2b Barisone",stage:"Moon Room",time:"2:00a–4:00a",spotify:"https://open.spotify.com/search/Alex%20Moon%20DJ"},
+    {id:"s64",name:"Passionfruit b2b Samgelis",stage:"Moon Room",time:"12:15a–2:00a",spotify:"https://open.spotify.com/search/Passionfruit%20DJ"},
+    {id:"s65",name:"1-800 GIRLS",stage:"Moon Room",time:"10:30p–12:15a",spotify:"https://open.spotify.com/search/1-800%20GIRLS"},
+  ]},
+  {id:"sun",label:"SUN",date:"May 24",stages:["Lightning", "Thunder", "Woogie", "Grand Artique", "Junkyard", "Stacks", "Crossroads", "Moon Room"],artists:[
+    {id:"su1",name:"Empire of the Sun",stage:"Lightning",time:"12:30a–2:00a",spotify:"https://open.spotify.com/search/Empire%20of%20the%20Sun"},
+    {id:"su2",name:"Mochakk",stage:"Lightning",time:"10:15p–11:45p",spotify:"https://open.spotify.com/search/Mochakk"},
+    {id:"su3",name:"Tinashe",stage:"Lightning",time:"9:00p–10:00p",spotify:"https://open.spotify.com/search/Tinashe"},
+    {id:"su4",name:"Haute & Freddy",stage:"Lightning",time:"7:45p–8:45p",spotify:"https://open.spotify.com/search/Haute%20%26%20Freddy"},
+    {id:"su5",name:"Bigger Than Us",stage:"Lightning",time:"6:15p–7:30p",spotify:"https://open.spotify.com/search/Bigger%20Than%20Us"},
+    {id:"su6",name:"DIMENSION",stage:"Thunder",time:"12:45a–2:00a",spotify:"https://open.spotify.com/search/DIMENSION%20DJ"},
+    {id:"su7",name:"Of The Trees",stage:"Thunder",time:"11:20p–12:35a",spotify:"https://open.spotify.com/search/Of%20The%20Trees"},
+    {id:"su8",name:"jigitz",stage:"Thunder",time:"9:50p–11:05p",spotify:"https://open.spotify.com/artist/7sfn5Z6ItzDkOF9cYzxWPZ"},
+    {id:"su9",name:"Conducta",stage:"Thunder",time:"8:35p–9:50p",spotify:"https://open.spotify.com/search/Conducta"},
+    {id:"su10",name:"Introspekt",stage:"Thunder",time:"7:20p–8:35p",spotify:"https://open.spotify.com/search/Introspekt"},
+    {id:"su11",name:"1-800 GIRLS",stage:"Thunder",time:"6:05p–7:20p",spotify:"https://open.spotify.com/search/1-800%20GIRLS"},
+    {id:"su12",name:"Cartridge",stage:"Thunder",time:"4:50p–6:05p",spotify:"https://open.spotify.com/search/Cartridge%20DJ"},
+    {id:"su13",name:"The Silk Road",stage:"Thunder",time:"3:35p–4:50p",spotify:"https://open.spotify.com/search/Silk%20Road%20DJ"},
+    {id:"su14",name:"Jesse Brede",stage:"Thunder",time:"2:20p–3:35p",spotify:"https://open.spotify.com/search/Jesse%20Brede"},
+    {id:"su15",name:"Avalon Emerson",stage:"Woogie",time:"12:00a–2:00a",spotify:"https://open.spotify.com/search/Avalon%20Emerson"},
+    {id:"su16",name:"Tripolism",stage:"Woogie",time:"10:00p–12:00a",spotify:"https://open.spotify.com/search/Tripolism"},
+    {id:"su17",name:"Jayda G",stage:"Woogie",time:"8:00p–10:00p",spotify:"https://open.spotify.com/search/Jayda%20G"},
+    {id:"su18",name:"Rodriguez Jr.",stage:"Woogie",time:"5:55p–7:55p",spotify:"https://open.spotify.com/search/Rodriguez%20Jr"},
+    {id:"su19",name:"JAMIIE",stage:"Woogie",time:"3:50p–5:50p",spotify:"https://open.spotify.com/search/JAMIIE"},
+    {id:"su20",name:"SWEET LIKE CHOCOLATE",stage:"Woogie",time:"1:55p–3:50p",spotify:"https://open.spotify.com/search/Sweet%20Like%20Chocolate%20DJ"},
+    {id:"su21",name:"Pickles",stage:"Woogie",time:"12:00p–1:55p",spotify:"https://open.spotify.com/search/Pickles%20DJ"},
+    {id:"su22",name:"Red Giant Project",stage:"Grand Artique",time:"2:45a–4:00a",spotify:"https://open.spotify.com/search/Red%20Giant%20Project"},
+    {id:"su23",name:"Henry Pope ft. Alana Hil et al.",stage:"Grand Artique",time:"1:20a–2:35a",spotify:"https://open.spotify.com/search/Henry%20Pope%20DJ"},
+    {id:"su24",name:"PlexusPlay",stage:"Grand Artique",time:"10:30p–11:45p",spotify:"https://open.spotify.com/search/PlexusPlay"},
+    {id:"su25",name:"King Bubble",stage:"Grand Artique",time:"8:45p–10:00p",spotify:"https://open.spotify.com/search/King%20Bubble"},
+    {id:"su26",name:"Magulo",stage:"Grand Artique",time:"7:00p–8:15p",spotify:"https://open.spotify.com/search/Magulo"},
+    {id:"su27",name:"Grand Artique Talent Show",stage:"Grand Artique",time:"5:00p–6:30p",spotify:"https://open.spotify.com/search/Grand%20Artique"},
+    {id:"su28",name:"Devyn Brinsfield",stage:"Grand Artique",time:"3:15p–4:30p",spotify:"https://open.spotify.com/search/Devyn%20Brinsfield"},
+    {id:"su29",name:"The Wandering Menstruals",stage:"Grand Artique",time:"1:00p–2:15p",spotify:"https://open.spotify.com/search/Wandering%20Menstruals"},
+    {id:"su30",name:"Patricio",stage:"Junkyard",time:"2:00a–4:00a",spotify:"https://open.spotify.com/search/Patricio%20DJ"},
+    {id:"su31",name:"Soraya",stage:"Junkyard",time:"12:30a–2:00a",spotify:"https://open.spotify.com/search/Soraya%20DJ"},
+    {id:"su32",name:"Maria Nocheydia",stage:"Junkyard",time:"11:00p–12:30a",spotify:"https://open.spotify.com/search/Maria%20Nocheydia"},
+    {id:"su33",name:"ATHENA",stage:"Junkyard",time:"9:45p–11:00p",spotify:"https://open.spotify.com/search/ATHENA%20DJ"},
+    {id:"su34",name:"Matt Caines",stage:"Junkyard",time:"6:30p–8:00p",spotify:"https://open.spotify.com/search/Matt%20Caines"},
+    {id:"su35",name:"Shawni",stage:"Junkyard",time:"5:15p–6:30p",spotify:"https://open.spotify.com/search/Shawni"},
+    {id:"su36",name:"Miss Javi",stage:"Junkyard",time:"4:00p–5:15p",spotify:"https://open.spotify.com/search/Miss%20Javi"},
+    {id:"su37",name:"Cameron Angeli",stage:"Junkyard",time:"2:45p–4:00p",spotify:"https://open.spotify.com/search/Cameron%20Angeli"},
+    {id:"su38",name:"Malcom Brown",stage:"Junkyard",time:"1:30p–2:45p",spotify:"https://open.spotify.com/search/Malcom%20Brown"},
+    {id:"su39",name:"Sam Cypher",stage:"Junkyard",time:"12:00p–1:30p",spotify:"https://open.spotify.com/search/Sam%20Cypher"},
+    {id:"su40",name:"Nikita, the Wicked",stage:"Stacks",time:"1:00a–2:00a",spotify:"https://open.spotify.com/search/Nikita%20the%20Wicked"},
+    {id:"su41",name:"SweetTooth",stage:"Stacks",time:"11:45p–1:00a",spotify:"https://open.spotify.com/search/SweetTooth%20DJ"},
+    {id:"su42",name:"REAPER",stage:"Stacks",time:"10:15p–11:45p",spotify:"https://open.spotify.com/search/REAPER%20DJ"},
+    {id:"su43",name:"Reid Speed",stage:"Stacks",time:"9:15p–10:15p",spotify:"https://open.spotify.com/search/Reid%20Speed"},
+    {id:"su44",name:"Chmura",stage:"Stacks",time:"8:00p–9:15p",spotify:"https://open.spotify.com/search/Chmura"},
+    {id:"su45",name:"Don Jamal",stage:"Stacks",time:"6:45p–8:00p",spotify:"https://open.spotify.com/search/Don%20Jamal"},
+    {id:"su46",name:"Chief Jesta",stage:"Stacks",time:"4:15p–5:30p",spotify:"https://open.spotify.com/search/Chief%20Jesta"},
+    {id:"su47",name:"Phayla",stage:"Stacks",time:"3:00p–4:15p",spotify:"https://open.spotify.com/search/Phayla"},
+    {id:"su48",name:"Bad Girl Bailey",stage:"Stacks",time:"1:45p–3:00p",spotify:"https://open.spotify.com/search/Bad%20Girl%20Bailey"},
+    {id:"su49",name:"Just Neeks",stage:"Stacks",time:"12:00p–1:45p",spotify:"https://open.spotify.com/search/Just%20Neeks"},
+    {id:"su50",name:"Dr. Chaii",stage:"Crossroads",time:"3:00a–4:00a",spotify:"https://open.spotify.com/search/Dr.%20Chaii"},
+    {id:"su51",name:"Full Crate",stage:"Crossroads",time:"2:00a–3:00a",spotify:"https://open.spotify.com/search/Full%20Crate"},
+    {id:"su52",name:"Blaq Pages",stage:"Crossroads",time:"1:00a–2:00a",spotify:"https://open.spotify.com/search/Blaq%20Pages"},
+    {id:"su53",name:"Danni G",stage:"Crossroads",time:"11:45p–12:45a",spotify:"https://open.spotify.com/search/Danni%20G%20DJ"},
+    {id:"su54",name:"AndreasOne",stage:"Crossroads",time:"10:45p–11:45p",spotify:"https://open.spotify.com/search/AndreasOne"},
+    {id:"su55",name:"One Lovell",stage:"Crossroads",time:"9:50p–10:45p",spotify:"https://open.spotify.com/search/One%20Lovell"},
+    {id:"su56",name:"Cocoa Crescendo",stage:"Crossroads",time:"8:55p–9:50p",spotify:"https://open.spotify.com/search/Cocoa%20Crescendo"},
+    {id:"su57",name:"Amira",stage:"Crossroads",time:"8:00p–8:55p",spotify:"https://open.spotify.com/search/Amira%20DJ"},
+    {id:"su58",name:"Julianna Barwick",stage:"Moon Room",time:"2:15a–3:30a",spotify:"https://open.spotify.com/search/Julianna%20Barwick"},
+    {id:"su59",name:"Ben Darwish",stage:"Moon Room",time:"12:20a–2:15a",spotify:"https://open.spotify.com/search/Ben%20Darwish"},
+    {id:"su60",name:"Thugfucker: Greg\'s Mellow Trip",stage:"Moon Room",time:"10:30p–12:20a",spotify:"https://open.spotify.com/search/Thugfucker"},
+  ]},
+];
+
+
+// Attach meta to artists
+DAYS.forEach(function(d){
+  d.artists.forEach(function(a){
+    var m=META[a.id];
+    if(m){a.genres=m[0];a.desc=m[1];}
+  });
+});
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+var db={users:{},picks:{}};
+var myId=localStorage.getItem("lib26_uid");
+var selEmoji="🌊";
+var activeDay="fri";
+var curArtist=null;
+
+// ── STORAGE ───────────────────────────────────────────────────────────────────
+function loadLocal(){
+  try{var s=localStorage.getItem("lib26_db");if(s)db=JSON.parse(s);}catch(e){}
+  if(!db.users)db.users={};
+  if(!db.picks)db.picks={};
+}
+function saveLocal(){
+  localStorage.setItem("lib26_db",JSON.stringify(db));
+}
+async function saveDB(){
+  saveLocal();
+  if(!fbDb||!fbUpd)return;
+  try{await fbUpd(fbRef("lib26"),db);setSyncOK(true);}catch(e){setSyncOK(false);}
+}
+function setSyncOK(ok){
+  document.getElementById("syncDot").className="sdot"+(ok?" ok":"");
+  document.getElementById("syncTxt").textContent=ok?"Live":"Local";
+}
+
+// ── FIREBASE (background, non-blocking) ──────────────────────────────────────
+function initFB(){
+  if(!FB_ON)return;
+  import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js").then(function(m){
+    return import("https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js").then(function(db_m){
+      var app=m.initializeApp(FBC);
+      fbDb=db_m.getDatabase(app);
+      fbRef=function(p){return db_m.ref(fbDb,p);};
+      fbOnVal=db_m.onValue;
+      fbUpd=db_m.update;
+      db_m.get(fbRef("lib26")).then(function(snap){
+        if(snap.exists())db=snap.val();
+        if(!db.users)db.users={};
+        if(!db.picks)db.picks={};
+        renderGrid();
+        renderSquadPreview();
+        db_m.onValue(fbRef("lib26"),function(snap){
+          if(snap.exists())db=snap.val();
+          if(!db.users)db.users={};
+          if(!db.picks)db.picks={};
+          renderGrid();
+        });
+        setSyncOK(true);
+      });
+    });
+  }).catch(function(){setSyncOK(false);});
+}
+
+// ── BOOT ──────────────────────────────────────────────────────────────────────
+window.addEventListener("DOMContentLoaded",function(){
+  loadLocal();
+  document.getElementById("loading").style.display="none";
+  if(myId&&db.users&&db.users[myId]){
+    goMain();
+  } else {
+    myId=null;
+    localStorage.removeItem("lib26_uid");
+    showScreen("splash");
+    initSplash();
+  }
+  initFB();
+});
+
+function showScreen(id){
+  document.querySelectorAll(".screen").forEach(function(s){s.classList.remove("active");});
+  document.getElementById(id).classList.add("active");
+}
+function esc(s){
+  return String(s).replace(/[&<>"']/g,function(c){
+    return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];
+  });
+}
+
+// ── SPLASH ────────────────────────────────────────────────────────────────────
+function initSplash(){
+  var grid=document.getElementById("emojiGrid");
+  grid.innerHTML="";
+  EMOJIS.forEach(function(e){
+    var btn=document.createElement("button");
+    btn.className="ebtn"+(e===selEmoji?" sel":"");
+    btn.textContent=e;
+    btn.onclick=function(){
+      selEmoji=e;
+      grid.querySelectorAll(".ebtn").forEach(function(b){b.classList.remove("sel");});
+      btn.classList.add("sel");
+      updateJoinBtn();
+    };
+    grid.appendChild(btn);
+  });
+  var inp=document.getElementById("nameInput");
+  inp.addEventListener("input",updateJoinBtn);
+  inp.addEventListener("keydown",function(e){if(e.key==="Enter")doJoin();});
+  document.getElementById("joinBtn").onclick=doJoin;
+  updateJoinBtn();
+  renderSquadPreview();
+}
+function updateJoinBtn(){
+  var name=document.getElementById("nameInput").value.trim();
+  var btn=document.getElementById("joinBtn");
+  btn.disabled=!name;
+  btn.textContent=name?selEmoji+" Let's go, "+name+"!":"Enter your name…";
+}
+function renderSquadPreview(){
+  var users=Object.values(db.users||{});
+  var el=document.getElementById("sqPrev");
+  if(!users.length){el.style.display="none";return;}
+  el.style.display="block";
+  document.getElementById("sqChips").innerHTML=users.map(function(u){
+    return '<div class="sqchip"><span>'+u.emoji+'</span><span>'+esc(u.name)+'</span></div>';
+  }).join("");
+}
+async function doJoin(){
+  var name=document.getElementById("nameInput").value.trim();
+  if(!name)return;
+  if(!myId)myId="u"+Date.now().toString(36);
+  if(!db.users)db.users={};
+  if(!db.picks)db.picks={};
+  db.users[myId]={name:name,emoji:selEmoji};
+  if(!db.picks[myId])db.picks[myId]={};
+  localStorage.setItem("lib26_uid",myId);
+  await saveDB();
+  goMain();
+}
+
+// ── MAIN ──────────────────────────────────────────────────────────────────────
+function goMain(){
+  var me=db.users&&db.users[myId];
+  if(!me){showScreen("splash");initSplash();return;}
+  showScreen("main");
+  document.getElementById("meChip").innerHTML=
+    "<span>"+me.emoji+"</span><span>"+esc(me.name)+"</span><span style='font-size:10px;opacity:.35;margin-left:2px'>&#9998;</span>";
+  buildDayTabs();
+  buildTimeGutter();
+  renderGrid();
+  updateFabCnt();
+}
+function editProfile(){
+  var me=db.users&&db.users[myId];
+  if(!me)return;
+  selEmoji=me.emoji;
+  showScreen("splash");
+  initSplash();
+  document.getElementById("nameInput").value=me.name;
+  updateJoinBtn();
+}
+function buildDayTabs(){
+  document.getElementById("dayTabs").innerHTML=DAYS.map(function(d){
+    var cls="dtab"+(d.id===activeDay?" on":"");
+    var btn=document.createElement("button");
+    btn.className=cls;
+    btn.dataset.day=d.id;
+    btn.innerHTML='<div class="dl">'+d.label+'</div><div class="dd">'+d.date+'</div>';
+    btn.onclick=function(){switchDay(this.dataset.day);};
+    return btn.outerHTML;
+  }).join("");
+}
+function switchDay(id){
+  activeDay=id;
+  buildDayTabs();
+  buildTimeGutter();
+  renderGrid();
+  document.getElementById("stagesScroll").scrollTop=0;
+  document.getElementById("stagesScroll").scrollLeft=0;
+}
+function buildTimeGutter(){
+  var totalH=SLOTS*SH;
+  var gut=document.getElementById("timeGutter");
+  gut.style.height=(36+totalH)+"px";
+  var html='<div style="height:36px"></div>';
+  for(var i=0;i<=SLOTS;i++){
+    var mins=DS+i*30;
+    var wrap=mins>=1440?mins-1440:mins;
+    var h=Math.floor(wrap/60),m=wrap%60;
+    var ap=h<12?"a":"p";
+    var h12=h%12||12;
+    var lbl=m===0?h12+ap:"";
+    html+='<div class="tlbl">'+lbl+'</div>';
+  }
+  gut.innerHTML=html;
+  var scr=document.getElementById("stagesScroll");
+  gut.onscroll=null;
+  scr.onscroll=function(){gut.scrollTop=scr.scrollTop;};
+}
+function renderGrid(){
+  var day=DAYS.find(function(d){return d.id===activeDay;});
+  if(!day)return;
+  var totalH=SLOTS*SH;
+  var inner=document.getElementById("stagesInner");
+  inner.innerHTML="";
+  inner.style.minHeight=(36+totalH)+"px";
+  var myPicks=db.picks&&db.picks[myId]?db.picks[myId]:{};
+  day.stages.forEach(function(stage){
+    var col=SC[stage]||"#aaa";
+    var artists=day.artists.filter(function(a){return a.stage===stage;});
+    var colDiv=document.createElement("div");
+    colDiv.className="scol";
+    colDiv.style.minHeight=(36+totalH)+"px";
+    colDiv.innerHTML='<div class="schdr"><div class="scdot" style="background:'+col+'"></div>'
+      +'<div class="scnm" style="color:'+col+'">'+stage+'</div></div>';
+    // bg rows
+    var bg=document.createElement("div");
+    bg.className="gbg";
+    for(var i=0;i<SLOTS;i++){
+      var row=document.createElement("div");
+      row.className="grow"+(i%2===0?" hr":"");
+      bg.appendChild(row);
+    }
+    colDiv.appendChild(bg);
+    // artists
+    var arts=document.createElement("div");
+    arts.className="scarts";
+    artists.forEach(function(a){
+      var rng=tr(a.time);
+      var s=rng[0],e=rng[1];
+      if(s<DS)s+=1440;
+      if(e<=s)e+=1440;
+      var top=((s-DS)/30)*SH;
+      var height=Math.max(((e-s)/30)*SH-2,28);
+      var tier=myPicks[a.id]||null;
+      // Build block
+      var blk=document.createElement("div");
+      blk.className="ab"+(tier?" pop":""); // pop will animate once then stay
+      blk.dataset.id=a.id;
+      // Colors
+      var bg2,bdr,shadow="";
+      if(tier==="need"){
+        bg2="rgba(255,60,60,0.38)";bdr="rgba(255,90,90,0.95)";
+        shadow="box-shadow:0 0 18px rgba(255,60,60,.45),inset 0 0 0 1px rgba(255,130,130,.3)";
+      } else if(tier==="interested"){
+        bg2="rgba(60,150,255,0.3)";bdr="rgba(100,180,255,0.95)";
+        shadow="box-shadow:0 0 18px rgba(60,150,255,.4),inset 0 0 0 1px rgba(130,200,255,.3)";
+      } else {
+        bg2=col+"22";bdr=col+"55";
+      }
+      blk.style.cssText="top:"+top+"px;height:"+height+"px;background:"+bg2+";border-color:"+bdr+";"+shadow;
+      // Content
+      var genre=a.genres?a.genres.split(" · ").slice(0,1).join(""):"";
+      // facepile
+      var picks=db.picks||{};var users=db.users||{};
+      var pickers=Object.keys(picks).filter(function(uid){return picks[uid][a.id]&&users[uid];});
+      var needPickers=pickers.filter(function(uid){return picks[uid][a.id]==="need";});
+      var intPickers=pickers.filter(function(uid){return picks[uid][a.id]==="interested";});
+      var sorted=needPickers.concat(intPickers);
+      var fpHtml="";
+      var shown=sorted.slice(0,3);
+      shown.forEach(function(uid,i){
+        fpHtml+='<div class="fc"'+(i>0?' style="margin-left:-6px"':"")+'>'+users[uid].emoji+'</div>';
+      });
+      if(sorted.length>3)fpHtml+='<div class="fcx">+'+(sorted.length-3)+'</div>';
+      var goingLbl=sorted.length>0?'<span class="abfl">'+sorted.length+' going</span>':"";
+      blk.innerHTML='<div class="abn">'+esc(a.name)+'</div>'
+        +'<div class="abt">'+a.time+'</div>'
+        +(genre?'<div class="abg" style="color:'+col+'">'+esc(genre)+'</div>':"")
+        +(fpHtml?'<div class="abfp">'+fpHtml+goingLbl+'</div>':"");
+      blk.onclick=function(aid){return function(){openAM(aid);};}(a.id);
+      arts.appendChild(blk);
+    });
+    colDiv.appendChild(arts);
+    inner.appendChild(colDiv);
+  });
+}
+function updateFabCnt(){
+  var picks=db.picks&&db.picks[myId]?db.picks[myId]:{};
+  document.getElementById("fabCnt").textContent=Object.keys(picks).length;
+}
+
+// ── ARTIST MODAL ──────────────────────────────────────────────────────────────
+function openAM(artistId){
+  var found=null;
+  for(var i=0;i<DAYS.length;i++){
+    var a=DAYS[i].artists.find(function(x){return x.id===artistId;});
+    if(a){found=a;break;}
+  }
+  if(!found)return;
+  curArtist=found;
+  var col=SC[found.stage]||"#aaa";
+  document.getElementById("amStag").textContent=found.stage;
+  document.getElementById("amStag").style.cssText="background:"+col+"22;border:1px solid "+col+"44;color:"+col;
+  document.getElementById("amName").textContent=found.name;
+  document.getElementById("amTime").textContent=found.time;
+  document.getElementById("amSpot").href=found.spotify;
+  // genres
+  var gEl=document.getElementById("amGenres");
+  gEl.innerHTML="";
+  if(found.genres){
+    found.genres.split(" · ").forEach(function(g){
+      var sp=document.createElement("span");
+      sp.textContent=g;
+      sp.style.cssText="font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;"
+        +"background:"+col+"22;color:"+col+";border:1px solid "+col+"44;border-radius:20px;padding:3px 10px";
+      gEl.appendChild(sp);
+    });
+  }
+  document.getElementById("amDesc").textContent=found.desc||"";
+  updateAMBtns();
+  renderAMAtt();
+  document.getElementById("amBk").classList.add("open");
+}
+function closeAM(e){
+  if(e&&e.target!==document.getElementById("amBk"))return;
+  document.getElementById("amBk").classList.remove("open");
+  curArtist=null;
+}
+function updateAMBtns(){
+  if(!curArtist)return;
+  var tier=db.picks&&db.picks[myId]?db.picks[myId][curArtist.id]||null:null;
+  document.getElementById("btnNeed").className="tbn"+(tier==="need"?" an":"");
+  document.getElementById("btnInt").className="tbn"+(tier==="interested"?" ai":"");
+}
+function renderAMAtt(){
+  if(!curArtist){document.getElementById("amAtt").innerHTML="";return;}
+  var picks=db.picks||{};var users=db.users||{};
+  var all=Object.keys(picks).filter(function(uid){return picks[uid][curArtist.id]&&users[uid];})
+    .map(function(uid){return{user:users[uid],tier:picks[uid][curArtist.id]};});
+  var need=all.filter(function(x){return x.tier==="need";});
+  var intr=all.filter(function(x){return x.tier==="interested";});
+  var html="";
+  if(need.length){
+    html+='<div class="attsec"><div class="attlbl">&#128293; Need to see ('+need.length+')</div>'
+      +'<div class="attchips">'+need.map(function(x){
+        return '<div class="ach n"><span>'+x.user.emoji+'</span><span>'+esc(x.user.name)+'</span></div>';
+      }).join("")+'</div></div>';
+  }
+  if(intr.length){
+    html+='<div class="attsec"><div class="attlbl">&#10024; Interested ('+intr.length+')</div>'
+      +'<div class="attchips">'+intr.map(function(x){
+        return '<div class="ach i"><span>'+x.user.emoji+'</span><span>'+esc(x.user.name)+'</span></div>';
+      }).join("")+'</div></div>';
+  }
+  if(!all.length)html='<div class="nopick">No one has picked this yet — be first!</div>';
+  document.getElementById("amAtt").innerHTML=html;
+}
+async function setPick(tier){
+  if(!curArtist||!myId)return;
+  if(!db.picks)db.picks={};
+  if(!db.picks[myId])db.picks[myId]={};
+  var cur=db.picks[myId][curArtist.id];
+  if(cur===tier)delete db.picks[myId][curArtist.id];
+  else db.picks[myId][curArtist.id]=tier;
+  await saveDB();
+  updateAMBtns();
+  renderAMAtt();
+  renderGrid();
+  updateFabCnt();
+  // pop animation on block
+  setTimeout(function(){
+    var blk=document.querySelector('.ab[data-id="'+curArtist.id+'"]');
+    if(blk){blk.classList.remove("pop");void blk.offsetWidth;blk.classList.add("pop");}
+  },50);
+}
+
+// ── MY LINEUP ─────────────────────────────────────────────────────────────────
+function openLU(){
+  var me=db.users&&db.users[myId];
+  if(!me)return;
+  document.getElementById("luTitle").innerHTML=me.emoji+" My Lineup";
+  var picks=db.picks&&db.picks[myId]?db.picks[myId]:{};
+  var scr=document.getElementById("luScr");
+  scr.innerHTML="";
+  if(!Object.keys(picks).length){
+    scr.innerHTML='<div class="lu-empty">No picks yet!<br>Tap any artist and mark it &#128293; or &#10024;</div>';
+    document.getElementById("luBk").classList.add("open");
+    return;
+  }
+  DAYS.forEach(function(day){
+    var dp=day.artists.filter(function(a){return picks[a.id];});
+    if(!dp.length)return;
+    dp.sort(function(a,b){
+      var ra=tr(a.time),rb=tr(b.time);
+      var na=ra[0]<DS?ra[0]+1440:ra[0];
+      var nb=rb[0]<DS?rb[0]+1440:rb[0];
+      return na-nb;
+    });
+    var dayDiv=document.createElement("div");
+    dayDiv.className="lu-day";
+    dayDiv.innerHTML='<div class="lu-dlbl">'+day.label+' · '+day.date+'</div>';
+    dp.forEach(function(a){
+      var tier=picks[a.id];
+      var col=SC[a.stage]||"#aaa";
+      var el=document.createElement("div");
+      el.className="lu-item "+tier;
+      el.innerHTML='<div class="lu-dot" style="background:'+col+'"></div>'
+        +'<div class="lu-info">'
+        +'<div class="lu-name">'+esc(a.name)+'</div>'
+        +'<div class="lu-meta">'+esc(a.stage)+' · '+a.time+'</div>'
+        +'</div>'
+        +'<div class="lu-tier">'+(tier==="need"?"&#128293;":"&#10024;")+'</div>';
+      el.onclick=(function(id){return function(){closeLUopenAM(id);};})(a.id);
+      dayDiv.appendChild(el);
+    });
+    scr.appendChild(dayDiv);
+  });
+  document.getElementById("luBk").classList.add("open");
+}
+
+function closeLU(e){
+  if(e&&e.target!==document.getElementById("luBk"))return;
+  document.getElementById("luBk").classList.remove("open");
+}
+function closeLUopenAM(id){
+  document.getElementById("luBk").classList.remove("open");
+  setTimeout(function(){openAM(id);},180);
+}
+
+// ── SEARCH ────────────────────────────────────────────────────────────────────
+function openSR(){
+  document.getElementById("srBk").classList.add("open");
+  setTimeout(function(){document.getElementById("srInput").focus();},120);
+  renderSR("");
+}
+function closeSR(e){
+  if(e&&e.target!==document.getElementById("srBk"))return;
+  document.getElementById("srBk").classList.remove("open");
+  document.getElementById("srInput").value="";
+}
+function renderSR(q){
+  q=q.trim().toLowerCase();
+  var myPicks=db.picks&&db.picks[myId]?db.picks[myId]:{};
+  var all=[];
+  DAYS.forEach(function(day){
+    day.artists.forEach(function(a){all.push({a:a,day:day});});
+  });
+  var matches=q.length<1?all.slice(0,28):all.filter(function(item){
+    var a=item.a;
+    return a.name.toLowerCase().indexOf(q)>-1
+      ||(a.genres||"").toLowerCase().indexOf(q)>-1
+      ||a.stage.toLowerCase().indexOf(q)>-1;
+  });
+  var list=document.getElementById("srList");
+  list.innerHTML="";
+  if(!matches.length){
+    list.innerHTML='<div class="sr-empty">No artists found</div>';
+    return;
+  }
+  matches.forEach(function(item){
+    var a=item.a,day=item.day;
+    var col=SC[a.stage]||"#aaa";
+    var tier=myPicks[a.id]||null;
+    var el=document.createElement("div");
+    el.className="sri"+(tier==="need"?" sn":tier==="interested"?" si":"");
+    el.innerHTML='<div class="sri-dot" style="background:'+col+'"></div>'
+      +'<div class="sri-info">'
+        +'<div class="sri-name">'+esc(a.name)+(tier==="need"?" &#128293;":tier==="interested"?" &#10024;":"")+'</div>'
+        +'<div class="sri-meta">'+esc(a.stage)+' · '+a.time+'</div>'
+      +'</div>'
+      +'<div class="sri-day">'+day.label+'</div>';
+    el.onclick=function(aid,dayid){return function(){navToArtist(aid,dayid);};}(a.id,day.id);
+    list.appendChild(el);
+  });
+}
+document.addEventListener("DOMContentLoaded",function(){
+  document.getElementById("srInput").addEventListener("input",function(e){renderSR(e.target.value);});
+});
+function navToArtist(artistId,dayId){
+  // close search
+  document.getElementById("srBk").classList.remove("open");
+  document.getElementById("srInput").value="";
+  // switch day if needed
+  if(activeDay!==dayId){
+    activeDay=dayId;
+    buildDayTabs();
+    buildTimeGutter();
+    renderGrid();
+  }
+  // find artist
+  var targetArtist=null;
+  var targetDay=null;
+  for(var i=0;i<DAYS.length;i++){
+    var a=DAYS[i].artists.find(function(x){return x.id===artistId;});
+    if(a){targetArtist=a;targetDay=DAYS[i];break;}
+  }
+  if(!targetArtist)return;
+  setTimeout(function(){
+    var rng=tr(targetArtist.time);
+    var s=rng[0];
+    if(s<DS)s+=1440;
+    var topPx=((s-DS)/30)*SH;
+    var scr=document.getElementById("stagesScroll");
+    // scroll vertical
+    scr.scrollTo({top:Math.max(0,topPx-100),behavior:"smooth"});
+    // scroll horizontal to stage column
+    var stageIdx=targetDay.stages.indexOf(targetArtist.stage);
+    if(stageIdx>=0)scr.scrollTo({left:stageIdx*192,behavior:"smooth"});
+    // flash block
+    setTimeout(function(){
+      var blk=document.querySelector('.ab[data-id="'+artistId+'"]');
+      if(blk){
+        blk.classList.remove("nav");
+        void blk.offsetWidth;
+        blk.classList.add("nav");
+      }
+    },350);
+  },60);
+}
+</script>
+</body>
+</html>
