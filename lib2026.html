@@ -1876,85 +1876,57 @@ function renderFeed(){
   var users=db.users||{},allPicksF=db.picks||{};
   var myPicks=(allPicksF[myId])||{};
 
-  // ── TOP MATCHES: users ranked by shared "need" picks with me ─────────────
+  // ── UNIFIED SQUAD LIST: everyone shown, ranked by shared needs ──────────
   if(matchList&&myId){
     var myNeeds=Object.keys(myPicks).filter(function(aid){return myPicks[aid]==="need";});
     var scores={};
     Object.keys(users).forEach(function(uid){
       if(uid===myId||!allPicksF[uid])return;
       var shared=myNeeds.filter(function(aid){return allPicksF[uid][aid]==="need";});
-      if(shared.length>0)scores[uid]=shared.length;
+      scores[uid]=shared.length;
     });
-    var ranked=Object.keys(scores).sort(function(a,b){return scores[b]-scores[a];}).slice(0,8);
-    // Always show Top Matches section
+    var allOthers=Object.keys(users).filter(function(uid){return uid!==myId;});
+    allOthers.sort(function(a,b){
+      var sa=scores[a]||0,sb=scores[b]||0;
+      if(sb!==sa)return sb-sa;
+      return users[a].name.localeCompare(users[b].name);
+    });
     var mTitle=document.createElement("div");mTitle.className="feed-section-title";
-    mTitle.textContent="Top Matches";
+    mTitle.textContent="The Squad";
     matchList.appendChild(mTitle);
-    if(!ranked.length){
+    if(!allOthers.length){
       var emptyCard=document.createElement("div");emptyCard.className="match-empty";
       emptyCard.innerHTML='<div class="match-empty-icon">🔮</div>'
-        +'<div class="match-empty-title">Your top matches will show up here</div>'
-        +'<div class="match-empty-sub">Mark sets as 🔥 Need to See — squad members who pick the same ones rank up as your best matches.</div>';
+        +'<div class="match-empty-title">Your squad will appear here</div>'
+        +'<div class="match-empty-sub">Mark sets as 🔥 Need to See — squad members who pick the same ones rank up as your top matches.</div>';
       matchList.appendChild(emptyCard);
     }
-    if(ranked.length){
-      ranked.forEach(function(uid,i){
-        var u=users[uid];var isTop=i===0;
-        var card=document.createElement("div");
-        card.className="match-card"+(isTop?" top-match":"");
-        var av=document.createElement("div");
-        av.className="match-avatar"+(isTop?" top":"");
-        av.textContent=u.emoji;
-        var info=document.createElement("div");info.className="match-info";
-        var sharedArtists=myNeeds.filter(function(aid){return allPicksF[uid][aid]==="need";});
-        var artistNames=sharedArtists.slice(0,2).map(function(aid){
-          var art=null;DAYS.forEach(function(d){d.artists.forEach(function(a){if(a.id===aid)art=a;});});
-          return art?art.name:"";
-        }).filter(Boolean).join(", ")+(sharedArtists.length>2?" +"+(sharedArtists.length-2)+" more":"");
-        info.innerHTML='<div class="match-name">'+esc(u.name)+'</div>'+
-          '<div class="match-count">'+esc(artistNames)+'</div>';
-        var badge=document.createElement("div");badge.className="match-badge";
-        badge.textContent=isTop?"⭐ Top Match":scores[uid]+" in common";
-        card.appendChild(av);card.appendChild(info);card.appendChild(badge);
-        card.onclick=(function(u){return function(){
-          document.getElementById("feedBk").classList.remove("open");
-          setTimeout(function(){openProfileDrawer(u);},120);
-        };})(uid);
-        matchList.appendChild(card);
-      });
-    }
-  }
-
-  // ── SQUAD TAG CLOUD ──────────────────────────────────────────────────────
-  if(matchList){
-    var squadSection=document.createElement("div");
-    var squadTitle=document.createElement("div");squadTitle.className="feed-section-title";
-    squadTitle.textContent="The Squad";
-    squadSection.appendChild(squadTitle);
-    var allUsers=Object.keys(users);
-    if(!allUsers.length){
-      var noSquad=document.createElement("div");
-      noSquad.style.cssText="font-size:13px;color:rgba(255,255,255,.3);padding:8px 0 16px;text-align:center";
-      noSquad.textContent="No one has joined yet — share the link!";
-      squadSection.appendChild(noSquad);
-    } else {
-      var cloud=document.createElement("div");
-      cloud.style.cssText="display:flex;flex-wrap:wrap;gap:8px;padding-bottom:4px";
-      allUsers.forEach(function(uid){
-        var u=users[uid];if(!u)return;
-        var tag=document.createElement("button");
-        tag.className="squad-tag"+(uid===myId?" squad-tag-me":"");
-        tag.innerHTML='<span style="font-size:16px;line-height:1">'+u.emoji+'</span>'
-          +'<span>'+esc(u.name)+'</span>';
-        tag.onclick=(function(u2){return function(){
-          document.getElementById("feedBk").classList.remove("open");
-          setTimeout(function(){openProfileDrawer(u2);},120);
-        };})(uid);
-        cloud.appendChild(tag);
-      });
-      squadSection.appendChild(cloud);
-    }
-    matchList.appendChild(squadSection);
+    allOthers.forEach(function(uid,i){
+      var u=users[uid];var sc=scores[uid]||0;
+      var isTop=i===0&&sc>0;
+      var card=document.createElement("div");
+      card.className="match-card"+(isTop?" top-match":"");
+      var av=document.createElement("div");
+      av.className="match-avatar"+(isTop?" top":"");
+      av.textContent=u.emoji;
+      var info=document.createElement("div");info.className="match-info";
+      var sharedArtists=myNeeds.filter(function(aid){return allPicksF[uid]&&allPicksF[uid][aid]==="need";});
+      var artistNames=sharedArtists.slice(0,2).map(function(aid){
+        var art=null;DAYS.forEach(function(d){d.artists.forEach(function(a){if(a.id===aid)art=a;});});
+        return art?art.name:"";
+      }).filter(Boolean).join(", ")+(sharedArtists.length>2?" +"+(sharedArtists.length-2)+" more":"");
+      info.innerHTML='<div class="match-name">'+esc(u.name)+'</div>'
+        +(artistNames?'<div class="match-count">'+esc(artistNames)+'</div>':'<div class="match-count" style="opacity:.3">No shared picks yet</div>');
+      var badge=document.createElement("div");badge.className="match-badge";
+      badge.textContent=isTop?"⭐ Top Match":sc>0?sc+" in common":"";
+      if(!sc&&!isTop)badge.style.display="none";
+      card.appendChild(av);card.appendChild(info);card.appendChild(badge);
+      card.onclick=(function(u2){return function(){
+        document.getElementById("feedBk").classList.remove("open");
+        setTimeout(function(){openProfileDrawer(u2);},120);
+      };})(uid);
+      matchList.appendChild(card);
+    });
   }
 
 }
