@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#0a0a0a">
-<title>LIB 2026 Squad Planner</title>
+<title>LIB 2026 Squad Up!</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,700;9..40,800;9..40,900&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -44,6 +44,7 @@ input[type=text]::placeholder{color:rgba(255,255,255,.2)}
 .egrid{display:flex;flex-wrap:wrap;gap:10px;width:max-content;padding:4px}
 .ebtn{width:64px;height:64px;border-radius:14px;font-size:34px;background:var(--surf);border:1px solid var(--bdr);cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .ebtn:active{transform:scale(.88)}
+.ebtn.dim{opacity:.25;cursor:not-allowed;border-style:dashed}
 .ebtn.sel{background:var(--gdim);border:2px solid rgba(245,166,35,.7);transform:scale(1.08);box-shadow:0 0 18px rgba(245,166,35,.3)}
 .jbtn{width:100%;padding:17px;background:var(--gold);color:#000;border:none;border-radius:16px;font-size:16px;font-weight:800;font-family:inherit;cursor:pointer;transition:all .15s}
 .jbtn:disabled{background:rgba(255,255,255,.1);color:rgba(255,255,255,.2);cursor:default}
@@ -71,7 +72,7 @@ input[type=text]::placeholder{color:rgba(255,255,255,.2)}
 .tgut{width:var(--tgut);flex-shrink:0;overflow:hidden;position:relative;border-right:1px solid var(--bdr);z-index:10;background:#0a0a0a}
 .tgut-i{position:absolute;top:0;left:0;right:0}
 .tlbl{height:var(--row);display:flex;align-items:flex-start;padding:4px 6px 0 0;justify-content:flex-end;font-size:10px;color:var(--mut);font-weight:600;white-space:nowrap}
-.sscr{flex:1;overflow-x:auto;overflow-y:auto;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.1) transparent}
+.sscr{flex:1;overflow-x:auto;overflow-y:auto;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.1) transparent;touch-action:pan-x pan-y pinch-zoom}
 .sscr::-webkit-scrollbar{height:4px;width:4px}
 .sscr::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:2px}
 .si{display:flex;min-height:100%}
@@ -189,7 +190,7 @@ input[type=text]::placeholder{color:rgba(255,255,255,.2)}
 <div class="sp">
   <div class="sp-eye">Lightning in a Bottle &middot; Buena Vista Lake, CA</div>
   <div class="sp-h1">&#9889; LIB<br><span>2026</span></div>
-  <div class="sp-sub">Squad Planner</div>
+  <div class="sp-sub">Squad Up!</div>
   <div class="sp-loc">May 20&ndash;24 &middot; Buena Vista Lake, CA</div>
   <div class="fgrp"><label class="flbl">Your name</label>
     <input type="text" id="nameInput" placeholder="Enter your name&hellip;" maxlength="20" autocomplete="off"></div>
@@ -294,7 +295,15 @@ var EMOJIS = [
   "🎺","🥁","🌻","🦝","🐙","🪩","🏄","🎨","🧿","🪬",
   "🔮","🧲","🌋","🏔","🐋","🦈","🍀","🌿","🪸","🐚",
   "🪷","🌹","🌷","💐","🌼","🌞","🌝","☄️","🌪","❄️",
-  "💧","🫧","🌾","🎡","🎢","🎠","🏕","🎆","🎇","🎑"
+  "💧","🫧","🌾","🎡","🎢","🎠","🏕","🎆","🎇","🎑",
+  "🌲","🌳","🌴","🌵","🎋","🎍","🍀","🌿","🪨","🪵",
+  "🦔","🦦","🦥","🦘","🦙","🐨","🐼","🦭","🦓","🦒",
+  "🌏","🪅","🎭","🃏","🎲","🪄","🧸","🪆","🪀","🪁",
+  "🍕","🍔","🌮","🍜","🧋","🍦","🍩","🎂","🍿","🧃",
+  "🚀","🛸","🌠","🔭","🪐","💫","🌌","🛺","⛵","🏄",
+  "🎸","🎹","🥁","🎷","🎺","🪗","🎻","🎤","🎧","🪘",
+  "🧨","✨","🎉","🎊","🪩","💃","🕺","🎯","🏆","🥇",
+  "🦋","🐛","🐞","🦗","🪲","🦟","🕷","🦂","🪳","🐜"
 ];
 
 // ── STAGE COLORS ──────────────────────────────────────────────────────────────
@@ -841,7 +850,16 @@ DAYS.forEach(function(d){
 
 // ── STATE ─────────────────────────────────────────────────────────────────────
 var db={users:{},picks:{}};
+
+// Device ID: generated once, stored forever in localStorage
+// This is the persistent identity — survives tab closes, browser restarts
 var myId=localStorage.getItem("lib26_uid");
+if(!myId){
+  // Generate a stable device ID on first visit
+  myId="d"+(Date.now().toString(36))+(Math.random().toString(36).slice(2,7));
+  localStorage.setItem("lib26_uid",myId);
+}
+
 var selEmoji="🌊";
 var activeDay="fri";
 var curArtist=null;
@@ -863,6 +881,18 @@ async function saveDB(){
 function setSyncOK(ok){
   document.getElementById("syncDot").className="sdot"+(ok?" ok":"");
   document.getElementById("syncTxt").textContent=ok?"Live":"Local";
+}
+
+// Check if a name or emoji is already taken by someone else
+function nameIsTaken(name, excludeId){
+  return Object.entries(db.users||{}).some(function(e){
+    return e[0]!==excludeId && e[1].name.toLowerCase()===name.toLowerCase();
+  });
+}
+function emojiIsTaken(emoji, excludeId){
+  return Object.entries(db.users||{}).some(function(e){
+    return e[0]!==excludeId && e[1].emoji===emoji;
+  });
 }
 
 // ── FIREBASE (background, non-blocking) ──────────────────────────────────────
@@ -897,11 +927,12 @@ function initFB(){
 window.addEventListener("DOMContentLoaded",function(){
   loadLocal();
   document.getElementById("loading").style.display="none";
-  if(myId&&db.users&&db.users[myId]){
+  // myId is always set (device ID generated above)
+  // Check if this device has already registered a name
+  if(db.users&&db.users[myId]){
     goMain();
   } else {
-    myId=null;
-    localStorage.removeItem("lib26_uid");
+    // New device — show splash to pick name/emoji
     showScreen("splash");
     initSplash();
   }
@@ -923,10 +954,13 @@ function initSplash(){
   var grid=document.getElementById("emojiGrid");
   grid.innerHTML="";
   EMOJIS.forEach(function(e){
+    var taken=emojiIsTaken(e,myId);
     var btn=document.createElement("button");
-    btn.className="ebtn"+(e===selEmoji?" sel":"");
+    btn.className="ebtn"+(e===selEmoji?" sel":"")+(taken?" dim":"");
     btn.textContent=e;
+    btn.title=taken?"Already taken":"";
     btn.onclick=function(){
+      if(taken)return;
       selEmoji=e;
       grid.querySelectorAll(".ebtn").forEach(function(b){b.classList.remove("sel");});
       btn.classList.add("sel");
@@ -944,8 +978,13 @@ function initSplash(){
 function updateJoinBtn(){
   var name=document.getElementById("nameInput").value.trim();
   var btn=document.getElementById("joinBtn");
-  btn.disabled=!name;
-  btn.textContent=name?selEmoji+" Let's go, "+name+"!":"Enter your name…";
+  var nameTaken=name&&nameIsTaken(name,myId);
+  var emojiTaken=emojiIsTaken(selEmoji,myId);
+  btn.disabled=!name||nameTaken||emojiTaken;
+  if(!name) btn.textContent="Enter your name…";
+  else if(nameTaken) btn.textContent="⚠️ Name taken — try another";
+  else if(emojiTaken) btn.textContent="⚠️ Emoji taken — pick another";
+  else btn.textContent=selEmoji+" Let’s go, "+name+"!";
 }
 function renderSquadPreview(){
   var users=Object.values(db.users||{});
@@ -959,14 +998,33 @@ function renderSquadPreview(){
 async function doJoin(){
   var name=document.getElementById("nameInput").value.trim();
   if(!name)return;
-  if(!myId)myId="u"+Date.now().toString(36);
+  // Check uniqueness — exclude current user so they can keep their own name/emoji
+  if(nameIsTaken(name,myId)){
+    showJoinError("That name is already taken! Try another.");
+    return;
+  }
+  if(emojiIsTaken(selEmoji,myId)){
+    showJoinError("That emoji is taken! Pick a different one.");
+    return;
+  }
   if(!db.users)db.users={};
   if(!db.picks)db.picks={};
+  // myId is already set as device ID — reuse it to preserve picks on rename
   db.users[myId]={name:name,emoji:selEmoji};
   if(!db.picks[myId])db.picks[myId]={};
-  localStorage.setItem("lib26_uid",myId);
   await saveDB();
   goMain();
+}
+function showJoinError(msg){
+  var el=document.getElementById("joinError");
+  if(!el){
+    el=document.createElement("div");
+    el.id="joinError";
+    el.style.cssText="color:#ff6b6b;font-size:13px;text-align:center;margin-top:10px;font-weight:600";
+    document.getElementById("joinBtn").after(el);
+  }
+  el.textContent=msg;
+  setTimeout(function(){el.textContent="";},3000);
 }
 
 // ── MAIN ──────────────────────────────────────────────────────────────────────
