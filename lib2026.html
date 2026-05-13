@@ -401,6 +401,7 @@ input[type=text]::placeholder{color:rgba(255,255,255,.2)}
       <input type="text" id="srInput" placeholder="Search artists, genres, stages&hellip;" autocomplete="off" spellcheck="false">
     </div>
     <div class="sr-list" id="srList"></div>
+    <div id="srActivityList" style="overflow-y:auto;padding:0 0 100px"></div>
   </div>
 </div>
 
@@ -1591,10 +1592,73 @@ function closeLUopenAM(id){
 }
 
 // ── SEARCH ────────────────────────────────────────────────────────────────────
+function renderActivity(list){
+  if(!list)return;
+  var users=db.users||{},allPicksF=db.picks||{};
+  var actTitle=document.createElement("div");actTitle.className="feed-section-title";
+  actTitle.textContent="Activity";
+  list.appendChild(actTitle);
+  var items=[];
+  Object.keys(allPicksF).forEach(function(uid){
+    if(!users[uid])return;
+    var p=allPicksF[uid];
+    Object.keys(p).forEach(function(aid){
+      var tier=p[aid];var artist=null,day=null;
+      DAYS.forEach(function(d){d.artists.forEach(function(a){if(a.id===aid){artist=a;day=d;}});});
+      if(!artist)return;
+      items.push({uid:uid,user:users[uid],artist:artist,day:day,tier:tier,isMe:uid===myId});
+    });
+  });
+  items.sort(function(a,b){
+    if(a.isMe!==b.isMe)return a.isMe?1:-1;
+    if(a.tier!==b.tier)return a.tier==="need"?-1:1;
+    return a.artist.name.localeCompare(b.artist.name);
+  });
+  if(!items.length){
+    var empty=document.createElement("div");empty.className="feed-empty";
+    empty.innerHTML="No squad activity yet.";
+    list.appendChild(empty);
+    return;
+  }
+  items.forEach(function(item){
+    var myTier=(db.picks&&db.picks[myId])?db.picks[myId][item.artist.id]||null:null;
+    var col=SC[item.artist.stage]||"#aaa";
+    var el=document.createElement("div");el.className="feed-item";el.dataset.id=item.artist.id;
+    el.style.background=hexAlpha(col,.08);
+    el.style.borderColor=hexAlpha(col,.45);
+    var fbar=document.createElement("div");fbar.className="feed-bar";fbar.style.background=col;
+    var avatar=document.createElement("div");avatar.className="feed-avatar";avatar.textContent=item.user.emoji;
+    var info=document.createElement("div");info.className="feed-body";
+    var verb=item.tier==="need"?" 🔥 Going to":" ✨ Interested in";
+    var whoTxt=item.isMe?"You":item.user.name.split(" ")[0];
+    info.innerHTML='<div class="feed-who">'+esc(whoTxt)+verb+'</div>'
+      +'<div class="feed-what">'+esc(item.artist.name)+' · '+esc(item.artist.stage)+'</div>';
+    var btns=document.createElement("div");btns.className="sri-picks";
+    var bg=document.createElement("button");
+    bg.className="qpick qpick-g"+(myTier==="need"?" qn":myTier==="interested"?" qhide":"");
+    bg.textContent="🔥";
+    bg.onclick=(function(aid){return function(ev){ev.stopPropagation();quickPick(aid,"need");setTimeout(function(){renderSR("");renderActivity(document.getElementById("srActivityList"));},80);};})(item.artist.id);
+    var bi=document.createElement("button");
+    bi.className="qpick qpick-i"+(myTier==="interested"?" qi":myTier==="need"?" qhide":"");
+    bi.textContent="✨";
+    bi.onclick=(function(aid){return function(ev){ev.stopPropagation();quickPick(aid,"interested");setTimeout(function(){renderSR("");renderActivity(document.getElementById("srActivityList"));},80);};})(item.artist.id);
+    btns.appendChild(bg);btns.appendChild(bi);
+    el.appendChild(fbar);el.appendChild(avatar);el.appendChild(info);el.appendChild(btns);
+    el.onclick=(function(aid,did){return function(ev){
+      if(ev.target.closest(".sri-picks"))return;
+      document.getElementById("srBk").classList.remove("open");
+      navToArtist(aid,did);
+    };})(item.artist.id,item.day.id);
+    list.appendChild(el);
+  });
+}
+
 function openSR(){
   document.getElementById("srBk").classList.add("open");
   setTimeout(function(){document.getElementById("srInput").focus();},120);
   renderSR("");
+  var actList=document.getElementById("srActivityList");
+  if(actList){actList.innerHTML="";renderActivity(actList);}
 }
 function closeSR(e){
   if(e&&e.target!==document.getElementById("srBk"))return;
@@ -1612,13 +1676,33 @@ function renderSR(q){
   function srScore(aid){var s=0;if(myPicks[aid]==="need")s+=10;else if(myPicks[aid]==="interested")s+=6;Object.values(allPicksR).forEach(function(p){if(p[aid]==="need")s+=2;else if(p[aid]==="interested")s+=1;});return s;}
   var matches;
   if(q.length<1){
-    matches=all.slice().sort(function(a,b){return srScore(b.a.id)-srScore(a.a.id);}).slice(0,40);
+    // Default: rank by total squad popularity (need=2, interested=1) + my picks on top
+    function popScore(aid){
+      var s=0;
+      Object.keys(allPicksR).forEach(function(uid){
+        if(allPicksR[uid][aid]==="need")s+=2;
+        else if(allPicksR[uid][aid]==="interested")s+=1;
+      });
+      return s;
+    }
+    matches=all.slice().sort(function(a,b){return popScore(b.a.id)-popScore(a.a.id);}).slice(0,4);
+    // Show activity section in default state
+    var actList2=document.getElementById("srActivityList");
+    if(actList2){actList2.innerHTML="";renderActivity(actList2);}
+    document.getElementById("srActivityList").style.display="";
   } else {
+    document.getElementById("srActivityList").style.display="none";
+
     matches=all.filter(function(item){var a=item.a;return a.name.toLowerCase().indexOf(q)>-1||(a.genres||"").toLowerCase().indexOf(q)>-1||a.stage.toLowerCase().indexOf(q)>-1;});
-    matches.sort(function(a,b){return srScore(b.a.id)-srScore(a.a.id);});
+    matches=matches.slice(0,20).sort(function(a,b){return srScore(b.a.id)-srScore(a.a.id);});
   }
   var list=document.getElementById("srList");
   list.innerHTML="";
+  if(q.length<1){
+    var t=document.createElement("div");t.className="feed-section-title";
+    t.textContent="Top Artists";
+    list.appendChild(t);
+  }
   if(!matches.length){
     list.innerHTML='<div class="sr-empty">No artists found</div>';
     return;
@@ -1813,7 +1897,7 @@ function renderFeed(){
           return art?art.name:"";
         }).filter(Boolean).join(", ")+(sharedArtists.length>2?" +"+(sharedArtists.length-2)+" more":"");
         info.innerHTML='<div class="match-name">'+esc(u.name)+'</div>'+
-          '<div class="match-count">'+scores[uid]+' shared sets · '+esc(artistNames)+'</div>';
+          '<div class="match-count">'+esc(artistNames)+'</div>';
         var badge=document.createElement("div");badge.className="match-badge";
         badge.textContent=isTop?"⭐ Top Match":scores[uid]+" in common";
         card.appendChild(av);card.appendChild(info);card.appendChild(badge);
@@ -1858,64 +1942,6 @@ function renderFeed(){
     matchList.appendChild(squadSection);
   }
 
-  // ── ACTIVITY FEED ────────────────────────────────────────────────────────
-  var actTitle=document.createElement("div");actTitle.className="feed-section-title";
-  actTitle.textContent="Activity";
-  list.appendChild(actTitle);
-
-  var items=[];
-  Object.keys(allPicksF).forEach(function(uid){
-    if(!users[uid])return;
-    var p=allPicksF[uid];
-    Object.keys(p).forEach(function(aid){
-      var tier=p[aid];var artist=null,day=null;
-      DAYS.forEach(function(d){d.artists.forEach(function(a){if(a.id===aid){artist=a;day=d;}});});
-      if(!artist)return;
-      items.push({uid:uid,user:users[uid],artist:artist,day:day,tier:tier,isMe:uid===myId});
-    });
-  });
-  items.sort(function(a,b){
-    if(a.isMe!==b.isMe)return a.isMe?1:-1;
-    if(a.tier!==b.tier)return a.tier==="need"?-1:1;
-    return a.artist.name.localeCompare(b.artist.name);
-  });
-  if(!items.length){
-    var empty=document.createElement("div");empty.className="feed-empty";
-    empty.innerHTML="🔮<br><br>No squad activity yet.<br>Be first to mark a set!";
-    list.appendChild(empty);
-    return;
-  }
-  items.forEach(function(item){
-    var myTier=(db.picks&&db.picks[myId])?db.picks[myId][item.artist.id]||null:null;
-    var col=SC[item.artist.stage]||"#aaa";
-    var el=document.createElement("div");el.className="feed-item";el.dataset.id=item.artist.id;
-    el.style.background=hexAlpha(col,.08);
-    el.style.borderColor=hexAlpha(col,.45);
-    var fbar=document.createElement("div");fbar.className="feed-bar";fbar.style.background=col;
-    var avatar=document.createElement("div");avatar.className="feed-avatar";avatar.textContent=item.user.emoji;
-    var info=document.createElement("div");info.className="feed-body";
-    var verb=item.tier==="need"?" 🔥 Going to":" ✨ Interested in";
-    var whoTxt=item.isMe?"You":item.user.name.split(" ")[0];
-    info.innerHTML='<div class="feed-who">'+esc(whoTxt)+verb+'</div>'
-      +'<div class="feed-what">'+esc(item.artist.name)+' · '+esc(item.artist.stage)+'</div>';
-    var btns=document.createElement("div");btns.className="sri-picks";
-    var bg=document.createElement("button");
-    bg.className="qpick qpick-g"+(myTier==="need"?" qn":myTier==="interested"?" qhide":"");
-    bg.textContent="🔥";
-    bg.onclick=(function(aid){return function(ev){ev.stopPropagation();quickPick(aid,"need");setTimeout(renderFeed,80);};})(item.artist.id);
-    var bi=document.createElement("button");
-    bi.className="qpick qpick-i"+(myTier==="interested"?" qi":myTier==="need"?" qhide":"");
-    bi.textContent="✨";
-    bi.onclick=(function(aid){return function(ev){ev.stopPropagation();quickPick(aid,"interested");setTimeout(renderFeed,80);};})(item.artist.id);
-    btns.appendChild(bg);btns.appendChild(bi);
-    el.appendChild(fbar);el.appendChild(avatar);el.appendChild(info);el.appendChild(btns);
-    el.onclick=(function(aid,did){return function(ev){
-      if(ev.target.closest(".sri-picks"))return;
-      document.getElementById("feedBk").classList.remove("open");
-      navToArtist(aid,did);
-    };})(item.artist.id,item.day.id);
-    list.appendChild(el);
-  });
 }
 
 function navToArtist(artistId,dayId){
