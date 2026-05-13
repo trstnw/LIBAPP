@@ -71,7 +71,7 @@ input[type=text]::placeholder{color:rgba(255,255,255,.2)}
 .gcont{flex:1;display:flex;overflow:hidden;position:relative}
 .tgut{width:var(--tgut);flex-shrink:0;overflow:hidden;position:relative;border-right:1px solid var(--bdr);z-index:10;background:#0a0a0a}
 .tgut-i{position:absolute;top:0;left:0;right:0}
-.tlbl{height:var(--row);display:flex;align-items:flex-start;justify-content:flex-end;padding-right:8px;}
+.tlbl{height:var(--row);}
 .sscr{flex:1;overflow-x:auto;overflow-y:auto;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.1) transparent;touch-action:pan-x pan-y pinch-zoom;scroll-snap-type:x mandatory}
 .sscr::-webkit-scrollbar{height:4px;width:4px}
 .sscr::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:2px}
@@ -273,8 +273,8 @@ input[type=text]::placeholder{color:rgba(255,255,255,.2)}
 .sp2-flex>div:not(.feed-scroll):not(.sr-list){flex-shrink:0}
 .sp2-flex>input,.sp2-flex>.sr-row{flex-shrink:0}
 
-.tlbl-hour{font-size:11px;font-weight:800;color:rgba(255,255,255,.7);white-space:nowrap;margin-top:-1px}
-.tlbl-half{font-size:8px;font-weight:500;color:rgba(255,255,255,.12);white-space:nowrap;margin-top:1px}
+.tlbl-hour{font-size:11px;font-weight:700;color:rgba(255,255,255,.65);white-space:nowrap}
+.tlbl-half{display:none}
 
 .drawer-title{font-size:20px;font-weight:900;color:#fff;letter-spacing:-.01em;flex-shrink:0;padding-bottom:14px}
 .sr-row{flex-shrink:0;margin-bottom:12px}
@@ -1268,16 +1268,16 @@ function buildTimeGutter(){
   var totalH=SLOTS*SH;
   var gut=document.getElementById("timeGutter");
   gut.style.height=totalH+"px";
+  gut.style.position="relative";
   var html='';
-  for(var i=0;i<=SLOTS;i++){
+  for(var i=0;i<SLOTS;i++){
     var mins=DS+i*30;
     var wrap=mins>=1440?mins-1440:mins;
-    var h=Math.floor(wrap/60),m=wrap%60;
-    var ap=h<12?"a":"p";
-    var h12=h%12||12;
-    var lbl=m===0?h12+ap:(m===30?"+":""  );
-    var cls=m===0?"tlbl tlbl-hour":"tlbl tlbl-half";
-    html+='<div class="'+cls+'">'+lbl+'</div>';
+    var hh=Math.floor(wrap/60),mm=wrap%60;
+    var ap=hh<12?"a":"p";
+    var h12=hh%12||12;
+    if(mm!==0)continue;
+    html+='<div class="tlbl-hour" style="position:absolute;top:'+(i*SH)+'px;right:8px;transform:translateY(-50%)">'+h12+ap+'</div>';
   }
   gut.innerHTML=html;
   var scr=document.getElementById("stagesScroll");
