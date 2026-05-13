@@ -162,7 +162,7 @@ input[type=text]::placeholder{color:rgba(255,255,255,.2)}
 .sr-row span{font-size:18px;flex-shrink:0}
 .sr-row input{flex:1;background:transparent;border:none;outline:none;color:#fff;font-size:16px;font-family:inherit;padding:13px 0}
 .sr-row input::placeholder{color:rgba(255,255,255,.25)}
-.sr-list{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding-bottom:100px;min-height:0}
+.sr-list{overflow-y:visible;display:flex;flex-direction:column;gap:8px;padding-bottom:12px;flex-shrink:0}
 .sri{display:flex;align-items:stretch;gap:0;border-radius:14px;background:transparent;cursor:pointer;overflow:hidden;min-height:68px;margin-bottom:0;border:1.5px solid rgba(255,255,255,.1)}
 .sri:active{background:rgba(255,255,255,.1)}
 .sri.sn{background:rgba(255,70,70,.15);border-color:rgba(255,80,80,.4)}
@@ -401,7 +401,7 @@ input[type=text]::placeholder{color:rgba(255,255,255,.2)}
       <input type="text" id="srInput" placeholder="Search artists, genres, stages&hellip;" autocomplete="off" spellcheck="false">
     </div>
     <div class="sr-list" id="srList"></div>
-    <div id="srActivityList" style="overflow-y:auto;padding:0 0 100px"></div>
+    <div id="srActivityList" style="flex:1;overflow-y:auto;min-height:0;padding:0 0 100px"></div>
   </div>
 </div>
 
@@ -1685,7 +1685,7 @@ function renderSR(q){
       });
       return s;
     }
-    matches=all.slice().sort(function(a,b){return popScore(b.a.id)-popScore(a.a.id);}).slice(0,4);
+    matches=all.slice().sort(function(a,b){return popScore(b.a.id)-popScore(a.a.id);}).slice(0,5);
     // Show activity section in default state
     var actList2=document.getElementById("srActivityList");
     if(actList2){actList2.innerHTML="";renderActivity(actList2);}
@@ -1723,8 +1723,23 @@ function renderSR(q){
     el.style.borderColor=hexAlpha(col,.45);
     var bar=document.createElement("div");bar.className="sri-bar";bar.style.background=col;
     var info=document.createElement("div");info.className="sri-body";
+    var allUsers2=db.users||{},allPicks2=db.picks||{};
+    var goingU=Object.keys(allPicks2).filter(function(u){return allPicks2[u][a.id]==="need"&&allUsers2[u];});
+    var intU=Object.keys(allPicks2).filter(function(u){return allPicks2[u][a.id]==="interested"&&allUsers2[u];});
+    var totalPickers=goingU.length+intU.length;
+    var avatarHtml="";
+    if(q.length<1&&totalPickers>0){
+      var topU=goingU.concat(intU).slice(0,5);
+      avatarHtml='<div style="display:flex;align-items:center;gap:4px;margin-top:5px">';
+      topU.forEach(function(uid){
+        avatarHtml+='<div style="width:20px;height:20px;border-radius:50%;background:#2a2a2a;border:1.5px solid rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0">'+allUsers2[uid].emoji+'</div>';
+      });
+      if(totalPickers>5)avatarHtml+='<div style="font-size:10px;color:rgba(255,255,255,.4);font-weight:700;margin-left:2px">+'+(totalPickers-5)+'</div>';
+      avatarHtml+='</div>';
+    }
     info.innerHTML='<div class="sri-name">'+esc(a.name)+'</div>'
-      +'<div class="sri-meta" data-stage="'+esc(a.stage)+'">'+metaLine+'</div>';
+      +'<div class="sri-meta" data-stage="'+esc(a.stage)+'">'+metaLine+'</div>'
+      +avatarHtml;
     var btns=document.createElement("div");btns.className="sri-picks";
     var bg=document.createElement("button");
     bg.className="qpick qpick-g"+(tier==="need"?" qn":tier==="interested"?" qhide":"");
