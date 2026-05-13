@@ -291,13 +291,14 @@ input[type=text]::placeholder{color:rgba(255,255,255,.2)}
   <div class="sp-h1">&#9889; LIB<br><span>2026</span></div>
   <div class="sp-sub">Find your Squad!</div>
   <div class="sp-loc">May 20&ndash;24 &middot; Buena Vista Lake, CA</div>
+  <div style="font-size:12px;color:rgba(255,255,255,.35);text-align:center;line-height:1.6;max-width:280px;margin:-16px auto 24px">Browse the full lineup, mark your must-sees, and find friends who are going to the same sets. 🔥 = Need to See &nbsp;·&nbsp; ✨ = Interested</div>
   <div id="authTabs" style="display:flex;width:100%;margin-bottom:24px;border-radius:14px;overflow:hidden;border:1px solid var(--bdr)">
     <button id="tabLogin" onclick="switchTab('login')" style="flex:1;padding:13px;background:rgba(245,166,35,.2);border:none;color:var(--gold);font-size:15px;font-weight:800;font-family:inherit;cursor:pointer;border-right:1px solid var(--bdr)">Log In</button>
     <button id="tabJoin" onclick="switchTab('join')" style="flex:1;padding:13px;background:transparent;border:none;color:rgba(255,255,255,.4);font-size:15px;font-weight:800;font-family:inherit;cursor:pointer">Join Squad</button>
   </div>
   <div id="loginForm" style="width:100%">
     <div class="fgrp"><label class="flbl">Username</label>
-      <input type="text" id="loginName" placeholder="Your name…" maxlength="30" autocomplete="username" autocapitalize="off" autocorrect="off"></div>
+      <input type="text" id="loginName" placeholder="Your real name…" maxlength="30" autocomplete="username" autocapitalize="off" autocorrect="off"></div>
     <div class="fgrp"><label class="flbl">Password</label>
       <input type="password" id="loginPass" placeholder="Password…" maxlength="40" autocomplete="current-password"></div>
     <div id="loginError" style="color:#ff6b6b;font-size:13px;text-align:center;margin-bottom:10px;font-weight:600;min-height:18px"></div>
@@ -305,7 +306,7 @@ input[type=text]::placeholder{color:rgba(255,255,255,.2)}
   </div>
   <div id="joinForm" style="width:100%;display:none">
     <div class="fgrp"><label class="flbl">Choose a username</label>
-      <input type="text" id="nameInput" placeholder="Your name…" maxlength="30" autocomplete="off" autocapitalize="words"></div>
+      <input type="text" id="nameInput" placeholder="Your real name…" maxlength="30" autocomplete="off" autocapitalize="words"></div>
     <div class="fgrp"><label class="flbl">Choose a password</label>
       <input type="password" id="passInput" placeholder="Something memorable…" maxlength="40" autocomplete="new-password"></div>
     <div class="fgrp" style="margin-bottom:8px"><label class="flbl">Pick your emoji</label>
