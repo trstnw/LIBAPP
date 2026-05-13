@@ -275,12 +275,15 @@ input[type=text]::placeholder{color:rgba(255,255,255,.2)}
 // For live cross-device sync: create a free project at console.firebase.google.com,
 // enable Realtime Database (test mode), then replace the values below.
 var FBC = {
-  apiKey:"REPLACE_ME",
-  authDomain:"REPLACE_ME.firebaseapp.com",
-  databaseURL:"https://REPLACE_ME-default-rtdb.firebaseio.com",
-  projectId:"REPLACE_ME"
+  apiKey:"AIzaSyAPDG2oujtGT7hpxG-JkF-4ia_orglNia0",
+  authDomain:"libapp-ca0b9.firebaseapp.com",
+  databaseURL:"https://libapp-ca0b9-default-rtdb.firebaseio.com",
+  projectId:"libapp-ca0b9",
+  storageBucket:"libapp-ca0b9.firebasestorage.app",
+  messagingSenderId:"485974690646",
+  appId:"1:485974690646:web:d5aa25cc77b7ad191b64f7"
 };
-var FB_ON = FBC.databaseURL.indexOf("REPLACE_ME") === -1;
+var FB_ON = true;
 var fbDb=null,fbRef=null,fbOnVal=null,fbUpd=null;
 
 // ── EMOJIS ────────────────────────────────────────────────────────────────────
@@ -302,7 +305,7 @@ var SC = {
 };
 
 // ── TIME ──────────────────────────────────────────────────────────────────────
-var DS=720, DE=1680, SH=60, SL=(DE-DS)/30;
+var DS=720, DE=1680, SH=60, SLOTS=(DE-DS)/30;
 function pt(s){
   var m=s.match(/(\d+):(\d+)([ap])/i);
   if(!m)return 0;
