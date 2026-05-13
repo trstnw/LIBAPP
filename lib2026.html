@@ -162,7 +162,7 @@ input[type=text]::placeholder{color:rgba(255,255,255,.2)}
 .sr-row span{font-size:18px;flex-shrink:0}
 .sr-row input{flex:1;background:transparent;border:none;outline:none;color:#fff;font-size:16px;font-family:inherit;padding:13px 0}
 .sr-row input::placeholder{color:rgba(255,255,255,.25)}
-.sr-list{overflow-y:visible;display:flex;flex-direction:column;gap:8px;padding-bottom:12px;flex-shrink:0}
+.sr-list{overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding-bottom:12px;flex-shrink:0;max-height:55vh}
 .sri{display:flex;align-items:stretch;gap:0;border-radius:14px;background:transparent;cursor:pointer;overflow:hidden;min-height:68px;margin-bottom:0;border:1.5px solid rgba(255,255,255,.1)}
 .sri:active{background:rgba(255,255,255,.1)}
 .sri.sn{background:rgba(255,70,70,.15);border-color:rgba(255,80,80,.4)}
@@ -1685,7 +1685,7 @@ function renderSR(q){
       });
       return s;
     }
-    matches=all.slice().sort(function(a,b){return popScore(b.a.id)-popScore(a.a.id);}).slice(0,5);
+    matches=all.slice().sort(function(a,b){return popScore(b.a.id)-popScore(a.a.id);}).slice(0,20);
     // Show activity section in default state
     var actList2=document.getElementById("srActivityList");
     if(actList2){actList2.innerHTML="";renderActivity(actList2);}
