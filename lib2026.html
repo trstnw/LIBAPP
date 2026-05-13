@@ -68,15 +68,15 @@ input[type=text]::placeholder{color:rgba(255,255,255,.2)}
 .dtab .dd{font-size:10px;opacity:.7;margin-top:1px}
 
 /* GRID */
-.gcont{flex:1;display:flex;overflow:hidden}
+.gcont{flex:1;display:flex;overflow:hidden;position:relative}
 .tgut{width:var(--tgut);flex-shrink:0;overflow:hidden;position:relative;border-right:1px solid var(--bdr);z-index:10;background:#0a0a0a}
 .tgut-i{position:absolute;top:0;left:0;right:0}
 .tlbl{height:var(--row);display:flex;align-items:flex-start;padding:4px 6px 0 0;justify-content:flex-end;font-size:10px;color:var(--mut);font-weight:600;white-space:nowrap}
-.sscr{flex:1;overflow-x:auto;overflow-y:auto;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.1) transparent;touch-action:pan-x pan-y pinch-zoom}
+.sscr{flex:1;overflow-x:auto;overflow-y:auto;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.1) transparent;touch-action:pan-x pan-y pinch-zoom;scroll-snap-type:x mandatory}
 .sscr::-webkit-scrollbar{height:4px;width:4px}
 .sscr::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:2px}
 .si{display:flex;min-height:100%}
-.scol{width:var(--col);flex-shrink:0;border-right:1px solid var(--bdr);position:relative}
+.scol{width:var(--col);flex-shrink:0;border-right:1px solid var(--bdr);position:relative;scroll-snap-align:start}
 .schdr{position:sticky;top:0;z-index:20;height:36px;display:flex;align-items:center;justify-content:center;padding:0 8px;gap:5px;background:rgba(10,10,10,.96);border-bottom:1px solid var(--bdr)}
 .scdot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
 .scnm{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -92,6 +92,9 @@ input[type=text]::placeholder{color:rgba(255,255,255,.2)}
 .ab .abt{font-size:9px;opacity:.5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px}
 .ab .abg{font-size:9px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;opacity:.75;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:3px}
 .ab .abfp{display:flex;align-items:center;margin-top:auto;padding-top:3px;flex-wrap:nowrap}
+.ab-going{display:flex;align-items:center;gap:3px;margin-top:2px;min-width:0}
+.ab-going-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.ab-going-lbl{font-size:9px;opacity:.8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#fff}
 .ab .abfl{font-size:9px;opacity:.5;margin-left:5px;white-space:nowrap}
 .fc{width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:13px;border:1.5px solid rgba(255,255,255,.25);flex-shrink:0}
 .fc+.fc,.fcx{margin-left:-6px}
@@ -101,6 +104,11 @@ input[type=text]::placeholder{color:rgba(255,255,255,.2)}
 @keyframes navPulse{0%,100%{box-shadow:0 0 0 0 rgba(255,255,255,0)}50%{box-shadow:0 0 0 4px rgba(255,255,255,.4)}}
 .ab.nav{animation:navPulse .6s ease 3}
 
+
+/* ZOOM CONTROLS */
+.zoom-ctrls{position:absolute;bottom:72px;right:12px;z-index:60;display:flex;flex-direction:column;gap:6px}
+.zbtn{width:36px;height:36px;border-radius:50%;background:rgba(20,20,20,.9);border:1px solid rgba(255,255,255,.2);color:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:inherit;line-height:1}
+.zbtn:active{transform:scale(.92)}
 /* BOTTOM SHEETS shared */
 .bk{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);align-items:flex-end;justify-content:center}
 .bk.open{display:flex}
@@ -131,8 +139,8 @@ input[type=text]::placeholder{color:rgba(255,255,255,.2)}
 
 /* MY LINEUP */
 #luBk{z-index:300}
-.lu-sheet{display:flex;flex-direction:column;max-height:90vh;overflow:hidden}
-.lu-hdr{padding:20px 24px 16px;border-bottom:1px solid rgba(255,255,255,.07);flex-shrink:0}
+.lu-sheet{display:flex;flex-direction:column;max-height:82vh;overflow:hidden}
+.lu-hdr{padding:16px 24px 14px;border-bottom:1px solid rgba(255,255,255,.07);flex-shrink:0;position:sticky;top:0;background:#141414;z-index:10}
 .lu-title{font-size:20px;font-weight:900;margin-top:4px}
 .lu-scr{overflow-y:auto;padding:16px 24px 40px;flex:1}
 .lu-day{margin-bottom:24px}
@@ -144,6 +152,7 @@ input[type=text]::placeholder{color:rgba(255,255,255,.2)}
 .lu-info{flex:1;min-width:0}
 .lu-name{font-size:14px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .lu-meta{font-size:11px;color:var(--mut);margin-top:1px}
+.lu-others{font-size:10px;color:var(--gold);margin-top:2px;opacity:.85}
 .lu-tier{font-size:18px;flex-shrink:0}
 .lu-empty{text-align:center;padding:48px 24px;color:var(--mut);font-size:14px;line-height:1.6}
 
@@ -188,7 +197,7 @@ input[type=text]::placeholder{color:rgba(255,255,255,.2)}
 <!-- SPLASH -->
 <div class="screen" id="splash">
 <div class="sp">
-  <div class="sp-eye">Lightning in a Bottle &middot; Buena Vista Lake, CA</div>
+  <div class="sp-eye">Lightning in a Bottle</div>
   <div class="sp-h1">&#9889; LIB<br><span>2026</span></div>
   <div class="sp-sub">Squad Up!</div>
   <div class="sp-loc">May 20&ndash;24 &middot; Buena Vista Lake, CA</div>
@@ -213,9 +222,13 @@ input[type=text]::placeholder{color:rgba(255,255,255,.2)}
     </div>
     <div class="dtabs" id="dayTabs"></div>
   </div>
-  <div class="gcont">
+  <div class="gcont" id="gridCont">
     <div class="tgut"><div class="tgut-i" id="timeGutter"></div></div>
     <div class="sscr" id="stagesScroll"><div class="si" id="stagesInner"></div></div>
+    <div class="zoom-ctrls">
+      <button class="zbtn" onclick="adjustZoom(0.1)" title="Zoom in">+</button>
+      <button class="zbtn" onclick="adjustZoom(-0.1)" title="Zoom out">−</button>
+    </div>
   </div>
 </div>
 
@@ -247,7 +260,13 @@ input[type=text]::placeholder{color:rgba(255,255,255,.2)}
 <!-- MY LINEUP -->
 <div class="bk" id="luBk" onclick="closeLU(event)" style="z-index:300">
   <div class="sheet lu-sheet" onclick="event.stopPropagation()">
-    <div class="lu-hdr"><div class="pill"></div><div class="lu-title" id="luTitle">My Lineup</div></div>
+    <div class="lu-hdr">
+      <div class="pill"></div>
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div class="lu-title" id="luTitle">My Lineup</div>
+        <button onclick="document.getElementById('luBk').classList.remove('open')" style="background:rgba(255,255,255,.1);border:none;color:#fff;border-radius:50%;width:32px;height:32px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0">&times;</button>
+      </div>
+    </div>
     <div class="lu-scr" id="luScr"></div>
   </div>
 </div>
@@ -1049,15 +1068,15 @@ function editProfile(){
   updateJoinBtn();
 }
 function buildDayTabs(){
-  document.getElementById("dayTabs").innerHTML=DAYS.map(function(d){
-    var cls="dtab"+(d.id===activeDay?" on":"");
+  var tabs=document.getElementById("dayTabs");
+  tabs.innerHTML="";
+  DAYS.forEach(function(d){
     var btn=document.createElement("button");
-    btn.className=cls;
-    btn.dataset.day=d.id;
+    btn.className="dtab"+(d.id===activeDay?" on":"");
     btn.innerHTML='<div class="dl">'+d.label+'</div><div class="dd">'+d.date+'</div>';
-    btn.onclick=function(){switchDay(this.dataset.day);};
-    return btn.outerHTML;
-  }).join("");
+    btn.onclick=function(){switchDay(d.id);};
+    tabs.appendChild(btn);
+  });
 }
 function switchDay(id){
   activeDay=id;
@@ -1140,23 +1159,29 @@ function renderGrid(){
       blk.style.cssText="top:"+top+"px;height:"+height+"px;background:"+bg2+";border-color:"+bdr+";"+shadow;
       // Content
       var genre=a.genres?a.genres.split(" · ").slice(0,1).join(""):"";
-      // facepile
       var picks=db.picks||{};var users=db.users||{};
-      var pickers=Object.keys(picks).filter(function(uid){return picks[uid][a.id]&&users[uid];});
-      var needPickers=pickers.filter(function(uid){return picks[uid][a.id]==="need";});
-      var intPickers=pickers.filter(function(uid){return picks[uid][a.id]==="interested";});
-      var sorted=needPickers.concat(intPickers);
-      var fpHtml="";
-      var shown=sorted.slice(0,3);
-      shown.forEach(function(uid,i){
-        fpHtml+='<div class="fc"'+(i>0?' style="margin-left:-6px"':"")+'>'+users[uid].emoji+'</div>';
-      });
-      if(sorted.length>3)fpHtml+='<div class="fcx">+'+(sorted.length-3)+'</div>';
-      var goingLbl=sorted.length>0?'<span class="abfl">'+sorted.length+' going</span>':"";
+      var needPickers=Object.keys(picks).filter(function(uid){return picks[uid][a.id]==="need"&&users[uid];});
+      var intPickers=Object.keys(picks).filter(function(uid){return picks[uid][a.id]==="interested"&&users[uid];});
+
+      function nameLine(uids){
+        if(!uids.length)return "";
+        var names=uids.slice(0,2).map(function(uid){return users[uid].name;});
+        return names.join(", ")+(uids.length>2?"…":"");
+      }
+      var goingHtml="";
+      if(needPickers.length){
+        goingHtml='<div class="ab-going"><span class="ab-going-dot" style="background:#ff5a5a"></span>'
+          +'<span class="ab-going-lbl">Going: '+esc(nameLine(needPickers))+'</span></div>';
+      }
+      var intHtml="";
+      if(intPickers.length){
+        intHtml='<div class="ab-going"><span class="ab-going-dot" style="background:#64b4ff"></span>'
+          +'<span class="ab-going-lbl">Interested: '+esc(nameLine(intPickers))+'</span></div>';
+      }
       blk.innerHTML='<div class="abn">'+esc(a.name)+'</div>'
         +'<div class="abt">'+a.time+'</div>'
         +(genre?'<div class="abg" style="color:'+col+'">'+esc(genre)+'</div>':"")
-        +(fpHtml?'<div class="abfp">'+fpHtml+goingLbl+'</div>':"");
+        +goingHtml+intHtml;
       blk.onclick=function(aid){return function(){openAM(aid);};}(a.id);
       arts.appendChild(blk);
     });
@@ -1164,6 +1189,21 @@ function renderGrid(){
     inner.appendChild(colDiv);
   });
 }
+// ZOOM
+var gridZoom = 1.0;
+function adjustZoom(delta){
+  gridZoom = Math.min(1.0, Math.max(0.4, gridZoom + delta));
+  var inner = document.getElementById("stagesInner");
+  var gutter = document.getElementById("timeGutter");
+  inner.style.transformOrigin = "top left";
+  inner.style.transform = "scale("+gridZoom+")";
+  inner.style.width = (100/gridZoom)+"%";
+  // Scale gutter too
+  gutter.style.transformOrigin = "top left";
+  gutter.style.transform = "scale("+gridZoom+")";
+  gutter.style.width = (100/gridZoom)+"%";
+}
+
 function updateFabCnt(){
   var picks=db.picks&&db.picks[myId]?db.picks[myId]:{};
   document.getElementById("fabCnt").textContent=Object.keys(picks).length;
@@ -1240,18 +1280,21 @@ async function setPick(tier){
   if(!db.picks)db.picks={};
   if(!db.picks[myId])db.picks[myId]={};
   var cur=db.picks[myId][curArtist.id];
-  if(cur===tier)delete db.picks[myId][curArtist.id];
-  else db.picks[myId][curArtist.id]=tier;
-  await saveDB();
+  var newTier=cur===tier?null:tier;
+  if(newTier===null)delete db.picks[myId][curArtist.id];
+  else db.picks[myId][curArtist.id]=newTier;
+  // IMMEDIATE visual feedback — update buttons and grid before async save
   updateAMBtns();
   renderAMAtt();
   renderGrid();
   updateFabCnt();
-  // pop animation on block
-  setTimeout(function(){
-    var blk=document.querySelector('.ab[data-id="'+curArtist.id+'"]');
-    if(blk){blk.classList.remove("pop");void blk.offsetWidth;blk.classList.add("pop");}
-  },50);
+  // Haptic feedback on supported devices
+  if(navigator.vibrate)navigator.vibrate(30);
+  // Pop animation on block
+  var blk=document.querySelector('.ab[data-id="'+curArtist.id+'"]');
+  if(blk){blk.classList.remove("pop");void blk.offsetWidth;blk.classList.add("pop");}
+  // Save in background
+  saveDB();
 }
 
 // ── MY LINEUP ─────────────────────────────────────────────────────────────────
@@ -1284,10 +1327,23 @@ function openLU(){
       var col=SC[a.stage]||"#aaa";
       var el=document.createElement("div");
       el.className="lu-item "+tier;
+      // Who else is going to this artist?
+      var allPicks=db.picks||{};var allUsers=db.users||{};
+      var others=Object.keys(allPicks).filter(function(uid){
+        return uid!==myId&&allPicks[uid][a.id]&&allUsers[uid];
+      });
+      var othersHtml="";
+      if(others.length){
+        var otherNames=others.slice(0,2).map(function(uid){
+          return allUsers[uid].emoji+" "+allUsers[uid].name;
+        }).join(", ")+(others.length>2?" +"+(others.length-2)+" more":"");
+        othersHtml='<div class="lu-others">'+esc(otherNames)+' also going</div>';
+      }
       el.innerHTML='<div class="lu-dot" style="background:'+col+'"></div>'
         +'<div class="lu-info">'
         +'<div class="lu-name">'+esc(a.name)+'</div>'
         +'<div class="lu-meta">'+esc(a.stage)+' · '+a.time+'</div>'
+        +othersHtml
         +'</div>'
         +'<div class="lu-tier">'+(tier==="need"?"&#128293;":"&#10024;")+'</div>';
       el.onclick=(function(id){return function(){closeLUopenAM(id);};})(a.id);
@@ -1381,20 +1437,22 @@ function navToArtist(artistId,dayId){
     if(s<DS)s+=1440;
     var topPx=((s-DS)/30)*SH;
     var scr=document.getElementById("stagesScroll");
-    // scroll vertical
-    scr.scrollTo({top:Math.max(0,topPx-100),behavior:"smooth"});
-    // scroll horizontal to stage column
     var stageIdx=targetDay.stages.indexOf(targetArtist.stage);
-    if(stageIdx>=0)scr.scrollTo({left:stageIdx*192,behavior:"smooth"});
-    // flash block
+    // Scroll both axes simultaneously, place item near top with padding
+    var scrollTop=Math.max(0,topPx-40);
+    var scrollLeft=stageIdx>=0?stageIdx*192:0;
+    scr.scrollTo({top:scrollTop,left:scrollLeft,behavior:"smooth"});
+    // Flash the block after scroll settles
     setTimeout(function(){
       var blk=document.querySelector('.ab[data-id="'+artistId+'"]');
       if(blk){
         blk.classList.remove("nav");
         void blk.offsetWidth;
         blk.classList.add("nav");
+        // Also scroll into view precisely
+        blk.scrollIntoView({behavior:"smooth",block:"start",inline:"start"});
       }
-    },350);
+    },400);
   },60);
 }
 </script>
