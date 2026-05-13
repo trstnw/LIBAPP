@@ -27,7 +27,7 @@ html,body{height:100%;background:#0a0a0a;color:#fff;font-family:'DM Sans',system
 #loading p{font-size:13px;color:var(--mut)}
 
 /* SPLASH */
-#splash{background:radial-gradient(ellipse 90% 50% at 50% 0%,rgba(245,166,35,.18) 0%,transparent 65%);overflow-y:auto;align-items:center;padding:52px 24px 80px}
+#splash{background:radial-gradient(ellipse 90% 50% at 50% 0%,rgba(245,166,35,.18) 0%,transparent 65%);overflow-y:auto;align-items:center;padding:52px 24px 40px}
 .sp{width:100%;max-width:400px;margin:0 auto;display:flex;flex-direction:column;align-items:center}
 .sp-eye{font-size:11px;letter-spacing:.25em;color:var(--mut);text-transform:uppercase;margin-bottom:10px;text-align:center}
 .sp-h1{font-size:60px;font-weight:900;line-height:.9;letter-spacing:-.03em;text-align:center;margin-bottom:8px}
@@ -374,7 +374,7 @@ input[type=text]::placeholder{color:rgba(255,255,255,.2)}
 </div>
 
 <!-- FABs -->
-<div class="fabs">
+<div class="fabs" id="fabRow" style="display:none">
   <button class="sfab" onclick="openFeed()" id="feedFab">🔮</button>
   <button class="lfab" onclick="openLU()">My Lineup <span class="fcnt" id="fabCnt">0</span></button>
   <button class="sfab" onclick="openSR()">&#128269;</button>
@@ -963,8 +963,10 @@ DAYS.forEach(function(d){
 
 // ── STATE ─────────────────────────────────────────────────────────────────────
 var db={users:{},picks:{}};
-var myId=localStorage.getItem("lib26v2_uid")||null;
-var myPass=localStorage.getItem("lib26v2_pass")||null;
+(function(){var ok=["lib26_uid","lib26v3_db","lib26v3_uid","lib26v3_pass","lib26v2_db","lib26_pass"];
+  ok.forEach(function(k){try{localStorage.removeItem(k);}catch(e){}});})();
+var myId=localStorage.getItem("lib26v3_uid")||null;
+var myPass=localStorage.getItem("lib26v3_pass")||null;
 var fbReady=false;
 var selEmoji="🌊";
 var pickerTarget="join";
@@ -975,12 +977,12 @@ var curArtist=null;
 
 // ── STORAGE ───────────────────────────────────────────────────────────────────
 function loadLocal(){
-  try{var s=localStorage.getItem("lib26_db");if(s)db=JSON.parse(s);}catch(e){}
+  try{var s=localStorage.getItem("lib26v3_db");if(s)db=JSON.parse(s);}catch(e){}
   if(!db.users)db.users={};
   if(!db.picks)db.picks={};
 }
 function saveLocal(){
-  localStorage.setItem("lib26_db",JSON.stringify(db));
+  localStorage.setItem("lib26v3_db",JSON.stringify(db));
 }
 async function saveDB(){
   saveLocal();
@@ -1015,7 +1017,13 @@ function initFB(){
       var fdb=db_m.getDatabase(app);
       var fref=function(p){return db_m.ref(fdb,p);};
       db_m.get(fref("lib26")).then(function(snap){
-        if(snap.exists())db=snap.val();
+        // Firebase is authoritative — if it's empty, wipe local cache too
+        if(snap.exists()){
+          db=snap.val();
+        } else {
+          db={users:{},picks:{}};
+          try{localStorage.removeItem("lib26v3_db");}catch(e){}
+        }
         if(!db.users)db.users={};
         if(!db.picks)db.picks={};
         saveLocal();fbReady=true;setSyncOK(true);
@@ -1023,7 +1031,12 @@ function initFB(){
         if(_m&&_m.classList.contains("active"))renderGrid();
         if(_s&&_s.classList.contains("active"))renderSquadPreview();
         db_m.onValue(fref("lib26"),function(snap){
-          if(snap.exists())db=snap.val();
+          if(snap.exists()){
+            db=snap.val();
+          } else {
+            db={users:{},picks:{}};
+            try{localStorage.removeItem("lib26v3_db");}catch(e){}
+          }
           if(!db.users)db.users={};
           if(!db.picks)db.picks={};
           var _m=document.getElementById("main");
@@ -1043,6 +1056,7 @@ function afterLoad(){
   if(myId&&db.users&&db.users[myId]){
     goMain();
   } else {
+    var fr=document.getElementById("fabRow");if(fr)fr.style.display="none";
     showScreen("splash");
     initSplash();
   }
@@ -1097,6 +1111,9 @@ function initSplash(){
 function switchTab(tab){
   var lf=document.getElementById("loginForm"),jf=document.getElementById("joinForm");
   var tl=document.getElementById("tabLogin"),tj=document.getElementById("tabJoin");
+  // Show/hide logout button based on login state
+  var lo=document.getElementById("logoutBtn");
+  if(lo)lo.style.display=myId?"block":"none";
   if(!lf||!jf)return;
   var on="flex:1;padding:13px;background:rgba(245,166,35,.2);border:none;font-size:15px;font-weight:800;font-family:inherit;cursor:pointer;color:var(--gold)";
   var off="flex:1;padding:13px;background:transparent;border:none;font-size:15px;font-weight:800;font-family:inherit;cursor:pointer;color:rgba(255,255,255,.4)";
@@ -1143,7 +1160,7 @@ async function doLogin(){
   loadLocal();var user=db.users&&db.users[uid];
   if(!user){if(errEl)errEl.textContent="Username not found. Join the squad!";if(btn){btn.disabled=false;btn.textContent="Log In";}return;}
   if(user.pass!==hashPass(pass)){if(errEl)errEl.textContent="Wrong password. Try again.";if(btn){btn.disabled=false;btn.textContent="Log In";}return;}
-  myId=uid;myPass=hashPass(pass);localStorage.setItem("lib26v2_uid",myId);localStorage.setItem("lib26v2_pass",myPass);
+  myId=uid;myPass=hashPass(pass);localStorage.setItem("lib26v3_uid",myId);localStorage.setItem("lib26v3_pass",myPass);
   if(btn){btn.disabled=false;btn.textContent="Log In";}goMain();
 }
 async function doJoin(){
@@ -1159,20 +1176,29 @@ async function doJoin(){
   if(Object.entries(db.users||{}).some(function(e){return e[0]!==uid&&e[1].emoji===selEmoji;})){if(errEl)errEl.textContent="That emoji is taken!";if(btn){btn.disabled=false;btn.textContent=selEmoji+" Join as "+name+"!";}return;}
   if(!db.users)db.users={};if(!db.picks)db.picks={};var hp=hashPass(pass);
   db.users[uid]={name:name,emoji:selEmoji,pass:hp};if(!db.picks[uid])db.picks[uid]={};
-  myId=uid;myPass=hp;localStorage.setItem("lib26v2_uid",myId);localStorage.setItem("lib26v2_pass",myPass);
+  myId=uid;myPass=hp;localStorage.setItem("lib26v3_uid",myId);localStorage.setItem("lib26v3_pass",myPass);
   await saveDB();if(btn)btn.disabled=false;goMain();
 }
 
 function goMain(){
   var me=db.users&&db.users[myId];
-  if(!me){showScreen("splash");initSplash();return;}
+  if(!me){showScreen("splash");initSplash();
+    var fr=document.getElementById("fabRow");if(fr)fr.style.display="none";
+    return;}
   showScreen("main");
+  var fr=document.getElementById("fabRow");if(fr)fr.style.display="";
   document.getElementById("meChip").innerHTML=
     "<span>"+me.emoji+"</span><span>"+esc(me.name)+"</span><span style='font-size:10px;opacity:.35;margin-left:2px'>&#9998;</span>";
   buildDayTabs();
   buildTimeGutter();
   renderGrid();
   updateFabCnt();
+}
+function doLogout(){
+  myId=null;myPass=null;
+  try{localStorage.removeItem("lib26v3_uid");localStorage.removeItem("lib26v3_pass");}catch(e){}
+  var fr=document.getElementById("fabRow");if(fr)fr.style.display="none";
+  showScreen("splash");switchTab("login");initSplash();
 }
 function editProfile(){
   var me=db.users&&db.users[myId];
