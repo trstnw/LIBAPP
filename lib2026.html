@@ -71,7 +71,7 @@ input[type=text]::placeholder{color:rgba(255,255,255,.2)}
 .gcont{flex:1;display:flex;overflow:hidden;position:relative}
 .tgut{width:var(--tgut);flex-shrink:0;overflow:hidden;position:relative;border-right:1px solid var(--bdr);z-index:10;background:#0a0a0a}
 .tgut-i{position:absolute;top:0;left:0;right:0}
-.tlbl{height:var(--row);display:flex;align-items:flex-end;padding:0 8px 0 0;justify-content:flex-end;font-size:12px;color:rgba(255,255,255,.5);font-weight:700;white-space:nowrap;position:relative}
+.tlbl{height:var(--row);display:flex;align-items:flex-start;padding:2px 8px 0 0;justify-content:flex-end;font-size:12px;color:rgba(255,255,255,.5);font-weight:700;white-space:nowrap}
 .sscr{flex:1;overflow-x:auto;overflow-y:auto;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.1) transparent;touch-action:pan-x pan-y pinch-zoom;scroll-snap-type:x mandatory}
 .sscr::-webkit-scrollbar{height:4px;width:4px}
 .sscr::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:2px}
@@ -81,8 +81,8 @@ input[type=text]::placeholder{color:rgba(255,255,255,.2)}
 .scdot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
 .scnm{font-size:11px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .gbg{position:absolute;top:0;left:0;right:0;bottom:0;pointer-events:none}
-.grow{height:var(--row);border-bottom:1px solid rgba(255,255,255,.06)}
-.grow.hr{border-bottom-color:rgba(255,255,255,.28);border-bottom-width:1.5px}
+.grow{height:var(--row);border-top:1px solid rgba(255,255,255,.06)}
+.grow.hr{border-top-color:rgba(255,255,255,.28)!important;border-top-width:1.5px}
 .scarts{position:absolute;top:0;left:0;right:0}
 
 /* ARTIST BLOCKS */
@@ -162,7 +162,7 @@ input[type=text]::placeholder{color:rgba(255,255,255,.2)}
 .sr-row span{font-size:18px;flex-shrink:0}
 .sr-row input{flex:1;background:transparent;border:none;outline:none;color:#fff;font-size:16px;font-family:inherit;padding:13px 0}
 .sr-row input::placeholder{color:rgba(255,255,255,.25)}
-.sr-list{overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding-bottom:12px;flex-shrink:0;max-height:55vh}
+.sr-list{overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding-bottom:100px;flex:1;min-height:0}
 .sri{display:flex;align-items:stretch;gap:0;border-radius:14px;background:transparent;cursor:pointer;overflow:hidden;min-height:68px;margin-bottom:0;border:1.5px solid rgba(255,255,255,.1)}
 .sri:active{background:rgba(255,255,255,.1)}
 .sri.sn{background:rgba(255,70,70,.15);border-color:rgba(255,80,80,.4)}
@@ -273,8 +273,8 @@ input[type=text]::placeholder{color:rgba(255,255,255,.2)}
 .sp2-flex>div:not(.feed-scroll):not(.sr-list){flex-shrink:0}
 .sp2-flex>input,.sp2-flex>.sr-row{flex-shrink:0}
 
-.tlbl-hour{color:rgba(255,255,255,.75)!important;font-size:13px!important;font-weight:800!important;transform:translateY(50%)}
-.tlbl-half{color:rgba(255,255,255,.15)!important;font-size:9px!important;transform:translateY(50%)}
+.tlbl-hour{color:rgba(255,255,255,.75)!important;font-size:13px!important;font-weight:800!important}
+.tlbl-half{color:rgba(255,255,255,.15)!important;font-size:9px!important}
 
 .drawer-title{font-size:20px;font-weight:900;color:#fff;letter-spacing:-.01em;flex-shrink:0;padding-bottom:14px}
 .sr-row{flex-shrink:0;margin-bottom:12px}
@@ -401,7 +401,6 @@ input[type=text]::placeholder{color:rgba(255,255,255,.2)}
       <input type="text" id="srInput" placeholder="Search artists, genres, stages&hellip;" autocomplete="off" spellcheck="false">
     </div>
     <div class="sr-list" id="srList"></div>
-    <div id="srActivityList" style="flex:1;overflow-y:auto;min-height:0;padding:0 0 100px"></div>
   </div>
 </div>
 
@@ -412,7 +411,8 @@ input[type=text]::placeholder{color:rgba(255,255,255,.2)}
   <button class="sfab" onclick="openSR()">&#128269;</button>
 </div>
 
-<script>// ── FIREBASE CONFIG ─────────────────────────────
+<script>
+// ── FIREBASE CONFIG ─────────────────────────────
 // ── FIREBASE CONFIG ───────────────────────────────────────────────────────────
 // For live cross-device sync: create a free project at console.firebase.google.com,
 // enable Realtime Database (test mode), then replace the values below.
@@ -1312,7 +1312,7 @@ function renderGrid(){
     bg.className="gbg";
     for(var i=0;i<SLOTS;i++){
       var row=document.createElement("div");
-      row.className="grow"+(i%2===1?" hr":"");
+      row.className="grow"+(i%2===0?" hr":"");
       bg.appendChild(row);
     }
     colDiv.appendChild(bg);
@@ -1637,11 +1637,11 @@ function renderActivity(list){
     var bg=document.createElement("button");
     bg.className="qpick qpick-g"+(myTier==="need"?" qn":myTier==="interested"?" qhide":"");
     bg.textContent="🔥";
-    bg.onclick=(function(aid){return function(ev){ev.stopPropagation();quickPick(aid,"need");setTimeout(function(){renderSR("");renderActivity(document.getElementById("srActivityList"));},80);};})(item.artist.id);
+    bg.onclick=(function(aid){return function(ev){ev.stopPropagation();quickPick(aid,"need");setTimeout(function(){renderSR("");},80);};})(item.artist.id);
     var bi=document.createElement("button");
     bi.className="qpick qpick-i"+(myTier==="interested"?" qi":myTier==="need"?" qhide":"");
     bi.textContent="✨";
-    bi.onclick=(function(aid){return function(ev){ev.stopPropagation();quickPick(aid,"interested");setTimeout(function(){renderSR("");renderActivity(document.getElementById("srActivityList"));},80);};})(item.artist.id);
+    bi.onclick=(function(aid){return function(ev){ev.stopPropagation();quickPick(aid,"interested");setTimeout(function(){renderSR("");},80);};})(item.artist.id);
     btns.appendChild(bg);btns.appendChild(bi);
     el.appendChild(fbar);el.appendChild(avatar);el.appendChild(info);el.appendChild(btns);
     el.onclick=(function(aid,did){return function(ev){
@@ -1657,8 +1657,6 @@ function openSR(){
   document.getElementById("srBk").classList.add("open");
   setTimeout(function(){document.getElementById("srInput").focus();},120);
   renderSR("");
-  var actList=document.getElementById("srActivityList");
-  if(actList){actList.innerHTML="";renderActivity(actList);}
 }
 function closeSR(e){
   if(e&&e.target!==document.getElementById("srBk"))return;
@@ -1686,22 +1684,23 @@ function renderSR(q){
       return s;
     }
     matches=all.slice().sort(function(a,b){return popScore(b.a.id)-popScore(a.a.id);}).slice(0,20);
-    // Show activity section in default state
-    var actList2=document.getElementById("srActivityList");
-    if(actList2){actList2.innerHTML="";renderActivity(actList2);}
-    document.getElementById("srActivityList").style.display="";
   } else {
-    document.getElementById("srActivityList").style.display="none";
 
     matches=all.filter(function(item){var a=item.a;return a.name.toLowerCase().indexOf(q)>-1||(a.genres||"").toLowerCase().indexOf(q)>-1||a.stage.toLowerCase().indexOf(q)>-1;});
     matches=matches.slice(0,20).sort(function(a,b){return srScore(b.a.id)-srScore(a.a.id);});
   }
   var list=document.getElementById("srList");
-  list.innerHTML="";
+  while(list.firstChild)list.removeChild(list.firstChild);
   if(q.length<1){
     var t=document.createElement("div");t.className="feed-section-title";
     t.textContent="Top Artists";
     list.appendChild(t);
+  }
+  if(!matches.length&&q.length<1){
+    var emptyDiv=document.createElement("div");emptyDiv.className="sr-empty";
+    emptyDiv.textContent="No picks yet — be first!";
+    list.appendChild(emptyDiv);
+    return;
   }
   if(!matches.length){
     list.innerHTML='<div class="sr-empty">No artists found</div>';
@@ -1978,6 +1977,7 @@ function navToArtist(artistId,dayId){
     },400);
   },60);
 }
+
 </script>
 script>
 <div class="bk" id="feedBk" onclick="closeFeed(event)" style="z-index:450">
