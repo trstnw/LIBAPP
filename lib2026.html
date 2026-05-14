@@ -1273,7 +1273,10 @@ function buildTimeGutter(){
   SH=parseInt(getComputedStyle(document.documentElement).getPropertyValue("--row"))||60;
   var totalH=SLOTS*SH;
   var gut=document.getElementById("timeGutter");
-  gut.style.height=(totalH+36)+"px";
+  // Read actual rendered header height dynamically
+  var hdrRow=document.getElementById("stageHeaderRow");
+  var hdrH=hdrRow?Math.round(hdrRow.getBoundingClientRect().height):36;
+  gut.style.height=(totalH+hdrH)+"px";
   var html="";
   for(var i=0;i<SLOTS;i++){
     var mins=DS+i*30;
@@ -1282,7 +1285,7 @@ function buildTimeGutter(){
     if(mm!==0)continue;
     var ap=hh<12?"a":"p";
     var h12=hh%12||12;
-    html+="<div class='tlbl-hour' style='position:absolute;top:"+(36+i*SH)+"px;right:8px;transform:translateY(-50%)'>"+h12+ap+"</div>";
+    html+="<div class='tlbl-hour' style='position:absolute;top:"+(hdrH+i*SH)+"px;right:8px;transform:translateY(-50%)'>"+h12+ap+"</div>";
   }
   gut.innerHTML="<div id='tgutInner' style='position:absolute;top:0;left:0;right:0;'>"+html+"</div>";
 }
@@ -1407,19 +1410,26 @@ function adjustZoom(delta){
   inner.style.transformOrigin = "top left";
   inner.style.transform = "scale("+gridZoom+")";
   inner.style.width = (100/gridZoom)+"%";
-  // Scale gutter too
+  // Scale gutter
   gutter.style.transformOrigin = "top left";
   gutter.style.transform = "scale("+gridZoom+")";
   gutter.style.width = (100/gridZoom)+"%";
-  // Scale header row cells to match column width
-  var colW = parseInt(getComputedStyle(document.documentElement).getPropertyValue("--col"))||210;
-  var newColW = Math.round(colW * gridZoom);
+  // Scale header row — height and cells both scale with zoom
+  var baseColW = parseInt(getComputedStyle(document.documentElement).getPropertyValue("--col"))||210;
+  var baseHdrH = 36;
+  var newColW = Math.round(baseColW * gridZoom);
+  var newHdrH = Math.round(baseHdrH * gridZoom);
+  var hdrRow = document.getElementById("stageHeaderRow");
+  if(hdrRow) hdrRow.style.height = newHdrH+"px";
   var cells = document.querySelectorAll(".shdr-cell");
   cells.forEach(function(cell){
     cell.style.width = newColW+"px";
     cell.style.minWidth = newColW+"px";
+    cell.style.height = newHdrH+"px";
     cell.style.fontSize = Math.round(11 * gridZoom)+"px";
   });
+  // Rebuild time gutter so offset recalculates from actual header height
+  buildTimeGutter();
 }
 
 function updateFabCnt(){
