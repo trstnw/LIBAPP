@@ -69,8 +69,8 @@ input[type=text]::placeholder{color:rgba(255,255,255,.2)}
 
 /* GRID */
 .gcont{flex:1;display:flex;overflow:hidden;position:relative}
-.tgut{width:var(--tgut);flex-shrink:0;overflow:hidden;position:relative;border-right:1px solid var(--bdr);z-index:10;background:#0a0a0a}
-.tgut-i{position:absolute;top:0;left:0;right:0}
+.tgut{width:var(--tgut);flex-shrink:0;overflow:visible;position:relative;border-right:1px solid var(--bdr);z-index:10;background:#0a0a0a}
+.tgut-i{position:absolute;top:0;left:0;right:0;bottom:0;overflow:visible}
 .tlbl{height:var(--row);}
 .sscr{flex:1;overflow-x:auto;overflow-y:auto;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.1) transparent;touch-action:pan-x pan-y pinch-zoom;scroll-snap-type:x mandatory}
 .sscr::-webkit-scrollbar{height:4px;width:4px}
@@ -282,7 +282,7 @@ input[type=text]::placeholder{color:rgba(255,255,255,.2)}
 .tgut::-webkit-scrollbar{display:none}
 
 @media(max-width:430px){
-  :root{--col:160px;--tgut:20px;}
+  :root{--col:160px;--tgut:40px;}
   .tlbl-hour{font-size:12px!important;}
 }
 </style>
@@ -1291,7 +1291,7 @@ function buildTimeGutter(){
     if(mm!==0)continue;
     var ap=hh<12?"AM":"PM";
     var h12=hh%12||12;
-    html+="<div class='tlbl-hour' style='position:absolute;top:"+(hdrH+i*SH)+"px;left:0;right:0;text-align:right;padding-right:4px;transform:translateY(-40%)'>"+h12+ap+"</div>";
+    html+="<div class='tlbl-hour' style='position:absolute;top:"+(hdrH+i*SH)+"px;right:2px;text-align:right;transform:translateY(-40%);font-size:11px'>"+h12+ap+"</div>";
   }
   gut.innerHTML="<div id='tgutInner' style='position:absolute;top:0;left:0;right:0;'>"+html+"</div>";
 }
@@ -1417,10 +1417,7 @@ function adjustZoom(delta){
   inner.style.transformOrigin = "top left";
   inner.style.transform = "scale("+gridZoom+")";
   inner.style.width = (100/gridZoom)+"%";
-  // Scale gutter
-  gutter.style.transformOrigin = "top left";
-  gutter.style.transform = "scale("+gridZoom+")";
-  gutter.style.width = (100/gridZoom)+"%";
+  // Gutter is synced via scrollTop/gridZoom — no transform needed
   // Scale header row — height and cells both scale with zoom
   var baseColW = parseInt(getComputedStyle(document.documentElement).getPropertyValue("--col"))||210;
   var baseHdrH = 36;
