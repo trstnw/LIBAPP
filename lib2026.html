@@ -16,7 +16,7 @@ html,body{height:100%;background:#0a0a0a;color:#fff;font-family:'DM Sans',system
   --gold:#F5A623;--gdim:rgba(245,166,35,.15);
   --surf:rgba(255,255,255,.05);--bdr:rgba(255,255,255,.08);
   --mut:rgba(255,255,255,.35);
-  --col:210px;--row:60px;--tgut:56px;
+  --col:210px;--row:60px;--tgut:48px;
 }
 .screen{display:none;height:100vh;flex-direction:column;overflow:hidden}
 .screen.active{display:flex}
@@ -273,13 +273,18 @@ input[type=text]::placeholder{color:rgba(255,255,255,.2)}
 .sp2-flex>div:not(.feed-scroll):not(.sr-list){flex-shrink:0}
 .sp2-flex>input,.sp2-flex>.sr-row{flex-shrink:0}
 
-.tlbl-hour{font-size:11px;font-weight:700;color:rgba(255,255,255,.65);white-space:nowrap;text-align:right;width:100%;padding-right:8px;box-sizing:border-box}
+.tlbl-hour{font-size:12px;font-weight:700;color:#fff;white-space:nowrap;text-align:right;width:100%;padding-right:4px;box-sizing:border-box}
 .tlbl-half{display:none}
 
 .drawer-title{font-size:20px;font-weight:900;color:#fff;letter-spacing:-.01em;flex-shrink:0;padding-bottom:14px}
 .sr-row{flex-shrink:0;margin-bottom:12px}
 
 .tgut::-webkit-scrollbar{display:none}
+
+@media(max-width:430px){
+  :root{--col:160px;--tgut:12px;}
+  .tlbl-hour{font-size:12px!important;}
+}
 </style>
 </head>
 <body>
@@ -1404,7 +1409,7 @@ function renderGrid(){
   });
 }
 // ZOOM
-var gridZoom = window.innerWidth<=430 ? 0.7 : 1.0;
+var gridZoom = window.innerWidth<=430 ? 0.8 : 1.0;
 function adjustZoom(delta){
   gridZoom = Math.min(1.0, Math.max(0.4, gridZoom + delta));
   var inner = document.getElementById("stagesInner");
