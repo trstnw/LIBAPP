@@ -123,7 +123,7 @@ input[type=text]::placeholder{color:rgba(255,255,255,.2)}
 .am-name{font-size:26px;font-weight:900;line-height:1.05;margin-bottom:4px}
 .am-time{font-size:13px;color:var(--mut)}
 .sptbtn{display:flex;align-items:center;gap:6px;background:#1DB954;color:#000;border-radius:20px;padding:8px 16px;font-size:12px;font-weight:800;text-decoration:none;flex-shrink:0;margin-left:12px;font-family:inherit;white-space:nowrap}
-.am-genres{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.am-genres{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;align-items:center}
 .am-desc{font-size:13px;color:rgba(255,255,255,.5);line-height:1.6;margin-bottom:20px}
 .tbns{display:flex;gap:10px;margin-bottom:22px}
 .tbn{flex:1;padding:14px 8px;border-radius:14px;border:1.5px solid var(--bdr);background:var(--surf);color:#fff;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;transition:all .15s}
@@ -163,14 +163,14 @@ input[type=text]::placeholder{color:rgba(255,255,255,.2)}
 .sr-row input{flex:1;background:transparent;border:none;outline:none;color:#fff;font-size:16px;font-family:inherit;padding:13px 0}
 .sr-row input::placeholder{color:rgba(255,255,255,.25)}
 .sr-list{overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding-bottom:100px;flex:1;min-height:0}
-.sri{display:flex;align-items:stretch;gap:0;border-radius:14px;background:transparent;cursor:pointer;overflow:hidden;min-height:68px;margin-bottom:0;border:1.5px solid rgba(255,255,255,.1)}
+.sri{display:flex;align-items:stretch;gap:0;border-radius:14px;background:transparent;cursor:pointer;overflow:hidden;margin-bottom:0;border:1.5px solid rgba(255,255,255,.1)}
 .sri:active{background:rgba(255,255,255,.1)}
 .sri.sn{background:rgba(255,70,70,.15);border-color:rgba(255,80,80,.4)}
 .sri.si{background:rgba(80,160,255,.12);border-color:rgba(100,180,255,.4)}
 .sri-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
 .sri-info{flex:1;min-width:0}
-.sri-name{font-size:16px;font-weight:700;color:#fff;white-space:normal;overflow:visible;line-height:1.25}
-.sri-meta{font-size:13px;color:var(--mut);margin-top:3px;font-weight:500}
+.sri-name{font-size:15px;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.2}
+.sri-meta{font-size:12px;color:var(--mut);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .sri-day{font-size:11px;font-weight:700;background:rgba(255,255,255,.1);color:rgba(255,255,255,.6);border-radius:8px;padding:2px 8px;flex-shrink:0}
 .sr-empty{text-align:center;color:var(--mut);font-size:14px;padding:32px 0}
 
@@ -203,7 +203,7 @@ input[type=text]::placeholder{color:rgba(255,255,255,.2)}
 .ep-btn{width:100%;aspect-ratio:1;border-radius:12px;border:2px solid transparent;background:transparent;cursor:pointer;font-size:28px;display:flex;align-items:center;justify-content:center;transition:all .12s;line-height:1}
 .ep-btn:active{transform:scale(.88)}
 .ep-btn.ep-sel{background:rgba(245,166,35,.15);border-color:rgba(245,166,35,.6)}
-.sri-meta{font-size:13px;color:var(--mut);margin-top:3px;font-weight:500}
+.sri-meta{font-size:12px;color:var(--mut);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .sri-name{font-size:17px;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .feed-item{display:flex;align-items:stretch;gap:0;border-radius:14px;background:transparent;cursor:pointer;overflow:hidden;min-height:72px;border:1.5px solid rgba(255,255,255,.1);margin-bottom:8px}
 .feed-item:active{background:rgba(255,255,255,.1)}
@@ -225,7 +225,7 @@ input[type=text]::placeholder{color:rgba(255,255,255,.2)}
 .feed-item.stage-card{border-radius:12px;overflow:hidden}
 
 .sri-bar{width:4px;flex-shrink:0;border-radius:0}
-.sri-body{flex:1;min-width:0;padding:13px 6px 13px 14px;display:flex;flex-direction:column;justify-content:center;overflow:hidden}
+.sri-body{flex:1;min-width:0;padding:10px 6px 10px 14px;display:flex;flex-direction:column;justify-content:center;gap:3px}
 .feed-bar{width:4px;flex-shrink:0;border-radius:0}
 .feed-body{flex:1;min-width:0;padding:16px 6px 16px 12px;display:flex;flex-direction:column;justify-content:center;overflow:hidden}
 .sri .sri-picks,.feed-item .sri-picks{width:92px;flex-shrink:0;display:flex;align-items:center;justify-content:center;align-self:stretch;gap:0;padding:0}
@@ -412,6 +412,7 @@ input[type=text]::placeholder{color:rgba(255,255,255,.2)}
 </div>
 
 <script>
+// ── FIREBASE CONFIG ────────────────────────
 // ── FIREBASE CONFIG ─────────────────────────────
 // ── FIREBASE CONFIG ───────────────────────────────────────────────────────────
 // For live cross-device sync: create a free project at console.firebase.google.com,
@@ -1277,7 +1278,7 @@ function buildTimeGutter(){
     var ap=hh<12?"a":"p";
     var h12=hh%12||12;
     if(mm!==0)continue;
-    html+='<div class="tlbl-hour" style="position:absolute;top:'+(i*SH)+'px;right:8px;transform:translateY(-50%)">'+h12+ap+'</div>';
+    html+='<div class="tlbl-hour" style="position:absolute;top:'+(i*SH)+'px;right:8px">'+h12+ap+'</div>';
   }
   gut.innerHTML=html;
   var scr=document.getElementById("stagesScroll");
@@ -1439,11 +1440,11 @@ function openAM(artistId){
       var sp=document.createElement("span");
       sp.textContent=g;
       if(gi===0){
-        sp.style.cssText="font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;"
-          +"background:"+col+"30;color:"+col+";border:1.5px solid "+col+"66;border-radius:20px;padding:4px 12px";
+        sp.style.cssText="display:inline-flex;align-items:center;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;"
+          +"background:"+col+"30;color:"+col+";border:1.5px solid "+col+"66;border-radius:20px;padding:5px 12px;line-height:1";
       } else {
-        sp.style.cssText="font-size:10px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;"
-          +"background:rgba(255,255,255,.05);color:rgba(255,255,255,.45);border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:3px 9px";
+        sp.style.cssText="display:inline-flex;align-items:center;font-size:10px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;"
+          +"background:rgba(255,255,255,.05);color:rgba(255,255,255,.45);border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:5px 9px;line-height:1";
       }
       gEl.appendChild(sp);
     });
@@ -1731,7 +1732,7 @@ function renderSR(q){
       var topU=goingU.concat(intU).slice(0,5);
       avatarHtml='<div style="display:flex;align-items:center;gap:4px;margin-top:5px">';
       topU.forEach(function(uid){
-        avatarHtml+='<div style="width:20px;height:20px;border-radius:50%;background:#2a2a2a;border:1.5px solid rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0">'+allUsers2[uid].emoji+'</div>';
+        avatarHtml+='<div style="width:18px;height:18px;border-radius:50%;background:#2a2a2a;border:1px solid rgba(255,255,255,.12);display:inline-flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;margin-right:2px">'+allUsers2[uid].emoji+'</div>';
       });
       if(totalPickers>5)avatarHtml+='<div style="font-size:10px;color:rgba(255,255,255,.4);font-weight:700;margin-left:2px">+'+(totalPickers-5)+'</div>';
       avatarHtml+='</div>';
@@ -1977,9 +1978,8 @@ function navToArtist(artistId,dayId){
     },400);
   },60);
 }
-
 </script>
-script>
+
 <div class="bk" id="feedBk" onclick="closeFeed(event)" style="z-index:450">
   <div class="sheet sp2-flex" onclick="event.stopPropagation()" style="position:relative">
     <button class="drawer-close" onclick="closeFeed()">&#10005;</button>
