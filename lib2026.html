@@ -1112,7 +1112,7 @@ window.addEventListener("DOMContentLoaded",function(){
     if(hdr)hdr.scrollLeft=_scrEl.scrollLeft;
     // Sync time gutter via translateY on inner div
     var ti=document.getElementById("tgutInner");
-    if(ti)ti.style.transform="translateY(-"+_scrEl.scrollTop+"px)";
+    if(ti)ti.style.transform="translateY(-"+(_scrEl.scrollTop/gridZoom)+"px)";
   },{passive:true});
   // Show splash after 800ms regardless of Firebase
   setTimeout(function(){
@@ -1233,6 +1233,7 @@ function goMain(){
   buildTimeGutter();
   renderGrid();
   updateFabCnt();
+  if(window.innerWidth<=430)adjustZoom(0);
 }
 function doLogout(){
   myId=null;myPass=null;
@@ -1283,7 +1284,7 @@ function buildTimeGutter(){
     var wrap=mins>=1440?mins-1440:mins;
     var hh=Math.floor(wrap/60),mm=wrap%60;
     if(mm!==0)continue;
-    var ap=hh<12?"a":"p";
+    var ap=hh<12?"AM":"PM";
     var h12=hh%12||12;
     html+="<div class='tlbl-hour' style='position:absolute;top:"+(hdrH+i*SH)+"px;right:8px;transform:translateY(-50%)'>"+h12+ap+"</div>";
   }
