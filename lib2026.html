@@ -69,7 +69,7 @@ input[type=text]::placeholder{color:rgba(255,255,255,.2)}
 
 /* GRID */
 .gcont{flex:1;display:flex;overflow:hidden;position:relative}
-.tgut{width:var(--tgut);flex-shrink:0;overflow-y:auto;overflow-x:hidden;position:relative;border-right:1px solid var(--bdr);z-index:10;background:#0a0a0a;scrollbar-width:none;-ms-overflow-style:none}
+.tgut{width:var(--tgut);flex-shrink:0;overflow:hidden;position:relative;border-right:1px solid var(--bdr);z-index:10;background:#0a0a0a}
 .tgut-i{position:absolute;top:0;left:0;right:0}
 .tlbl{height:var(--row);}
 .sscr{flex:1;overflow-x:auto;overflow-y:auto;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.1) transparent;touch-action:pan-x pan-y pinch-zoom;scroll-snap-type:x mandatory}
@@ -163,14 +163,14 @@ input[type=text]::placeholder{color:rgba(255,255,255,.2)}
 .sr-row input{flex:1;background:transparent;border:none;outline:none;color:#fff;font-size:16px;font-family:inherit;padding:13px 0}
 .sr-row input::placeholder{color:rgba(255,255,255,.25)}
 .sr-list{overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding-bottom:100px;flex:1;min-height:0}
-.sri{display:flex;align-items:stretch;gap:0;border-radius:14px;background:transparent;cursor:pointer;overflow:hidden;margin-bottom:0;border:1.5px solid rgba(255,255,255,.1);min-height:72px}
+.sri{display:flex;align-items:stretch;gap:0;border-radius:14px;background:transparent;cursor:pointer;overflow:visible;margin-bottom:8px;border:1.5px solid rgba(255,255,255,.1)}
 .sri:active{background:rgba(255,255,255,.1)}
 .sri.sn{background:rgba(255,70,70,.15);border-color:rgba(255,80,80,.4)}
 .sri.si{background:rgba(80,160,255,.12);border-color:rgba(100,180,255,.4)}
 .sri-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
 .sri-info{flex:1;min-width:0}
-.sri-name{font-size:15px;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.2}
-.sri-meta{font-size:12px;color:var(--mut);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sri-name{font-size:15px;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sri-meta{font-size:12px;color:var(--mut);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .sri-day{font-size:11px;font-weight:700;background:rgba(255,255,255,.1);color:rgba(255,255,255,.6);border-radius:8px;padding:2px 8px;flex-shrink:0}
 .sr-empty{text-align:center;color:var(--mut);font-size:14px;padding:32px 0}
 
@@ -203,7 +203,7 @@ input[type=text]::placeholder{color:rgba(255,255,255,.2)}
 .ep-btn{width:100%;aspect-ratio:1;border-radius:12px;border:2px solid transparent;background:transparent;cursor:pointer;font-size:28px;display:flex;align-items:center;justify-content:center;transition:all .12s;line-height:1}
 .ep-btn:active{transform:scale(.88)}
 .ep-btn.ep-sel{background:rgba(245,166,35,.15);border-color:rgba(245,166,35,.6)}
-.sri-meta{font-size:12px;color:var(--mut);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sri-meta{font-size:12px;color:var(--mut);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .sri-name{font-size:17px;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .feed-item{display:flex;align-items:stretch;gap:0;border-radius:14px;background:transparent;cursor:pointer;overflow:hidden;min-height:72px;border:1.5px solid rgba(255,255,255,.1);margin-bottom:8px}
 .feed-item:active{background:rgba(255,255,255,.1)}
@@ -224,8 +224,8 @@ input[type=text]::placeholder{color:rgba(255,255,255,.2)}
 .sri.stage-card{border-radius:12px;overflow:hidden}
 .feed-item.stage-card{border-radius:12px;overflow:hidden}
 
-.sri-bar{width:4px;flex-shrink:0;border-radius:0}
-.sri-body{flex:1;min-width:0;padding:10px 6px 10px 14px;display:flex;flex-direction:column;justify-content:center;gap:3px}
+.sri-bar{width:4px;flex-shrink:0;border-radius:14px 0 0 14px}
+.sri-body{flex:1;min-width:0;padding:12px 6px 12px 14px;display:flex;flex-direction:column;justify-content:flex-start;gap:4px}
 .feed-bar{width:4px;flex-shrink:0;border-radius:0}
 .feed-body{flex:1;min-width:0;padding:16px 6px 16px 12px;display:flex;flex-direction:column;justify-content:center;overflow:hidden}
 .sri .sri-picks,.feed-item .sri-picks{width:92px;flex-shrink:0;display:flex;align-items:center;justify-content:center;align-self:stretch;gap:0;padding:0}
@@ -414,6 +414,8 @@ input[type=text]::placeholder{color:rgba(255,255,255,.2)}
 </div>
 
 <script>
+// ── FIREBASE CONFIG ────────────────────────
+// ── FIREBASE 
 // ── FIREBASE CONFIG ────────────────────────
 // ── FIREBASE CONFIG ─────────────────────────────
 // ── FIREBASE CONFIG ───────────────────────────────────────────────────────────
@@ -1108,9 +1110,9 @@ window.addEventListener("DOMContentLoaded",function(){
     // Sync sticky header row horizontal scroll
     var hdr=document.getElementById("stageHeaderRow");
     if(hdr)hdr.scrollLeft=_scrEl.scrollLeft;
-    // Sync time gutter vertical scroll
-    var gut=document.getElementById("timeGutter");
-    if(gut)gut.scrollTop=_scrEl.scrollTop;
+    // Sync time gutter via translateY on inner div
+    var ti=document.getElementById("tgutInner");
+    if(ti)ti.style.transform="translateY(-"+_scrEl.scrollTop+"px)";
   },{passive:true});
   // Show splash after 800ms regardless of Firebase
   setTimeout(function(){
@@ -1272,18 +1274,17 @@ function buildTimeGutter(){
   var totalH=SLOTS*SH;
   var gut=document.getElementById("timeGutter");
   gut.style.height=totalH+"px";
-  gut.style.position="relative";
-  var html='';
+  var html="";
   for(var i=0;i<SLOTS;i++){
     var mins=DS+i*30;
     var wrap=mins>=1440?mins-1440:mins;
     var hh=Math.floor(wrap/60),mm=wrap%60;
+    if(mm!==0)continue;
     var ap=hh<12?"a":"p";
     var h12=hh%12||12;
-    if(mm!==0)continue;
-    html+='<div class="tlbl-hour" style="position:absolute;top:'+(i*SH)+'px;right:8px">'+h12+ap+'</div>';
+    html+="<div class='tlbl-hour' style='position:absolute;top:"+(i*SH)+"px;right:8px;line-height:1'>"+h12+ap+"</div>";
   }
-  gut.innerHTML=html;
+  gut.innerHTML="<div id='tgutInner' style='position:absolute;top:0;left:0;right:0;'>"+html+"</div>";
 }
 // scroll sync handled by DOMContentLoaded listener
 function renderGrid(){
@@ -1996,8 +1997,7 @@ function navToArtist(artistId,dayId){
   },60);
 }
 </script>
-
-<div class="bk" id="feedBk" onclick="closeFeed(event)" style="z-index:450">
+)" style="z-index:450">
   <div class="sheet sp2-flex" onclick="event.stopPropagation()" style="position:relative">
     <button class="drawer-close" onclick="closeFeed()">&#10005;</button>
     <div class="pill"></div>
