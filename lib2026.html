@@ -1273,7 +1273,7 @@ function buildTimeGutter(){
   SH=parseInt(getComputedStyle(document.documentElement).getPropertyValue("--row"))||60;
   var totalH=SLOTS*SH;
   var gut=document.getElementById("timeGutter");
-  gut.style.height=totalH+"px";
+  gut.style.height=(totalH+36)+"px";
   var html="";
   for(var i=0;i<SLOTS;i++){
     var mins=DS+i*30;
@@ -1282,7 +1282,7 @@ function buildTimeGutter(){
     if(mm!==0)continue;
     var ap=hh<12?"a":"p";
     var h12=hh%12||12;
-    html+="<div class='tlbl-hour' style='position:absolute;top:"+(i*SH)+"px;right:8px;transform:translateY(-50%)'>"+h12+ap+"</div>";
+    html+="<div class='tlbl-hour' style='position:absolute;top:"+(36+i*SH)+"px;right:8px;transform:translateY(-50%)'>"+h12+ap+"</div>";
   }
   gut.innerHTML="<div id='tgutInner' style='position:absolute;top:0;left:0;right:0;'>"+html+"</div>";
 }
