@@ -1411,6 +1411,15 @@ function adjustZoom(delta){
   gutter.style.transformOrigin = "top left";
   gutter.style.transform = "scale("+gridZoom+")";
   gutter.style.width = (100/gridZoom)+"%";
+  // Scale header row cells to match column width
+  var colW = parseInt(getComputedStyle(document.documentElement).getPropertyValue("--col"))||210;
+  var newColW = Math.round(colW * gridZoom);
+  var cells = document.querySelectorAll(".shdr-cell");
+  cells.forEach(function(cell){
+    cell.style.width = newColW+"px";
+    cell.style.minWidth = newColW+"px";
+    cell.style.fontSize = Math.round(11 * gridZoom)+"px";
+  });
 }
 
 function updateFabCnt(){
