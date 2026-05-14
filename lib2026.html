@@ -69,7 +69,7 @@ input[type=text]::placeholder{color:rgba(255,255,255,.2)}
 
 /* GRID */
 .gcont{flex:1;display:flex;overflow:hidden;position:relative}
-.tgut{width:var(--tgut);flex-shrink:0;overflow:hidden;position:relative;border-right:1px solid var(--bdr);z-index:10;background:#0a0a0a}
+.tgut{width:var(--tgut);flex-shrink:0;overflow-y:auto;overflow-x:hidden;position:relative;border-right:1px solid var(--bdr);z-index:10;background:#0a0a0a;scrollbar-width:none;-ms-overflow-style:none}
 .tgut-i{position:absolute;top:0;left:0;right:0}
 .tlbl{height:var(--row);}
 .sscr{flex:1;overflow-x:auto;overflow-y:auto;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.1) transparent;touch-action:pan-x pan-y pinch-zoom;scroll-snap-type:x mandatory}
@@ -163,7 +163,7 @@ input[type=text]::placeholder{color:rgba(255,255,255,.2)}
 .sr-row input{flex:1;background:transparent;border:none;outline:none;color:#fff;font-size:16px;font-family:inherit;padding:13px 0}
 .sr-row input::placeholder{color:rgba(255,255,255,.25)}
 .sr-list{overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding-bottom:100px;flex:1;min-height:0}
-.sri{display:flex;align-items:stretch;gap:0;border-radius:14px;background:transparent;cursor:pointer;overflow:hidden;margin-bottom:0;border:1.5px solid rgba(255,255,255,.1)}
+.sri{display:flex;align-items:stretch;gap:0;border-radius:14px;background:transparent;cursor:pointer;overflow:hidden;margin-bottom:0;border:1.5px solid rgba(255,255,255,.1);min-height:72px}
 .sri:active{background:rgba(255,255,255,.1)}
 .sri.sn{background:rgba(255,70,70,.15);border-color:rgba(255,80,80,.4)}
 .sri.si{background:rgba(80,160,255,.12);border-color:rgba(100,180,255,.4)}
@@ -278,6 +278,8 @@ input[type=text]::placeholder{color:rgba(255,255,255,.2)}
 
 .drawer-title{font-size:20px;font-weight:900;color:#fff;letter-spacing:-.01em;flex-shrink:0;padding-bottom:14px}
 .sr-row{flex-shrink:0;margin-bottom:12px}
+
+.tgut::-webkit-scrollbar{display:none}
 </style>
 </head>
 <body>
@@ -1103,11 +1105,12 @@ window.addEventListener("DOMContentLoaded",function(){
   // Persistent time gutter sync — attached once, never overwritten
   var _scrEl=document.getElementById("stagesScroll");
   if(_scrEl)_scrEl.addEventListener("scroll",function(){
-    var gut=document.getElementById("timeGutter");
-    if(gut)gut.style.transform="translateY(-"+_scrEl.scrollTop+"px)";
     // Sync sticky header row horizontal scroll
     var hdr=document.getElementById("stageHeaderRow");
     if(hdr)hdr.scrollLeft=_scrEl.scrollLeft;
+    // Sync time gutter vertical scroll
+    var gut=document.getElementById("timeGutter");
+    if(gut)gut.scrollTop=_scrEl.scrollTop;
   },{passive:true});
   // Show splash after 800ms regardless of Firebase
   setTimeout(function(){
@@ -1281,10 +1284,8 @@ function buildTimeGutter(){
     html+='<div class="tlbl-hour" style="position:absolute;top:'+(i*SH)+'px;right:8px">'+h12+ap+'</div>';
   }
   gut.innerHTML=html;
-  var scr=document.getElementById("stagesScroll");
-  gut.onscroll=null;
-  scr.onscroll=function(){gut.scrollTop=scr.scrollTop;};
 }
+// scroll sync handled by DOMContentLoaded listener
 function renderGrid(){
   // Rebuild sticky header row
   var hdrRow=document.getElementById("stageHeaderRow");
@@ -1723,23 +1724,39 @@ function renderSR(q){
     el.style.borderColor=hexAlpha(col,.45);
     var bar=document.createElement("div");bar.className="sri-bar";bar.style.background=col;
     var info=document.createElement("div");info.className="sri-body";
-    var allUsers2=db.users||{},allPicks2=db.picks||{};
-    var goingU=Object.keys(allPicks2).filter(function(u){return allPicks2[u][a.id]==="need"&&allUsers2[u];});
-    var intU=Object.keys(allPicks2).filter(function(u){return allPicks2[u][a.id]==="interested"&&allUsers2[u];});
-    var totalPickers=goingU.length+intU.length;
-    var avatarHtml="";
-    if(q.length<1&&totalPickers>0){
-      var topU=goingU.concat(intU).slice(0,5);
-      avatarHtml='<div style="display:flex;align-items:center;gap:4px;margin-top:5px">';
-      topU.forEach(function(uid){
-        avatarHtml+='<div style="width:18px;height:18px;border-radius:50%;background:#2a2a2a;border:1px solid rgba(255,255,255,.12);display:inline-flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;margin-right:2px">'+allUsers2[uid].emoji+'</div>';
-      });
-      if(totalPickers>5)avatarHtml+='<div style="font-size:10px;color:rgba(255,255,255,.4);font-weight:700;margin-left:2px">+'+(totalPickers-5)+'</div>';
-      avatarHtml+='</div>';
+    // Artist name
+    var nameEl=document.createElement("div");nameEl.className="sri-name";
+    nameEl.textContent=a.name;
+    info.appendChild(nameEl);
+    // Stage + status
+    var metaEl=document.createElement("div");metaEl.className="sri-meta";
+    metaEl.setAttribute("data-stage",a.stage);
+    metaEl.textContent=metaLine;
+    info.appendChild(metaEl);
+    // Avatars (default state only)
+    if(q.length<1){
+      var allUsers2=db.users||{},allPicks2=db.picks||{};
+      var goingU=Object.keys(allPicks2).filter(function(u){return allPicks2[u][a.id]==="need"&&allUsers2[u];});
+      var intU=Object.keys(allPicks2).filter(function(u){return allPicks2[u][a.id]==="interested"&&allUsers2[u];});
+      var totalPickers=goingU.length+intU.length;
+      if(totalPickers>0){
+        var avRow=document.createElement("div");
+        avRow.style.cssText="display:flex;align-items:center;gap:3px;margin-top:4px;flex-wrap:nowrap";
+        goingU.concat(intU).slice(0,5).forEach(function(uid){
+          var av=document.createElement("div");
+          av.style.cssText="width:18px;height:18px;border-radius:50%;background:#2a2a2a;border:1px solid rgba(255,255,255,.12);display:inline-flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0";
+          av.textContent=allUsers2[uid].emoji;
+          avRow.appendChild(av);
+        });
+        if(totalPickers>5){
+          var more=document.createElement("div");
+          more.style.cssText="font-size:10px;color:rgba(255,255,255,.4);font-weight:700;margin-left:2px";
+          more.textContent="+"+(totalPickers-5);
+          avRow.appendChild(more);
+        }
+        info.appendChild(avRow);
+      }
     }
-    info.innerHTML='<div class="sri-name">'+esc(a.name)+'</div>'
-      +'<div class="sri-meta" data-stage="'+esc(a.stage)+'">'+metaLine+'</div>'
-      +avatarHtml;
     var btns=document.createElement("div");btns.className="sri-picks";
     var bg=document.createElement("button");
     bg.className="qpick qpick-g"+(tier==="need"?" qn":tier==="interested"?" qhide":"");
