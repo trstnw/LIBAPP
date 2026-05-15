@@ -1163,7 +1163,7 @@ window.addEventListener("DOMContentLoaded",function(){
     if(hdr)hdr.scrollLeft=_scrEl.scrollLeft;
     // Sync time gutter via translateY on inner div
     var ti=document.getElementById("tgutInner");
-    if(ti)ti.style.transform="translateY(-"+(_scrEl.scrollTop/gridZoom)+"px)";
+    if(ti)ti.style.transform="translateY(-"+_scrEl.scrollTop+"px)";
   },{passive:true});
   // Show splash after 800ms regardless of Firebase
   setTimeout(function(){
@@ -1327,8 +1327,8 @@ function buildTimeGutter(){
   var gut=document.getElementById("timeGutter");
   // Read actual rendered header height dynamically
   var hdrRow=document.getElementById("stageHeaderRow");
-  var hdrH=hdrRow?Math.round(hdrRow.getBoundingClientRect().height/gridZoom):36;
-  gut.style.height=(totalH+hdrH)+"px";
+  var hdrH=hdrRow?Math.round(hdrRow.getBoundingClientRect().height):Math.round(36*gridZoom);
+  gut.style.height=(totalH*gridZoom+hdrH)+"px";
   var html="";
   for(var i=0;i<SLOTS;i++){
     var mins=DS+i*30;
@@ -1337,7 +1337,7 @@ function buildTimeGutter(){
     if(mm!==0)continue;
     var ap=hh<12?"AM":"PM";
     var h12=hh%12||12;
-    html+="<div class='tlbl-hour' style='position:absolute;top:"+(hdrH+i*SH)+"px;right:2px;text-align:right;transform:translateY(-40%);font-size:11px'>"+h12+ap+"</div>";
+    html+="<div class='tlbl-hour' style='position:absolute;top:"+(hdrH+i*SH*gridZoom)+"px;right:2px;text-align:right;transform:translateY(-40%);font-size:11px'>"+h12+ap+"</div>";
   }
   gut.innerHTML="<div id='tgutInner' style='position:absolute;top:0;left:0;right:0;'>"+html+"</div>";
 }
@@ -1974,14 +1974,18 @@ function renderFeed(){
   var users=db.users||{},allPicksF=db.picks||{};
   var myPicks=(allPicksF[myId])||{};
 
-  // ── UNIFIED SQUAD LIST: everyone shown, ranked by shared needs ──────────
+  // ── UNIFIED CREW LIST: everyone shown, ranked by total pick overlap ─────
   if(matchList&&myId){
-    var myNeeds=Object.keys(myPicks).filter(function(aid){return myPicks[aid]==="need";});
+    // Count ALL overlapping picks regardless of tier (need or interested)
+    var myAllPicks=Object.keys(myPicks).filter(function(aid){return myPicks[aid]==="need"||myPicks[aid]==="interested";});
     var scores={};
+    var sharedMap={}; // uid -> array of shared artist ids
     Object.keys(users).forEach(function(uid){
       if(uid===myId||!allPicksF[uid])return;
-      var shared=myNeeds.filter(function(aid){return allPicksF[uid][aid]==="need";});
+      var theirPicks=allPicksF[uid];
+      var shared=myAllPicks.filter(function(aid){return theirPicks[aid]==="need"||theirPicks[aid]==="interested";});
       scores[uid]=shared.length;
+      sharedMap[uid]=shared;
     });
     var allOthers=Object.keys(users).filter(function(uid){return uid!==myId;});
     allOthers.sort(function(a,b){
@@ -2008,7 +2012,7 @@ function renderFeed(){
       av.className="match-avatar"+(isTop?" top":"");
       av.textContent=u.emoji;
       var info=document.createElement("div");info.className="match-info";
-      var sharedArtists=myNeeds.filter(function(aid){return allPicksF[uid]&&allPicksF[uid][aid]==="need";});
+      var sharedArtists=sharedMap[uid]||[];
       var artistNames=sharedArtists.slice(0,2).map(function(aid){
         var art=null;DAYS.forEach(function(d){d.artists.forEach(function(a){if(a.id===aid)art=a;});});
         return art?art.name:"";
