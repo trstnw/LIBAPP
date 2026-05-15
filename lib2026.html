@@ -2061,7 +2061,7 @@ function navToArtist(artistId,dayId){
     var stageIdx=targetDay.stages.indexOf(targetArtist.stage);
     // Scroll both axes simultaneously, place item near top with padding
     var hdrH=40; // sticky stage header height
-    var scrollTop=Math.max(0,topPx-hdrH-16);
+    var scrollTop=Math.max(0,topPx*gridZoom-(scr.clientHeight/2)+(SH*gridZoom/2));
     // Center the target column in the viewport
     var colW=parseInt(getComputedStyle(document.documentElement).getPropertyValue("--col"))||210;
     var viewW=scr.clientWidth;
@@ -2075,7 +2075,7 @@ function navToArtist(artistId,dayId){
         void blk.offsetWidth;
         blk.classList.add("nav");
         // Also scroll into view precisely
-        blk.scrollIntoView({behavior:"smooth",block:"start",inline:"start"});
+        blk.scrollIntoView({behavior:"smooth",block:"center",inline:"center"});
       }
     },400);
   },60);
