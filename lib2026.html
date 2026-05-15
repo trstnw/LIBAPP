@@ -1838,6 +1838,16 @@ function renderSR(q){
         info.appendChild(avRow);
       }
     }
+    var btns=document.createElement("div");btns.className="sri-picks";
+    var bg=document.createElement("button");
+    bg.className="qpick qpick-g"+(tier==="need"?" qn":tier==="interested"?" qhide":"");
+    bg.textContent="🔥";
+    bg.onclick=(function(aid){return function(ev){ev.stopPropagation();quickPick(aid,"need");};})(a.id);
+    var bi=document.createElement("button");
+    bi.className="qpick qpick-i"+(tier==="interested"?" qi":tier==="need"?" qhide":"");
+    bi.textContent="✨";
+    bi.onclick=(function(aid){return function(ev){ev.stopPropagation();quickPick(aid,"interested");};})(a.id);
+    btns.appendChild(bg);btns.appendChild(bi);
     el.appendChild(bar);el.appendChild(info);el.appendChild(btns);
     el.onclick=(function(aid,did){return function(){navToArtist(aid,did);};})(a.id,day.id);
     list.appendChild(el);
