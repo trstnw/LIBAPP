@@ -163,14 +163,14 @@ input[type=text]::placeholder{color:rgba(255,255,255,.2)}
 .sr-row input{flex:1;background:transparent;border:none;outline:none;color:#fff;font-size:16px;font-family:inherit;padding:13px 0}
 .sr-row input::placeholder{color:rgba(255,255,255,.25)}
 .sr-list{overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding-bottom:280px;flex:1;min-height:0}
-.sri{display:flex;align-items:stretch;gap:0;padding:0;border-radius:14px;cursor:pointer;overflow:hidden;width:100%;margin-bottom:8px;border:1.5px solid rgba(255,255,255,.1)}
+.sri{display:flex;align-items:stretch;gap:0;padding:0;border-radius:14px;margin-bottom:8px;cursor:pointer;overflow:hidden;min-height:64px;width:100%;border:1.5px solid rgba(255,255,255,.1)}
 .sri:active{background:rgba(255,255,255,.1)}
 .sri.sn{background:rgba(255,70,70,.15);border-color:rgba(255,80,80,.4)}
 .sri.si{background:rgba(80,160,255,.12);border-color:rgba(100,180,255,.4)}
 .sri-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
 .sri-info{flex:1;min-width:0}
-.sri-name{font-size:15px;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3}
-.sri-meta{font-size:12px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3}
+.sri-name{font-size:15px;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sri-meta{font-size:12px;color:var(--mut);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .sri-day{font-size:11px;font-weight:700;background:rgba(255,255,255,.1);color:rgba(255,255,255,.6);border-radius:8px;padding:2px 8px;flex-shrink:0}
 .sr-empty{text-align:center;color:var(--mut);font-size:14px;padding:32px 0}
 
@@ -203,7 +203,7 @@ input[type=text]::placeholder{color:rgba(255,255,255,.2)}
 .ep-btn{width:100%;aspect-ratio:1;border-radius:12px;border:2px solid transparent;background:transparent;cursor:pointer;font-size:28px;display:flex;align-items:center;justify-content:center;transition:all .12s;line-height:1}
 .ep-btn:active{transform:scale(.88)}
 .ep-btn.ep-sel{background:rgba(245,166,35,.15);border-color:rgba(245,166,35,.6)}
-.sri-meta{font-size:12px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3}
+.sri-meta{font-size:12px;color:var(--mut);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .sri-name{font-size:17px;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .feed-item{display:flex;align-items:stretch;gap:0;border-radius:14px;background:transparent;cursor:pointer;overflow:hidden;min-height:72px;border:1.5px solid rgba(255,255,255,.1);margin-bottom:8px}
 .feed-item:active{background:rgba(255,255,255,.1)}
@@ -225,7 +225,7 @@ input[type=text]::placeholder{color:rgba(255,255,255,.2)}
 .feed-item.stage-card{border-radius:12px;overflow:hidden}
 
 .sri-bar{width:4px;flex-shrink:0;border-radius:0}
-.sri-body{flex:1;min-width:0;padding:10px 6px 10px 14px;display:flex;flex-direction:column;justify-content:flex-start;gap:4px}
+.sri-body{flex:1;min-width:0;padding:12px 6px 12px 14px;display:flex;flex-direction:column;justify-content:center;overflow:hidden}
 .feed-bar{width:4px;flex-shrink:0;border-radius:0}
 .feed-body{flex:1;min-width:0;padding:16px 6px 16px 12px;display:flex;flex-direction:column;justify-content:center;overflow:hidden}
 .sri .sri-picks,.feed-item .sri-picks{width:92px;flex-shrink:0;display:flex;align-items:center;justify-content:center;align-self:stretch;gap:0;padding:0}
@@ -286,7 +286,7 @@ input[type=text]::placeholder{color:rgba(255,255,255,.2)}
   .tlbl-hour{font-size:12px!important;}
 }
 
-.stream-btns{display:flex;gap:8px;margin:14px 0 16px;flex-wrap:wrap}
+.stream-btns{display:flex;gap:8px;margin:8px 0 0;flex-wrap:wrap;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,.08)}
 .stream-btn{display:inline-flex;align-items:center;gap:7px;padding:9px 16px;border-radius:24px;font-size:13px;font-weight:700;text-decoration:none;transition:opacity .15s;flex:1;justify-content:center}
 .stream-btn:active{opacity:.7}
 .stream-btn.spotify{background:#1DB954;color:#000}
@@ -1394,8 +1394,8 @@ function renderGrid(){
         bg2=hexAlpha(col,.75);bdr=col;
         shadow="box-shadow:0 0 26px "+hexAlpha(col,.85)+",inset 0 0 0 1px "+hexAlpha(col,.65);
       } else if(tier==="interested"){
-        bg2=hexAlpha(col,.45);bdr=hexAlpha(col,.9);
-        shadow="box-shadow:0 0 18px "+hexAlpha(col,.6)+",inset 0 0 0 1px "+hexAlpha(col,.3);
+        bg2=hexAlpha(col,.45);bdr=col;
+        shadow="box-shadow:0 0 18px "+hexAlpha(col,.6)+",inset 0 0 0 2px "+hexAlpha(col,.9);
       } else {
         bg2=col+"22";bdr=col+"55";
       }
@@ -1805,16 +1805,16 @@ function renderSR(q){
     el.style.borderColor=hexAlpha(col,.45);
     var bar=document.createElement("div");bar.className="sri-bar";bar.style.background=col;
     var info=document.createElement("div");info.className="sri-body";
-    // Artist name
+    // Name
     var nameEl=document.createElement("div");nameEl.className="sri-name";
     nameEl.textContent=a.name;
     info.appendChild(nameEl);
-    // Stage + status
+    // Meta: stage + status
     var metaEl=document.createElement("div");metaEl.className="sri-meta";
     metaEl.setAttribute("data-stage",a.stage);
     metaEl.textContent=metaLine;
     info.appendChild(metaEl);
-    // Avatars (default state only)
+    // Avatars — only in default (no search query) state
     if(q.length<1){
       var allUsers2=db.users||{},allPicks2=db.picks||{};
       var goingU=Object.keys(allPicks2).filter(function(u){return allPicks2[u][a.id]==="need"&&allUsers2[u];});
@@ -1838,16 +1838,6 @@ function renderSR(q){
         info.appendChild(avRow);
       }
     }
-    var btns=document.createElement("div");btns.className="sri-picks";
-    var bg=document.createElement("button");
-    bg.className="qpick qpick-g"+(tier==="need"?" qn":tier==="interested"?" qhide":"");
-    bg.textContent="🔥";
-    bg.onclick=(function(aid){return function(ev){ev.stopPropagation();quickPick(aid,"need");};})(a.id);
-    var bi=document.createElement("button");
-    bi.className="qpick qpick-i"+(tier==="interested"?" qi":tier==="need"?" qhide":"");
-    bi.textContent="✨";
-    bi.onclick=(function(aid){return function(ev){ev.stopPropagation();quickPick(aid,"interested");};})(a.id);
-    btns.appendChild(bg);btns.appendChild(bi);
     el.appendChild(bar);el.appendChild(info);el.appendChild(btns);
     el.onclick=(function(aid,did){return function(){navToArtist(aid,did);};})(a.id,day.id);
     list.appendChild(el);
