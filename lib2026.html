@@ -162,7 +162,7 @@ input[type=text]::placeholder{color:rgba(255,255,255,.2)}
 .sr-row span{font-size:18px;flex-shrink:0}
 .sr-row input{flex:1;background:transparent;border:none;outline:none;color:#fff;font-size:16px;font-family:inherit;padding:13px 0}
 .sr-row input::placeholder{color:rgba(255,255,255,.25)}
-.sr-list{overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding-bottom:100px;flex:1;min-height:0}
+.sr-list{overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding-bottom:280px;flex:1;min-height:0}
 .sri{display:flex;align-items:stretch;gap:0;border-radius:14px;background:transparent;cursor:pointer;overflow:visible;margin-bottom:8px;border:1.5px solid rgba(255,255,255,.1)}
 .sri:active{background:rgba(255,255,255,.1)}
 .sri.sn{background:rgba(255,70,70,.15);border-color:rgba(255,80,80,.4)}
@@ -266,7 +266,7 @@ input[type=text]::placeholder{color:rgba(255,255,255,.2)}
 
 .feed-scroll{flex:1;overflow-y:auto;min-height:0;padding:0 0 100px}
 
-.sp2-flex{display:flex;flex-direction:column;flex:1;overflow:hidden;min-height:0;padding:0 24px}
+.sp2-flex{display:flex;flex-direction:column;flex:1;overflow:hidden;min-height:0;padding:0 24px;height:100%}
 
 .sp2-flex>.drawer-close{flex-shrink:0}
 .sp2-flex>.pill{flex-shrink:0}
@@ -291,6 +291,11 @@ input[type=text]::placeholder{color:rgba(255,255,255,.2)}
 .stream-btn:active{opacity:.7}
 .stream-btn.spotify{background:#1DB954;color:#000}
 .stream-btn.applemusic{background:#fc3c44;color:#fff}
+
+/* Prevent keyboard from resizing sheet on iOS */
+@supports (-webkit-touch-callout: none){
+  .sheet.sp2-flex{max-height:90vh;height:90vh}
+}
 </style>
 </head>
 <body>
@@ -304,7 +309,6 @@ input[type=text]::placeholder{color:rgba(255,255,255,.2)}
   <div class="sp-h1">&#9889; LIB<br><span>2026</span></div>
   <div class="sp-sub">Find your Crew!</div>
   <div class="sp-loc">May 20&ndash;24 &middot; Buena Vista Lake, CA</div>
-  <div style="font-size:12px;color:rgba(255,255,255,.35);text-align:center;line-height:1.6;max-width:280px;margin:-16px auto 24px">Browse the full lineup, mark your must-sees, and find friends who are going to the same sets. 🔥 = Need to See &nbsp;·&nbsp; ✨ = Interested</div>
   <div id="authTabs" style="display:flex;width:100%;margin-bottom:24px;border-radius:14px;overflow:hidden;border:1px solid var(--bdr)">
     <button id="tabLogin" onclick="switchTab('login')" style="flex:1;padding:13px;background:rgba(245,166,35,.2);border:none;color:var(--gold);font-size:15px;font-weight:800;font-family:inherit;cursor:pointer;border-right:1px solid var(--bdr)">Log In</button>
     <button id="tabJoin" onclick="switchTab('join')" style="flex:1;padding:13px;background:transparent;border:none;color:rgba(255,255,255,.4);font-size:15px;font-weight:800;font-family:inherit;cursor:pointer">Join Up</button>
@@ -1323,7 +1327,7 @@ function buildTimeGutter(){
   var gut=document.getElementById("timeGutter");
   // Read actual rendered header height dynamically
   var hdrRow=document.getElementById("stageHeaderRow");
-  var hdrH=hdrRow?Math.round(hdrRow.getBoundingClientRect().height):36;
+  var hdrH=hdrRow?Math.round(hdrRow.getBoundingClientRect().height/gridZoom):36;
   gut.style.height=(totalH+hdrH)+"px";
   var html="";
   for(var i=0;i<SLOTS;i++){
@@ -1727,6 +1731,9 @@ function renderActivity(list){
     };})(item.artist.id,item.day.id);
     list.appendChild(el);
   });
+  // Scroll results to top so they're visible above keyboard
+  var listEl=document.getElementById("srList");
+  if(listEl)listEl.scrollTop=0;
 }
 
 function openSR(){
