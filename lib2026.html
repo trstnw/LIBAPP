@@ -1032,6 +1032,8 @@ var DAYS = [
     {id:"su60",name:"Thugfucker: Greg\'s Mellow Trip",stage:"Moon Room",time:"10:30p–12:20a",spotify:"https://open.spotify.com/search/Thugfucker"},
     {id:"su66",name:"SURPRISE",stage:"Stacks",time:"2:00a–4:00a",spotify:"https://open.spotify.com/search/SURPRISE"},
     {id:"su67",name:"BLVK H3RO, Amalyn Davix",stage:"Crossroads",time:"12:45a–1:00a",spotify:"https://open.spotify.com/search/BLVK%20H3RO"},
+    {id:"su68",name:"Dust and Beau",stage:"Stacks",time:"5:30p–6:45p",spotify:"https://open.spotify.com/search/Dust%20and%20Beau"},
+    {id:"su69",name:"Sunday Revival",stage:"Grand Artique",time:"2:20p–2:45p",spotify:"https://open.spotify.com/search/Sunday%20Revival"},
   ]},
 ];
 
@@ -1313,12 +1315,13 @@ function switchDay(id){
   buildDayTabs();
   buildTimeGutter();
   renderGrid();
-  adjustZoom(0);
+  // Reset scroll FIRST so adjustZoom reads correct position
   var scr=document.getElementById("stagesScroll");
   scr.scrollTop=0;
   scr.scrollLeft=0;
   var hi=document.getElementById("hdrInner");
   if(hi)hi.style.transform="translateX(0)";
+  adjustZoom(0);
 }
 function buildTimeGutter(){
   SH=parseInt(getComputedStyle(document.documentElement).getPropertyValue("--row"))||60;
