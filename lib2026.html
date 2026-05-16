@@ -260,7 +260,7 @@ input[type=text]::placeholder{color:rgba(255,255,255,.2)}
 .drawer-close{position:absolute;top:16px;right:16px;width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.1);border:none;color:rgba(255,255,255,.7);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:inherit;line-height:1;flex-shrink:0;z-index:10;transition:background .15s;-webkit-tap-highlight-color:transparent}
 .drawer-close:active{background:rgba(255,255,255,.2)}
 
-.shdr-row{display:flex;overflow:hidden;flex-shrink:0;background:#0a0a0a;z-index:30;height:36px;border-bottom:2px solid rgba(255,255,255,.06)}
+.shdr-row{position:relative;overflow:hidden;flex-shrink:0;background:#0a0a0a;z-index:30;height:36px;border-bottom:2px solid rgba(255,255,255,.06)}
 .shdr-cell{flex-shrink:0;display:flex;align-items:center;justify-content:center;gap:6px;padding:0 8px;height:36px}
 .schdr{display:none}
 
@@ -1163,8 +1163,8 @@ window.addEventListener("DOMContentLoaded",function(){
   var _scrEl=document.getElementById("stagesScroll");
   if(_scrEl)_scrEl.addEventListener("scroll",function(){
     // Sync sticky header row horizontal scroll
-    var hdr=document.getElementById("stageHeaderRow");
-    if(hdr)hdr.scrollLeft=_scrEl.scrollLeft;
+    var hi=document.getElementById("hdrInner");
+    if(hi)hi.style.transform="translateX(-"+_scrEl.scrollLeft+"px)";
     // Sync time gutter via translateY on inner div
     var ti=document.getElementById("tgutInner");
     if(ti)ti.style.transform="translateY(-"+_scrEl.scrollTop+"px)";
@@ -1324,6 +1324,8 @@ function switchDay(id){
   var scr=document.getElementById("stagesScroll");
   scr.scrollTop=0;
   scr.scrollLeft=0;
+  var hi=document.getElementById("hdrInner");
+  if(hi)hi.style.transform="translateX(0)";
 }
 function buildTimeGutter(){
   SH=parseInt(getComputedStyle(document.documentElement).getPropertyValue("--row"))||60;
@@ -1350,6 +1352,10 @@ function renderGrid(){
   // Rebuild sticky header row
   var hdrRow=document.getElementById("stageHeaderRow");
   if(hdrRow){hdrRow.innerHTML="";}
+  var hdrInner=document.createElement("div");
+  hdrInner.id="hdrInner";
+  hdrInner.style.cssText="display:flex;position:absolute;top:0;left:0;will-change:transform";
+  if(hdrRow)hdrRow.appendChild(hdrInner);
   var colW=parseInt(getComputedStyle(document.documentElement).getPropertyValue("--col"))||210;
   SH=parseInt(getComputedStyle(document.documentElement).getPropertyValue("--row"))||60;
   var day=DAYS.find(function(d){return d.id===activeDay;});
@@ -1453,7 +1459,7 @@ function renderGrid(){
     hdrCell.style.borderBottom="2px solid "+col+"80";
     hdrCell.innerHTML='<div class="scdot" style="background:'+col+';box-shadow:0 0 8px '+col+'cc"></div>'
       +'<div class="scnm" style="color:'+col+';text-shadow:0 0 16px '+col+'88">'+stage+'</div>';
-    hdrRow.appendChild(hdrCell);
+    if(hdrInner)hdrInner.appendChild(hdrCell);
   }
   inner.appendChild(colDiv);
   });
