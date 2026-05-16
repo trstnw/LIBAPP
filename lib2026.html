@@ -845,8 +845,8 @@ var DAYS = [
     {id:"f13",name:"Mindex",stage:"Thunder",time:"2:20p–3:35p",spotify:"https://open.spotify.com/search/Mindex"},
     {id:"f14",name:"Bass Temple",stage:"Thunder",time:"1:05p–2:20p",spotify:"https://open.spotify.com/search/Bass%20Temple"},
     {id:"f15",name:"ALLEYCVT",stage:"Thunder",time:"12:45a–2:00a",spotify:"https://open.spotify.com/search/ALLEYCVT"},
-    {id:"f16",name:"Sara Landry",stage:"Grand Artique",time:"12:00a–2:00a",spotify:"https://open.spotify.com/search/Sara%20Landry"},
-    {id:"f17",name:"Effy",stage:"Grand Artique",time:"10:00p–12:00a",spotify:"https://open.spotify.com/search/Effy%20DJ"},
+    {id:"f16",name:"Sara Landry",stage:"Woogie",time:"12:00a–2:00a",spotify:"https://open.spotify.com/search/Sara%20Landry"},
+    {id:"f17",name:"Effy",stage:"Woogie",time:"10:00p–12:00a",spotify:"https://open.spotify.com/search/Effy%20DJ"},
     {id:"f18",name:"DJ HEARTSTRING",stage:"Woogie",time:"8:00p–10:00p",spotify:"https://open.spotify.com/search/DJ%20Heartstring"},
     {id:"f19",name:"Lee Burridge",stage:"Woogie",time:"5:30p–8:00p",spotify:"https://open.spotify.com/search/Lee%20Burridge"},
     {id:"f20",name:"EREZ",stage:"Woogie",time:"2:00p–4:00p",spotify:"https://open.spotify.com/search/EREZ%20DJ"},
@@ -895,10 +895,10 @@ var DAYS = [
     {id:"f63",name:"Bobby Saint",stage:"Moon Room",time:"10:30p–12:20a",spotify:"https://open.spotify.com/search/Bobby%20Saint"},
     {id:"f64",name:"Sacredsouldier",stage:"Grand Artique",time:"1:15a–2:30a",spotify:"https://open.spotify.com/search/Sacredsouldier"},
     {id:"f65",name:"CLUB'N (DJ Clutch h2b GDUB'N)",stage:"Crossroads",time:"3:00a–4:00a",spotify:"https://open.spotify.com/search/CLUB%27N%20(DJ%20Clutch%20h2b%20GDUB%27N)"},
-    {id:"f66",name:"Black Carl!",stage:"Crossroads",time:"7:00p–8:00p",spotify:"https://open.spotify.com/search/Black%20Carl"},
-    {id:"f67",name:"Sarz",stage:"Grand Artique",time:"4:00p–5:30p",spotify:"https://open.spotify.com/search/Sarz"},
+    {id:"f66",name:"Black Carl!",stage:"Stacks",time:"7:00p–8:00p",spotify:"https://open.spotify.com/search/Black%20Carl"},
+    {id:"f67",name:"Sarz",stage:"Woogie",time:"4:00p–5:30p",spotify:"https://open.spotify.com/search/Sarz"},
     {id:"f68",name:"O'Snap",stage:"Stacks",time:"2:00p–3:00p",spotify:"https://open.spotify.com/search/O%27Snap"},
-    {id:"f70",name:"SURPRISE",stage:"Stacks",time:"2:00a–3:00a",spotify:"https://open.spotify.com/search/SURPRISE"},
+    {id:"f70",name:"SURPRISE",stage:"Stacks",time:"3:00a–4:00a",spotify:"https://open.spotify.com/search/SURPRISE"},
   ]},
   {id:"sat",label:"SAT",date:"May 23",stages:["Lightning", "Thunder", "Woogie", "Stacks", "Junkyard", "Grand Artique", "Crossroads", "Moon Room"],artists:[
     {id:"s1",name:"Chase & Status",stage:"Lightning",time:"12:30a–2:00a",spotify:"https://open.spotify.com/artist/3jNkaOXasoc7RsxdchvEVq"},
@@ -1332,6 +1332,7 @@ function switchDay(id){
   buildDayTabs();
   buildTimeGutter();
   renderGrid();
+  adjustZoom(0);
   var scr=document.getElementById("stagesScroll");
   scr.scrollTop=0;
   scr.scrollLeft=0;
@@ -1501,6 +1502,10 @@ function adjustZoom(delta){
   });
   // Rebuild time gutter so offset recalculates from actual header height
   buildTimeGutter();
+  // Re-sync hdrInner translateX to current scroll position
+  var _scr=document.getElementById("stagesScroll");
+  var _hi=document.getElementById("hdrInner");
+  if(_scr&&_hi)_hi.style.transform="translateX(-"+_scr.scrollLeft+"px)";
 }
 
 function updateFabCnt(){
@@ -2064,6 +2069,7 @@ function navToArtist(artistId,dayId){
     buildDayTabs();
     buildTimeGutter();
     renderGrid();
+    adjustZoom(0);
   }
   // find artist
   var targetArtist=null;
